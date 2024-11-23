@@ -13,16 +13,11 @@ UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem() :
 	DestroySessionCompleteDelegate(FOnDestroySessionCompleteDelegate::CreateUObject(this, &ThisClass::OnDestroySessionComplete)),
 	StartSessionCompleteDelegate(FOnStartSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnStartSessionComplete))
 {
-	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
-	if (Subsystem)
-	{
-		SessionInterface = Subsystem->GetSessionInterface();
-	}
 }
 
 void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FString MatchType)
 {
-	if (!SessionInterface.IsValid()) return;
+	if (!IsValidSessionInterface()) return;
 
 	auto ExistingSession = SessionInterface->GetNamedSession(NAME_GameSession);
 	if (ExistingSession != nullptr)
@@ -54,6 +49,11 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 	// if create session failed
 	if (SessionInterface->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *LastSessionSettings) == false)
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
+				FString::Printf(TEXT("Failed to create Session")));
+		}
 		SessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
 
 		// Broadcast our own custom delegates
@@ -63,7 +63,7 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 
 void UMultiplayerSessionsSubsystem::FindSession(int32 MaxSearchResults)
 {
-	if (!SessionInterface.IsValid()) return;
+	if (!IsValidSessionInterface()) return;
 	
 	FindSessionsCompleteDelegateHandle = SessionInterface->AddOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegate);
 	
@@ -77,6 +77,11 @@ void UMultiplayerSessionsSubsystem::FindSession(int32 MaxSearchResults)
 	// if find sessions failed
 	if (SessionInterface->FindSessions(*LocalPlayer->GetPreferredUniqueNetId(), LastSessionSearch.ToSharedRef()) == false)
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
+				FString::Printf(TEXT("Failed to find Session")));
+		}
 		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
 		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(),false);
 	}
@@ -119,18 +124,30 @@ void UMultiplayerSessionsSubsystem::DestroySession()
 
 void UMultiplayerSessionsSubsystem::StartSession()
 {
-	if (!SessionInterface.IsValid())
-	{
-		MultiplayerOnStartSessionComplete.Broadcast(false);		
-		return;
-	}
+	// if (!SessionInterface.IsValid())
+	// {
+	// 	MultiplayerOnStartSessionComplete.Broadcast(false);		
+	// 	return;
+	// }
+	//
+	// StartSessionCompleteDelegateHandle = SessionInterface->AddOnStartSessionCompleteDelegate_Handle(StartSessionCompleteDelegate);
+	// if (SessionInterface->StartSession(NAME_GameSession) == false)
+	// {
+	// 	SessionInterface->ClearOnStartSessionCompleteDelegate_Handle(StartSessionCompleteDelegateHandle);
+	// 	MultiplayerOnStartSessionComplete.Broadcast(false);	
+	// }
+}
 
-	StartSessionCompleteDelegateHandle = SessionInterface->AddOnStartSessionCompleteDelegate_Handle(StartSessionCompleteDelegate);
-	if (SessionInterface->StartSession(NAME_GameSession) == false)
+bool UMultiplayerSessionsSubsystem::IsValidSessionInterface()
+{
+	if (!SessionInterface)
 	{
-		SessionInterface->ClearOnStartSessionCompleteDelegate_Handle(StartSessionCompleteDelegateHandle);
-		MultiplayerOnStartSessionComplete.Broadcast(false);	
+		if (IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get())
+		{
+			SessionInterface = Subsystem->GetSessionInterface();
+		}
 	}
+	return SessionInterface.IsValid();
 }
 
 // Callbacks
@@ -184,9 +201,9 @@ void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName SessionName, 
 
 void UMultiplayerSessionsSubsystem::OnStartSessionComplete(FName SessionName, bool bWasSuccessful)
 {
-	if (SessionInterface)
-	{
-		SessionInterface->ClearOnStartSessionCompleteDelegate_Handle(StartSessionCompleteDelegateHandle);
-	}
-	MultiplayerOnStartSessionComplete.Broadcast(bWasSuccessful);
+	// if (SessionInterface)
+	// {
+	// 	SessionInterface->ClearOnStartSessionCompleteDelegate_Handle(StartSessionCompleteDelegateHandle);
+	// }
+	// MultiplayerOnStartSessionComplete.Broadcast(bWasSuccessful);
 }

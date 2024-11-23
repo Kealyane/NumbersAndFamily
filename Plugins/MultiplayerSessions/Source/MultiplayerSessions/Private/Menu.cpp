@@ -17,7 +17,8 @@ void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeMatch, FStrin
 	
 	AddToViewport();
 	SetVisibility(ESlateVisibility::Visible);
-	bIsFocusable = true;
+	//bIsFocusable = true;
+	SetIsFocusable(true);
 
 	UWorld* World = GetWorld();
 	if (World)
@@ -44,21 +45,6 @@ void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeMatch, FStrin
 		MultiplayerSessionsSubsystem->MultiplayerOnJoinSessionComplete.AddUObject(this, &ThisClass::OnJoinSession);
 		MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ThisClass::OnDestroySession);
 		MultiplayerSessionsSubsystem->MultiplayerOnStartSessionComplete.AddDynamic(this, &ThisClass::OnStartSession);
-	}
-}
-
-void UMenu::MenuCancelSetup()
-{
-	RemoveFromParent();
-	
-	if (const UWorld* World = GetWorld())
-	{
-		if (APlayerController* PlayerController = World->GetFirstPlayerController())
-		{
-			const FInputModeGameOnly InputModeData;
-			PlayerController->SetInputMode(InputModeData);
-			PlayerController->SetShowMouseCursor(false);
-		}
 	}
 }
 
@@ -108,7 +94,7 @@ void UMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResu
 {
 	if (MultiplayerSessionsSubsystem == nullptr) return;
 		
-	for (auto& Result : SessionResults)
+	for (auto Result : SessionResults)
 	{
 		FString MatchValue;
 		Result.Session.SessionSettings.Get(FName("MatchType"), MatchValue);
@@ -172,5 +158,20 @@ void UMenu::JoinButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->FindSession(10000);
+	}
+}
+
+void UMenu::MenuCancelSetup()
+{
+	RemoveFromParent();
+	
+	if (UWorld* World = GetWorld())
+	{
+		if (APlayerController* PlayerController = World->GetFirstPlayerController())
+		{
+			FInputModeGameOnly InputModeData;
+			PlayerController->SetInputMode(InputModeData);
+			PlayerController->SetShowMouseCursor(false);
+		}
 	}
 }

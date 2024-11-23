@@ -37,6 +37,8 @@ public:
 	void DestroySession();
 	void StartSession();
 
+	bool IsValidSessionInterface();
+
 	FMultiplayerOnCreateSessionComplete MultiplayerOnCreateSessionComplete;
 	FMultiplayerOnFindSessionsComplete MultiplayerOnFindSessionsComplete;
 	FMultiplayerOnJoinSessionComplete MultiplayerOnJoinSessionComplete;
@@ -63,7 +65,7 @@ private:
 
 	//
 	// To add to the Online Session Interface delegate list.
-	// We'll bind our MultiplayerSessionsSubsystem internal callbacks to these.
+	// Bind MultiplayerSessionsSubsystem internal callbacks to these.
 	//
 	FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
 	FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
