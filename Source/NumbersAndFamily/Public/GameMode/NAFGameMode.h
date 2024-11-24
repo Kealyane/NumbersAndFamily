@@ -7,6 +7,7 @@
 #include "NAFGameMode.generated.h"
 
 
+class ADeck;
 /**
  * 
  */
@@ -16,9 +17,13 @@ class NUMBERSANDFAMILY_API ANAFGameMode : public AGameMode
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category="Deck")
+	TSubclassOf<ADeck> DeckType;
+	
 	void PostLogin(APlayerController* NewPlayer) override;
 	void LaunchGame();
 
 private:
 	FTimerHandle WaitHandle;
+	TObjectPtr<ADeck> Deck;
 };

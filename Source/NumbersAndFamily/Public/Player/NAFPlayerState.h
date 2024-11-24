@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameElements/Deck.h"
 #include "GameFramework/PlayerState.h"
 #include "NumbersAndFamily/NumbersAndFamily.h"
 #include "NAFPlayerState.generated.h"
 
+class ANAFPlayerController;
 /**
  * 
  */
@@ -20,11 +22,34 @@ class NUMBERSANDFAMILY_API ANAFPlayerState : public APlayerState
 public:
 	UPROPERTY(ReplicatedUsing=OnRep_Id)
 	EPosition Id = EPosition::SERVER;
-
-	
 	UFUNCTION()
 	void OnRep_Id();
 
+	void StoreCardInHand(FCardDataServer Card);
+	void UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus);
+	/**
+	 * 
+	 * @return true if slot is occupied
+	 */
+	TArray<bool> HandStatus();
+	
 protected:
+	UPROPERTY(Replicated)
+	FCardDataServer Card1;
+	UPROPERTY(Replicated)
+	FCardDataServer Card2;
+	
+	UPROPERTY(Replicated)
+	int32 ScoreLine0;
+	UPROPERTY(Replicated)
+	int32 ScoreLine1;
+	UPROPERTY(Replicated)
+	int32 ScoreLine2;
+	UPROPERTY(Replicated)
+	int32 TotalScore;
+	
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
+
+private:
+	ANAFPlayerController* GetNafPC() const;
 };

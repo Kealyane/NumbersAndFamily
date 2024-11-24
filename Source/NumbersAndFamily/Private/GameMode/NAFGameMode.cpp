@@ -6,6 +6,7 @@
 #include "GameMode/NAFGameState.h"
 #include "Player/NAFPlayerController.h"
 #include "Player/NAFPlayerState.h"
+#include "GameElements/Deck.h"
 
 void ANAFGameMode::PostLogin(APlayerController* NewPlayer)
 {
@@ -48,22 +49,48 @@ void ANAFGameMode::LaunchGame()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : launch game")));
 
-		if (UWorld* World = GetWorld())
+		UWorld* World = GetWorld();
+		
+		if (World)
 		{
 			World->GetTimerManager().ClearTimer(WaitHandle);
 		}
 
 		// Link to Level Blueprint to remove lobby widget
-		if (ANAFGameState* NafGameState = GetGameState<ANAFGameState>())
+		ANAFGameState* NafGameState = GetGameState<ANAFGameState>();
+		if (NafGameState)
 		{
 			NafGameState->OnLeaveLobby.Broadcast();
 		}
 
+		// Show UI
 		for (FConstPlayerControllerIterator PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; ++PCIterator)
 		{
 			if (ANAFPlayerController* NafPlayerController = Cast<ANAFPlayerController>(*PCIterator))
 			{
 				NafPlayerController->ClientRPC_ShowGameBoard();
+			}
+		}
+
+		// Initialize Deck
+		if (World)
+		{
+			Deck = World->SpawnActor<ADeck>(DeckType);
+			Deck->InitDeck();
+		}
+
+		for (APlayerState* PlayerState : NafGameState->PlayerArray)
+		{
+			if (PlayerState)
+			{
+				if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
+				{
+					const FCardDataServer Card = Deck->DrawCard();
+					NafPS->StoreCardInHand(Card);
+					TArray<bool> HandCurrent = NafPS->HandStatus();
+					ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
+					OpponentPS->UpdateHandUI(NafPS->Id,HandCurrent);
+				}
 			}
 		}
 	}

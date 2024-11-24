@@ -6,6 +6,8 @@
 #include "GameFramework/GameState.h"
 #include "NAFGameState.generated.h"
 
+enum class EPosition : uint8;
+class ANAFPlayerState;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLeaveLobbySignature);
 
 /**
@@ -19,4 +21,6 @@ class NUMBERSANDFAMILY_API ANAFGameState : public AGameState
 public:
 	UPROPERTY(BlueprintAssignable)
 	FLeaveLobbySignature OnLeaveLobby;
+
+	ANAFPlayerState* GetOpponentPlayerState(EPosition CurrentId);
 };
