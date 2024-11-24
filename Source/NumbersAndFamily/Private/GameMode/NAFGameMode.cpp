@@ -5,6 +5,7 @@
 #include "GameFramework/GameState.h"
 #include "GameMode/NAFGameState.h"
 #include "Player/NAFPlayerController.h"
+#include "Player/NAFPlayerState.h"
 
 void ANAFGameMode::PostLogin(APlayerController* NewPlayer)
 {
@@ -17,6 +18,21 @@ void ANAFGameMode::PostLogin(APlayerController* NewPlayer)
 
 	int32 NumberOfPlayers = GameState->PlayerArray.Num();
 
+	if (ANAFPlayerController* TPC = Cast<ANAFPlayerController>(NewPlayer))
+	{
+		if (ANAFPlayerState* PS = Cast<ANAFPlayerState>(TPC->PlayerState))
+		{
+			if (NumberOfPlayers == 1)
+			{
+				PS->Id = EPosition::LEFT;
+			}
+			else if (NumberOfPlayers == 2)
+			{
+				PS->Id = EPosition::RIGHT;
+			}
+		}
+	}
+	
 	if (NumberOfPlayers == 2)
 	{
 		if (UWorld* World = GetWorld())
