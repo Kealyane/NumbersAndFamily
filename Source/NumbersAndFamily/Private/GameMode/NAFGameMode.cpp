@@ -3,6 +3,8 @@
 
 #include "GameMode/NAFGameMode.h"
 #include "GameFramework/GameState.h"
+#include "GameMode/NAFGameState.h"
+#include "Player/NAFPlayerController.h"
 
 void ANAFGameMode::PostLogin(APlayerController* NewPlayer)
 {
@@ -10,13 +12,44 @@ void ANAFGameMode::PostLogin(APlayerController* NewPlayer)
 	
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("game mode : post login")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : post login")));
 	}
-	
+
 	int32 NumberOfPlayers = GameState->PlayerArray.Num();
 
 	if (NumberOfPlayers == 2)
 	{
-		OnLeaveLobby.Broadcast();
+		if (UWorld* World = GetWorld())
+		{
+			World->GetTimerManager().SetTimer(WaitHandle, this, &ANAFGameMode::LaunchGame, 1.f, false);
+		}
 	}
+}
+
+void ANAFGameMode::LaunchGame()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : launch game")));
+
+		if (UWorld* World = GetWorld())
+		{
+			World->GetTimerManager().ClearTimer(WaitHandle);
+		}
+
+		// Link to Level Blueprint to remove lobby widget
+		if (ANAFGameState* NafGameState = GetGameState<ANAFGameState>())
+		{
+			NafGameState->OnLeaveLobby.Broadcast();
+		}
+
+		for (FConstPlayerControllerIterator PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; ++PCIterator)
+		{
+			if (ANAFPlayerController* NafPlayerController = Cast<ANAFPlayerController>(*PCIterator))
+			{
+				NafPlayerController->ClientRPC_ShowGameBoard();
+			}
+		}
+	}
+	
 }

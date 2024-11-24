@@ -6,7 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "NAFGameMode.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLeaveLobbySignature);
+
 /**
  * 
  */
@@ -17,8 +17,8 @@ class NUMBERSANDFAMILY_API ANAFGameMode : public AGameMode
 
 protected:
 	void PostLogin(APlayerController* NewPlayer) override;
+	void LaunchGame();
 
-public:
-	UPROPERTY(BlueprintAssignable)
-	FLeaveLobbySignature OnLeaveLobby;
+private:
+	FTimerHandle WaitHandle;
 };
