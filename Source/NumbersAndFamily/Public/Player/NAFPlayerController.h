@@ -27,6 +27,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category="MyPropperties|Card")
 	TObjectPtr<UTexture2D> CardVerso;
 
+	void PlaySound(USoundBase* Sound);
+	
 public:
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_ShowGameBoard();

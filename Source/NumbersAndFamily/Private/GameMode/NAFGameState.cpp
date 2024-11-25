@@ -3,6 +3,7 @@
 
 #include "GameMode/NAFGameState.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/NAFPlayerController.h"
 #include "Player/NAFPlayerState.h"
@@ -20,7 +21,13 @@ void ANAFGameState::SetActivePlayer(EPosition InActiveId)
 	}
 }
 
-void ANAFGameState::UpdateActiveTurnUI_Implementation()
+void ANAFGameState::MultiRPC_PlaySoundStartGame_Implementation()
+{
+	// TODO : replace nullptr by sound
+	PlaySound(nullptr);
+}
+
+void ANAFGameState::MultiRPC_UpdateActiveTurnUI_Implementation()
 {
 	for (APlayerState* PlayerState : PlayerArray)
 	{
@@ -87,4 +94,12 @@ void ANAFGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ANAFGameState, ActiveId);
+}
+
+void ANAFGameState::PlaySound(USoundBase* Sound)
+{
+	if (Sound)
+	{
+		UGameplayStatics::PlaySound2D(this, Sound);
+	}
 }

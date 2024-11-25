@@ -30,7 +30,9 @@ public:
 	UFUNCTION()
 	void SetActivePlayer(EPosition InActiveId);
 	UFUNCTION(NetMulticast, Unreliable)
-	void UpdateActiveTurnUI();
+	void MultiRPC_PlaySoundStartGame();
+	UFUNCTION(NetMulticast, Unreliable)
+	void MultiRPC_UpdateActiveTurnUI();
 
 	UFUNCTION()
 	void SwitchPlayerTurn();
@@ -40,4 +42,5 @@ public:
 
 protected:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	void PlaySound(USoundBase* Sound);
 };

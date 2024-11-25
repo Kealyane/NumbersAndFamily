@@ -79,6 +79,8 @@ void ANAFGameMode::LaunchGame()
 			Deck->InitDeck();
 		}
 
+		NafGameState->MultiRPC_PlaySoundStartGame();
+		
 		for (APlayerState* PlayerState : NafGameState->PlayerArray)
 		{
 			if (PlayerState)
@@ -109,5 +111,5 @@ void ANAFGameMode::ActivePlayerTurn(EPosition Id)
 	{
 		ActivePS->ActiveTurn(Id);
 	}
-	NafGameState->UpdateActiveTurnUI();
+	NafGameState->MultiRPC_UpdateActiveTurnUI();
 }

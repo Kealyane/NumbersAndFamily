@@ -5,6 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "GameElements/Deck.h"
+#include "Kismet/GameplayStatics.h"
 #include "Widgets/CardWidget.h"
 #include "Widgets/GameWidget.h"
 
@@ -43,6 +44,9 @@ void ANAFPlayerController::ClientRPC_PlaceCardInPocketUI_Implementation(EPositio
 	{
 	 	GameWidget->GetCardWidget(PlayerPosition, Pos)->ShowCard(Data->ImageRecto);
 	}
+
+	// TODO : Sound Draw Card
+	PlaySound(nullptr);
 }
 
 void ANAFPlayerController::ClientRPC_ShowPocketCardVerso_Implementation(EPosition PlayerPosition, uint8 Pos)
@@ -70,6 +74,14 @@ void ANAFPlayerController::ClientRPC_PocketCardEmpty_Implementation(EPosition Pl
 	if (GameWidget)
 	{
 		GameWidget->GetCardWidget(PlayerPosition, Pos)->HideCard();
+	}
+}
+
+void ANAFPlayerController::PlaySound(USoundBase* Sound)
+{
+	if (Sound)
+	{
+		UGameplayStatics::PlaySound2D(this, Sound);
 	}
 }
 
