@@ -65,6 +65,15 @@ void ANAFPlayerState::UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus)
 	}
 }
 
+void ANAFPlayerState::ActiveTurn(EPosition ActiveId)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
+			FString::Printf(TEXT("Player State %s : Your turn"), *EnumHelper::ToString(Id)));
+	}
+}
+
 TArray<bool> ANAFPlayerState::HandStatus()
 {
 	TArray<bool> Status;

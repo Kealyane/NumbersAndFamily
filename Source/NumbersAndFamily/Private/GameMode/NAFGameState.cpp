@@ -3,7 +3,45 @@
 
 #include "GameMode/NAFGameState.h"
 
+#include "Net/UnrealNetwork.h"
+#include "Player/NAFPlayerController.h"
 #include "Player/NAFPlayerState.h"
+
+void ANAFGameState::OnRep_ActiveId()
+{
+}
+
+void ANAFGameState::SetActivePlayer(EPosition InActiveId)
+{
+	if (HasAuthority())
+	{
+		ActiveId = InActiveId;
+		OnRep_ActiveId();
+	}
+}
+
+void ANAFGameState::UpdateActiveTurnUI_Implementation()
+{
+	for (APlayerState* PlayerState : PlayerArray)
+	{
+		if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
+		{
+			if (ANAFPlayerController* NafPC = NafPS->GetNafPC())
+			{
+				NafPC->UpdateActiveTurnUI(ActiveId);
+			}
+		}
+	}
+}
+
+void ANAFGameState::SwitchPlayerTurn()
+{
+	if (HasAuthority())
+	{
+		ActiveId = ActiveId == EPosition::LEFT ? EPosition::RIGHT : EPosition::LEFT;
+		OnRep_ActiveId();
+	}
+}
 
 ANAFPlayerState* ANAFGameState::GetOpponentPlayerState(EPosition CurrentId)
 {
@@ -28,4 +66,25 @@ ANAFPlayerState* ANAFGameState::GetOpponentPlayerState(EPosition CurrentId)
 			FString::Printf(TEXT("Game State : NO Opponent found")));
 	}
 	return nullptr;
+}
+
+ANAFPlayerState* ANAFGameState::GetNafPlayerState(EPosition Id)
+{
+	for (APlayerState* PlayerState : PlayerArray)
+	{
+		if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
+		{
+			if (NafPS->Id != Id)
+			{
+				return NafPS;
+			}
+		}
+	}
+	return nullptr;
+}
+
+void ANAFGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ANAFGameState, ActiveId);
 }

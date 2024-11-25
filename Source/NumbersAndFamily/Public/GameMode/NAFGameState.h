@@ -22,5 +22,22 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FLeaveLobbySignature OnLeaveLobby;
 
+	UPROPERTY(ReplicatedUsing=OnRep_ActiveId)
+	EPosition ActiveId;
+	UFUNCTION()
+	void OnRep_ActiveId();
+
+	UFUNCTION()
+	void SetActivePlayer(EPosition InActiveId);
+	UFUNCTION(NetMulticast, Unreliable)
+	void UpdateActiveTurnUI();
+
+	UFUNCTION()
+	void SwitchPlayerTurn();
+
 	ANAFPlayerState* GetOpponentPlayerState(EPosition CurrentId);
+	ANAFPlayerState* GetNafPlayerState(EPosition Id);
+
+protected:
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

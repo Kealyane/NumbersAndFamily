@@ -8,6 +8,7 @@
 #include "GameWidget.generated.h"
 
 
+class UTextBlock;
 class UScoreWidget;
 class UCardWidget;
 
@@ -25,6 +26,9 @@ public:
 	TObjectPtr<UCardWidget> WBP_Card_Deck;
 	
 	// PLAYER LEFT
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> Text_P1_Name;
 	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UCardWidget> WBP_Card_00;
@@ -60,6 +64,9 @@ public:
 	TObjectPtr<UScoreWidget> WBP_ScoreP1_Total;
 
 	// PLAYER RIGHT
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> Text_P2_Name;
 	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UCardWidget> WBP_Card_03;
@@ -116,6 +123,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShowDeckCard(EPosition PlayerPos, UTexture2D* CardRecto);
 
+	UFUNCTION()
+	void ShowActivePlayer(EPosition ActivePlayer);
+
 	// UFUNCTION(BlueprintCallable)
 	// void StashArcane();
 
@@ -123,5 +133,9 @@ public:
 	UCardWidget* GetCardWidget(EPosition PlayerPos, uint8 CardPos) const;
 
 protected:
-	virtual void NativeConstruct() override;	
+	virtual void NativeConstruct() override;
+
+private:
+	FSlateColor EnableColor = FSlateColor(FColor::Green);
+	FSlateColor DisableColor = FSlateColor(FColor::White);
 };

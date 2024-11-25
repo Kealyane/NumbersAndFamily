@@ -27,11 +27,11 @@ public:
 
 	void StoreCardInHand(FCardDataServer Card);
 	void UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus);
-	/**
-	 * 
-	 * @return true if slot is occupied
-	 */
+	void ActiveTurn(EPosition ActiveId);
+	
+	// return true if slot is occupied 
 	TArray<bool> HandStatus();
+	ANAFPlayerController* GetNafPC() const;
 	
 protected:
 	UPROPERTY(Replicated)
@@ -49,7 +49,5 @@ protected:
 	int32 TotalScore;
 	
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
-
-private:
-	ANAFPlayerController* GetNafPC() const;
+	
 };

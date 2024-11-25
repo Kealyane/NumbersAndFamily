@@ -7,6 +7,9 @@
 #include "NAFGameMode.generated.h"
 
 
+class ANAFGameState;
+enum class EPosition : uint8;
+class ANAFPlayerState;
 class ADeck;
 /**
  * 
@@ -22,8 +25,10 @@ protected:
 	
 	void PostLogin(APlayerController* NewPlayer) override;
 	void LaunchGame();
-
+	void ActivePlayerTurn(EPosition Id);
+	
 private:
 	FTimerHandle WaitHandle;
 	TObjectPtr<ADeck> Deck;
+	TObjectPtr<ANAFGameState> NafGameState;
 };

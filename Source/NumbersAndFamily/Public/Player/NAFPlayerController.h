@@ -36,4 +36,7 @@ public:
 	void ClientRPC_ShowPocketCardVerso(EPosition PlayerPosition, uint8 Pos);
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_PocketCardEmpty(EPosition PlayerPosition, uint8 Pos);
+
+	UFUNCTION()
+	void UpdateActiveTurnUI(EPosition ActivePosition);
 };

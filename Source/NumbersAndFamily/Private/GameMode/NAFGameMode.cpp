@@ -57,7 +57,7 @@ void ANAFGameMode::LaunchGame()
 		}
 
 		// Link to Level Blueprint to remove lobby widget
-		ANAFGameState* NafGameState = GetGameState<ANAFGameState>();
+		NafGameState = GetGameState<ANAFGameState>();
 		if (NafGameState)
 		{
 			NafGameState->OnLeaveLobby.Broadcast();
@@ -93,6 +93,21 @@ void ANAFGameMode::LaunchGame()
 				}
 			}
 		}
+
+		// Initialize Active Player
+		const bool bIsPlayerLeft = FMath::RandBool();
+		const EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
+		NafGameState->SetActivePlayer(ActivePosition);
+		ActivePlayerTurn(ActivePosition);
 	}
 	
+}
+
+void ANAFGameMode::ActivePlayerTurn(EPosition Id)
+{
+	if(ANAFPlayerState* ActivePS = NafGameState->GetNafPlayerState(Id))
+	{
+		ActivePS->ActiveTurn(Id);
+	}
+	NafGameState->UpdateActiveTurnUI();
 }

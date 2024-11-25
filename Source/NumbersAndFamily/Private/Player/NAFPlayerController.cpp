@@ -10,10 +10,10 @@
 
 void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow, FString(TEXT("PC : ShowGameBoard")));
-	}
+	// if (GEngine)
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow, FString(TEXT("PC : ShowGameBoard")));
+	// }
 	GameWidget = CreateWidget<UGameWidget>(this, GameWidgetType);
 	if (GameWidget)
 	{
@@ -67,8 +67,20 @@ void ANAFPlayerController::ClientRPC_PocketCardEmpty_Implementation(EPosition Pl
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow, FString(TEXT("PC : Pocket Card Empty")));
 	}
-	// if (GameWidget)
-	// {
-	// 	GameWidget->GetCardWidget(PlayerPosition, Pos)->HideCard();
-	// }
+	if (GameWidget)
+	{
+		GameWidget->GetCardWidget(PlayerPosition, Pos)->HideCard();
+	}
+}
+
+void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow, FString(TEXT("PC : Active Turn")));
+	}
+	if (GameWidget)
+	{
+		GameWidget->ShowActivePlayer(ActivePosition);
+	}
 }

@@ -6,6 +6,7 @@
 #include "NumbersAndFamily/NumbersAndFamily.h"
 #include "Widgets/CardWidget.h"
 #include "Widgets/ScoreWidget.h"
+#include "Components/TextBlock.h"
 
 void UGameWidget::ButtonCardClicked(FVector ButtonPos)
 {
@@ -15,6 +16,22 @@ void UGameWidget::ButtonCardClicked(FVector ButtonPos)
 void UGameWidget::ShowDeckCard(EPosition PlayerPos, UTexture2D* CardRecto)
 {
 	OnCardDrawFromDeck.Broadcast(PlayerPos, CardRecto);
+}
+
+void UGameWidget::ShowActivePlayer(EPosition ActivePlayer)
+{
+
+	if (ActivePlayer == EPosition::LEFT)
+	{
+		Text_P1_Name->SetColorAndOpacity(EnableColor);
+		Text_P2_Name->SetColorAndOpacity(DisableColor);
+	}
+	else
+	{
+		Text_P1_Name->SetColorAndOpacity(DisableColor);
+		Text_P2_Name->SetColorAndOpacity(EnableColor);
+	}
+	
 }
 
 void UGameWidget::ResetPlayerCardDeck(EPosition PlayerPos)
