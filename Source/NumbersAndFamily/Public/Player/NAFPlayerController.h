@@ -40,6 +40,9 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_PocketCardEmpty(EPosition PlayerPosition, uint8 Pos);
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerRPC_DrawCard();
+
 	UFUNCTION()
 	void UpdateActiveTurnUI(EPosition ActivePosition);
 	UFUNCTION()

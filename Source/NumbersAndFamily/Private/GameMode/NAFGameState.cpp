@@ -59,11 +59,6 @@ void ANAFGameState::SwitchPlayerTurn()
 
 ANAFPlayerState* ANAFGameState::GetOpponentPlayerState(EPosition CurrentId)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Magenta,
-			FString::Printf(TEXT("Game State : Get Opponent")));
-	}
 	for (APlayerState* PlayerState : PlayerArray)
 	{
 		if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
@@ -74,11 +69,7 @@ ANAFPlayerState* ANAFGameState::GetOpponentPlayerState(EPosition CurrentId)
 			}
 		}
 	}
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Magenta,
-			FString::Printf(TEXT("Game State : NO Opponent found")));
-	}
+	UE_LOG(LogTemp, Error, TEXT("Game State : NO Opponent found"));
 	return nullptr;
 }
 
@@ -88,7 +79,7 @@ ANAFPlayerState* ANAFGameState::GetNafPlayerState(EPosition Id)
 	{
 		if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
 		{
-			if (NafPS->Id != Id)
+			if (NafPS->Id == Id)
 			{
 				return NafPS;
 			}

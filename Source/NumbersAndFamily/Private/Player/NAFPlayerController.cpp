@@ -5,7 +5,10 @@
 
 #include "Blueprint/UserWidget.h"
 #include "GameElements/Deck.h"
+#include "GameMode/NAFGameMode.h"
+#include "GameMode/NAFGameState.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/NAFPlayerState.h"
 #include "Widgets/CardWidget.h"
 #include "Widgets/GameWidget.h"
 
@@ -13,7 +16,7 @@ void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 {
 	// if (GEngine)
 	// {
-	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow, FString(TEXT("PC : ShowGameBoard")));
+	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald, FString(TEXT("PC : ShowGameBoard")));
 	// }
 	GameWidget = CreateWidget<UGameWidget>(this, GameWidgetType);
 	if (GameWidget)
@@ -26,16 +29,16 @@ void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
-	SetInputMode(InputMode); 
+	SetInputMode(InputMode);
 }
 
 void ANAFPlayerController::ClientRPC_PlaceCardInPocketUI_Implementation(EPosition PlayerPosition, uint8 Pos,
 	FName CardRowName)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow, FString(TEXT("PC : show card in UI")));
-	}
+	// if (GEngine)
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald, FString(TEXT("PC : show card in UI")));
+	// }
 
 	const FString ContextString(TEXT("Tower Data Context"));
 	const FCardData* Data = DeckDataTable->FindRow<FCardData>(CardRowName,ContextString);
@@ -51,10 +54,10 @@ void ANAFPlayerController::ClientRPC_PlaceCardInPocketUI_Implementation(EPositio
 
 void ANAFPlayerController::ClientRPC_ShowPocketCardVerso_Implementation(EPosition PlayerPosition, uint8 Pos)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow, FString(TEXT("PC ShowPocketCardVerso")));
-	}
+	// if (GEngine)
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald, FString(TEXT("PC ShowPocketCardVerso")));
+	// }
 	if (GameWidget)
 	{
 		UCardWidget* CardUW = GameWidget->GetCardWidget(PlayerPosition, Pos);
@@ -69,7 +72,7 @@ void ANAFPlayerController::ClientRPC_PocketCardEmpty_Implementation(EPosition Pl
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow, FString(TEXT("PC : Pocket Card Empty")));
+		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald, FString(TEXT("PC : Pocket Card Empty")));
 	}
 	if (GameWidget)
 	{
@@ -85,11 +88,26 @@ void ANAFPlayerController::PlaySound(USoundBase* Sound)
 	}
 }
 
+void ANAFPlayerController::ServerRPC_DrawCard_Implementation()
+{
+	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->DrawCard(GetPlayerState<ANAFPlayerState>());
+	}
+}
+
+bool ANAFPlayerController::ServerRPC_DrawCard_Validate()
+{
+	ANAFGameState* GameState = GetWorld()->GetGameState<ANAFGameState>();
+	ANAFPlayerState* NafPS = GetPlayerState<ANAFPlayerState>();
+	return GameState && NafPS && GameState->ActiveId == NafPS->Id;
+}
+
 void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
+		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald,
 			FString::Printf(TEXT("PC : Update UI Turn %s"), *EnumHelper::ToString(ActivePosition)));
 	}
 	if (GameWidget)
@@ -100,7 +118,11 @@ void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
 
 void ANAFPlayerController::NotifyTurnStart()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow, FString(TEXT("PC : Notify Active Turn")));
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
+	FString(TEXT("PC : Notify Active Turn")));
+	}
 	bIsMyTurn = true;
-	EnableInput(this);
+	ServerRPC_DrawCard();
 }

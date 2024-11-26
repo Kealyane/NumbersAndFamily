@@ -25,6 +25,9 @@ protected:
 	
 	void PostLogin(APlayerController* NewPlayer) override;
 	void LaunchGame();
+
+public:
+	void DrawCard(ANAFPlayerState* ActivePlayerState);
 	
 private:
 	FTimerHandle WaitHandle;
