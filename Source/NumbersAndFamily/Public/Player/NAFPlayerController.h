@@ -18,6 +18,7 @@ class NUMBERSANDFAMILY_API ANAFPlayerController : public APlayerController
 
 private:
 	TObjectPtr<UGameWidget> GameWidget;
+	bool bIsMyTurn;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="MyPropperties|Widget")
@@ -41,4 +42,6 @@ public:
 
 	UFUNCTION()
 	void UpdateActiveTurnUI(EPosition ActivePosition);
+	UFUNCTION()
+	void NotifyTurnStart();
 };

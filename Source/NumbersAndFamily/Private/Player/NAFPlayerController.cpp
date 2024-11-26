@@ -89,10 +89,18 @@ void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow, FString(TEXT("PC : Active Turn")));
+		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
+			FString::Printf(TEXT("PC : Update UI Turn %s"), *EnumHelper::ToString(ActivePosition)));
 	}
 	if (GameWidget)
 	{
 		GameWidget->ShowActivePlayer(ActivePosition);
 	}
+}
+
+void ANAFPlayerController::NotifyTurnStart()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow, FString(TEXT("PC : Notify Active Turn")));
+	bIsMyTurn = true;
+	EnableInput(this);
 }

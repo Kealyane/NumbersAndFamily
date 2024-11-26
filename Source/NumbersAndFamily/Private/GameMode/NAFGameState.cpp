@@ -10,6 +10,13 @@
 
 void ANAFGameState::OnRep_ActiveId()
 {
+	if (ANAFPlayerState* PS = GetNafPlayerState(ActiveId))
+	{
+		if (ANAFPlayerController* PC = PS->GetNafPC())
+		{
+			PC->NotifyTurnStart();
+		}
+	}
 }
 
 void ANAFGameState::SetActivePlayer(EPosition InActiveId)

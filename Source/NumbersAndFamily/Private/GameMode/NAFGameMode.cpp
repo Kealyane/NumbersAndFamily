@@ -100,16 +100,7 @@ void ANAFGameMode::LaunchGame()
 		const bool bIsPlayerLeft = FMath::RandBool();
 		const EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
 		NafGameState->SetActivePlayer(ActivePosition);
-		ActivePlayerTurn(ActivePosition);
+		NafGameState->MultiRPC_UpdateActiveTurnUI();
 	}
-	
 }
 
-void ANAFGameMode::ActivePlayerTurn(EPosition Id)
-{
-	if(ANAFPlayerState* ActivePS = NafGameState->GetNafPlayerState(Id))
-	{
-		ActivePS->ActiveTurn(Id);
-	}
-	NafGameState->MultiRPC_UpdateActiveTurnUI();
-}

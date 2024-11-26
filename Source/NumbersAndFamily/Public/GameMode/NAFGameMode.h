@@ -25,7 +25,6 @@ protected:
 	
 	void PostLogin(APlayerController* NewPlayer) override;
 	void LaunchGame();
-	void ActivePlayerTurn(EPosition Id);
 	
 private:
 	FTimerHandle WaitHandle;
