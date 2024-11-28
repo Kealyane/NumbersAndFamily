@@ -52,7 +52,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FCardAllowSelectionSignature OnCardAllowSelection;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY()
 	FClickSignature OnClick;
 
 	UFUNCTION(BlueprintCallable)
@@ -69,5 +69,8 @@ public:
 	void ShowCard(UTexture2D* CardImage);
 	void HideCard();
 	
+	UPROPERTY(BlueprintReadOnly)
 	bool bIsCardSlotSelected = false;
+
+	void SelectCard(bool bIsSelected);
 };

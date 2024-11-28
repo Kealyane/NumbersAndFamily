@@ -7,6 +7,8 @@
 #include "Widgets/CardWidget.h"
 #include "Widgets/ScoreWidget.h"
 #include "Components/TextBlock.h"
+#include "Player/NAFPlayerController.h"
+#include "Player/NAFPlayerState.h"
 
 void UGameWidget::ButtonCardClicked(FVector ButtonPos)
 {
@@ -118,4 +120,86 @@ void UGameWidget::NativeConstruct()
 			Score->InitScore();
 		}
 	}
+
+	BindCardWidget();
+}
+
+void UGameWidget::BindCardWidget()
+{
+	// Board
+	for (int i = 0; i < BoardSlots.Num(); i++)
+	{
+		for (int j = 0; j < BoardSlots[i].Num(); j++)
+		{
+			if (BoardSlots[i][j])
+			{
+				BoardSlots[i][j]->OnClick.AddDynamic(this, &UGameWidget::OnHandCardSelected);
+			}
+		}
+	}
+
+	// Pocket/Hand
+	for (auto& PlayerPocket : PlayerPockets)
+	{
+		for (auto& PocketCard : PlayerPocket.Value) 
+		{
+			if (PocketCard)
+			{
+				PocketCard->OnClick.AddDynamic(this, &UGameWidget::OnHandCardSelected);
+			}
+		}
+	}
+}
+
+void UGameWidget::OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 ColSelect)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
+FString::Printf(TEXT("PC : line %d  col %d"), LineSelect, ColSelect));
+	
+	if (LineSelect != 3) return;
+	if (Player == GetPlayerId())
+	{
+		uint8 pos = 0;
+		switch (ColSelect)
+		{
+			case 1 : pos = 0; break;
+			case 2 : pos = 1; break;
+			case 3: pos = 0; break;
+			case 4 : pos = 1; break;
+			default: pos = 0;	
+		}
+		UCardWidget* NewCard = PlayerPockets[Player][pos];
+		if (SelectedHandCard)
+		{
+			if (SelectedHandCard != NewCard)
+			{
+				SelectedHandCard->SelectCard(false);
+				SelectedHandCard = NewCard;
+				SelectedHandCard->SelectCard(true);
+			}
+			else
+			{
+				SelectedHandCard->SelectCard(false);
+				SelectedHandCard = nullptr;
+			}
+		}
+		else
+		{
+			SelectedHandCard = NewCard;
+			SelectedHandCard->SelectCard(true);
+		}
+		
+	}
+}
+
+EPosition UGameWidget::GetPlayerId()
+{
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (ANAFPlayerController* NafPC = Cast<ANAFPlayerController>(PlayerController))
+		{
+			return NafPC->GetPlayerState<ANAFPlayerState>()->Id;
+		}
+	}
+	return EPosition::SERVER;
 }

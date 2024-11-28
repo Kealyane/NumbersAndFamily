@@ -7,6 +7,7 @@
 #include "NumbersAndFamily/NumbersAndFamily.h"
 #include "NAFPlayerController.generated.h"
 
+class ANAFPlayerState;
 class UGameWidget;
 /**
  * 

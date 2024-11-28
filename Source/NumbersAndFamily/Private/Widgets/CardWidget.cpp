@@ -31,6 +31,23 @@ void UCardWidget::CardClicked()
 	OnClick.Broadcast(OwningPlayer, Line, Col);
 }
 
+void UCardWidget::SelectCard(bool bIsSelected)
+{
+	bIsCardSlotSelected = bIsSelected;
+	
+	if (bIsSelected)
+	{
+		ButtonSlot->SetBackgroundColor(FLinearColor::Green);
+		OnCardSelected.Broadcast();
+	}
+	else
+	{
+		ButtonSlot->SetBackgroundColor(FLinearColor::White);
+		OnCardUnselected.Broadcast();
+	}
+}
+
+
 void UCardWidget::ActivateButton()
 {
 	ButtonSlot->SetIsEnabled(true);
@@ -52,3 +69,4 @@ void UCardWidget::HideCard()
 {
 	ImageCard->SetOpacity(0.f);
 }
+

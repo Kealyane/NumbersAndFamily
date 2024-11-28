@@ -134,8 +134,16 @@ public:
 
 protected:
 	virtual void NativeConstruct() override;
-
+	void BindCardWidget();
+	
 private:
 	FSlateColor EnableColor = FSlateColor(FColor::Green);
 	FSlateColor DisableColor = FSlateColor(FColor::White);
+
+	bool bCanInteractWithBoard = false;
+	TObjectPtr<UCardWidget> SelectedHandCard;
+	UFUNCTION()
+	void OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 ColSelect);
+
+	EPosition GetPlayerId();
 };
