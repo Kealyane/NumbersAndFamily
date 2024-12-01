@@ -8,12 +8,15 @@
 #include "GameWidget.generated.h"
 
 
+enum class ECardType : uint8;
 class UTextBlock;
 class UScoreWidget;
 class UCardWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FClickCardSlotSignature, FVector, ButtonPos);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FShowDeckCardSignature, EPosition, PlayerPos, UTexture2D*, CardRecto);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSendHandCardSelectedSignature, uint8, CardSlot);
 /**
  * 
  */
@@ -111,11 +114,6 @@ public:
 
 	TTuple<ECardZone,TObjectPtr<UCardWidget>> SelectedCard;
 	
-	UPROPERTY(BlueprintAssignable)
-	FClickCardSlotSignature OnClickCard;
-
-	UPROPERTY(BlueprintAssignable)
-	FShowDeckCardSignature OnCardDrawFromDeck;
 
 	UFUNCTION(BlueprintCallable)
 	void ButtonCardClicked(FVector ButtonPos);
@@ -125,12 +123,35 @@ public:
 
 	UFUNCTION()
 	void ShowActivePlayer(EPosition ActivePlayer);
+	UFUNCTION()
+	void StartHandSelection(EPosition ActivePlayer);
+	UFUNCTION()
+	void EndHandSelection(EPosition ActivePlayer);
+
+	UFUNCTION()
+	void ActivateHighlight(EPosition PlayerId, ECardType CardType);
+	UFUNCTION()
+	void DeactivateHighlight();
+	
+	UFUNCTION()
+	void ActiveHandHighlight(EPosition PlayerId);
+	UFUNCTION()
+	void DeactivateHandHighlight(EPosition PlayerId);
 
 	// UFUNCTION(BlueprintCallable)
 	// void StashArcane();
 
 	void ResetPlayerCardDeck(EPosition PlayerPos);
 	UCardWidget* GetCardWidget(EPosition PlayerPos, uint8 CardPos) const;
+
+	// EVENTS
+	
+	UPROPERTY(BlueprintAssignable)
+	FClickCardSlotSignature OnClickCard;
+	UPROPERTY(BlueprintAssignable)
+	FShowDeckCardSignature OnCardDrawFromDeck;
+	UPROPERTY()
+	FSendHandCardSelectedSignature OnSendHandCardSelected;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -144,6 +165,12 @@ private:
 	TObjectPtr<UCardWidget> SelectedHandCard;
 	UFUNCTION()
 	void OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 ColSelect);
+	UFUNCTION()
+	void OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 ColSelect);
 
 	EPosition GetPlayerId();
+	bool bIsHandChoiceDone = false;
+
+	TObjectPtr<UCardWidget> FirstCardSelected = nullptr;
+	TObjectPtr<UCardWidget> SecondCardSelected = nullptr;
 };

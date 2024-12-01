@@ -7,6 +7,7 @@
 #include "NumbersAndFamily/NumbersAndFamily.h"
 #include "NAFPlayerController.generated.h"
 
+enum class ECardType : uint8;
 class ANAFPlayerState;
 class UGameWidget;
 /**
@@ -40,6 +41,8 @@ public:
 	void ClientRPC_ShowPocketCardVerso(EPosition PlayerPosition, uint8 Pos);
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_PocketCardEmpty(EPosition PlayerPosition, uint8 Pos);
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_ActiveHand(EPosition PlayerPosition);
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPC_DrawCard();
@@ -48,4 +51,12 @@ public:
 	void UpdateActiveTurnUI(EPosition ActivePosition);
 	UFUNCTION()
 	void NotifyTurnStart();
+
+	UFUNCTION()
+	void EnableCardSelectionUI(EPosition PlayerId, ECardType CardType);
+	UFUNCTION()
+	void DisableCardSelectionUI();
+
+	UFUNCTION()
+	void GetCardTypeSelected(uint8 PosInHand);
 };

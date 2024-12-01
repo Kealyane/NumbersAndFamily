@@ -36,6 +36,159 @@ void UGameWidget::ShowActivePlayer(EPosition ActivePlayer)
 	
 }
 
+void UGameWidget::StartHandSelection(EPosition ActivePlayer)
+{
+	auto CurrentPlayerHand = PlayerPockets[ActivePlayer];
+	for (const auto& CardWidgets : CurrentPlayerHand)
+	{
+		CardWidgets->bIsHandSelectionOnGoing = true;
+	}
+}
+
+void UGameWidget::EndHandSelection(EPosition ActivePlayer)
+{
+	auto CurrentPlayerHand = PlayerPockets[ActivePlayer];
+	for (const auto& CardWidgets : CurrentPlayerHand)
+	{
+		CardWidgets->bIsHandSelectionOnGoing = false;
+	}
+}
+
+
+void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Turquoise,
+	FString::Printf(TEXT("GameWidget : active highlight id %s card %s"), *EnumHelper::ToString(PlayerId), *EnumCardTypeHelper::ToString(CardType)));
+	
+	if (CardType == ECardType::NORMAL)
+	{
+		for (auto Row : PlayerBoardSlots[PlayerId])
+		{
+			for (int i = 0; i < Row.Num(); i++)
+			{
+				if (!Row[i]->bIsCardOccupied)
+				{
+					Row[i]->EnableHighlight();
+					break;
+				}
+			}
+		}
+		return;
+	}
+	if (CardType == ECardType::SWITCH || CardType == ECardType::STEAL)
+	{
+		// if Switch : PlayerId needs to be the same as selected card
+		// if Steal : PlayerId needs to be opponent 
+		EPosition PlayerIdToHighlight = CardType == ECardType::SWITCH ? PlayerId
+						: (PlayerId == EPosition::LEFT) ? EPosition::RIGHT : EPosition::LEFT;
+		
+		if (FirstCardSelected == nullptr)
+		{
+			for (auto RowLeft : PlayerBoardSlots[EPosition::LEFT])
+			{
+				for (int i = 0; i < RowLeft.Num(); i++)
+				{
+					if (RowLeft[i]->bIsCardOccupied)
+					{
+						RowLeft[i]->EnableHighlight();
+					}
+				}
+			}
+			for (auto RowRight : PlayerBoardSlots[EPosition::RIGHT])
+			{
+				for (int i = 0; i < RowRight.Num(); i++)
+				{
+					if (RowRight[i]->bIsCardOccupied)
+					{
+						RowRight[i]->EnableHighlight();
+					}
+				}
+			}
+		}
+		else
+		{
+			DeactivateHighlight();
+			for (auto RowLeft : PlayerBoardSlots[PlayerIdToHighlight])
+			{
+				for (int i = 0; i < RowLeft.Num(); i++)
+				{
+					if (RowLeft[i]->bIsCardOccupied)
+					{
+						RowLeft[i]->EnableHighlight();
+					}
+				}
+			}
+		}
+		return;
+	}
+	if (CardType == ECardType::COPY)
+	{
+		if (FirstCardSelected == nullptr)
+		{
+			for (auto RowLeft : PlayerBoardSlots[PlayerId])
+			{
+				for (int i = 0; i < RowLeft.Num(); i++)
+				{
+					if (RowLeft[i]->bIsCardOccupied)
+					{
+						RowLeft[i]->EnableHighlight();
+					}
+				}
+			}
+		}
+		else
+		{
+			DeactivateHighlight();
+			for (auto Row : PlayerBoardSlots[PlayerId])
+			{
+				for (int i = 0; i < Row.Num(); i++)
+				{
+					if (!Row[i]->bIsCardOccupied)
+					{
+						Row[i]->EnableHighlight();
+						break;
+					}
+				}
+			}
+		}
+	}
+}
+
+void UGameWidget::DeactivateHighlight()
+{
+	for (int i = 0; i < BoardSlots.Num(); i++)
+	{
+		for (int j = 0; j < BoardSlots[i].Num(); j++)
+		{
+			if (BoardSlots[i][j])
+			{
+				BoardSlots[i][j]->DisableHighlight();
+			}
+		}
+	}
+}
+
+void UGameWidget::ActiveHandHighlight(EPosition PlayerId)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Turquoise,
+	FString::Printf(TEXT("GameWidget : ActiveHandHighlight id %s"), *EnumHelper::ToString(PlayerId)));
+	
+	auto CurrentPlayerHand = PlayerPockets[PlayerId];
+	for (const auto& CardWidgets : CurrentPlayerHand)
+	{
+		CardWidgets->EnableHighlight();	
+	}
+}
+
+void UGameWidget::DeactivateHandHighlight(EPosition PlayerId)
+{
+	auto CurrentPlayerHand = PlayerPockets[PlayerId];
+	for (const auto& CardWidgets : CurrentPlayerHand)
+	{
+		CardWidgets->DisableHighlight();	
+	}
+}
+
 void UGameWidget::ResetPlayerCardDeck(EPosition PlayerPos)
 {
 	if (PlayerPos == EPosition::LEFT)
@@ -61,6 +214,8 @@ UCardWidget* UGameWidget::GetCardWidget(EPosition PlayerPos, uint8 CardPos) cons
 	return WBP_Card_P2_Pocket_1;
 }
 
+
+
 void UGameWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -80,9 +235,12 @@ void UGameWidget::NativeConstruct()
 
 	TArray<TArray<TObjectPtr<UCardWidget>>> PlayerLeftBoardSlots;
 	PlayerLeftBoardSlots.SetNum(3);
-	PlayerLeftBoardSlots[0] = { WBP_Card_00, WBP_Card_01, WBP_Card_02 };
-	PlayerLeftBoardSlots[1] = { WBP_Card_10, WBP_Card_11, WBP_Card_12 };
-	PlayerLeftBoardSlots[2] = { WBP_Card_20, WBP_Card_21, WBP_Card_22 };
+	// PlayerLeftBoardSlots[0] = { WBP_Card_00, WBP_Card_01, WBP_Card_02 };
+	// PlayerLeftBoardSlots[1] = { WBP_Card_10, WBP_Card_11, WBP_Card_12 };
+	// PlayerLeftBoardSlots[2] = { WBP_Card_20, WBP_Card_21, WBP_Card_22 };
+	PlayerLeftBoardSlots[0] = { WBP_Card_02, WBP_Card_01, WBP_Card_00 };
+	PlayerLeftBoardSlots[1] = { WBP_Card_12, WBP_Card_11, WBP_Card_10 };
+	PlayerLeftBoardSlots[2] = { WBP_Card_22, WBP_Card_21, WBP_Card_20 };
 
 	TArray<TArray<TObjectPtr<UCardWidget>>> PlayerRightBoardSlots;
 	PlayerRightBoardSlots.SetNum(3);
@@ -133,7 +291,7 @@ void UGameWidget::BindCardWidget()
 		{
 			if (BoardSlots[i][j])
 			{
-				BoardSlots[i][j]->OnClick.AddDynamic(this, &UGameWidget::OnHandCardSelected);
+				BoardSlots[i][j]->OnClick.AddDynamic(this, &UGameWidget::OnBoardCardSelected);
 			}
 		}
 	}
@@ -153,9 +311,6 @@ void UGameWidget::BindCardWidget()
 
 void UGameWidget::OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 ColSelect)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
-FString::Printf(TEXT("PC : line %d  col %d"), LineSelect, ColSelect));
-	
 	if (LineSelect != 3) return;
 	if (Player == GetPlayerId())
 	{
@@ -174,22 +329,37 @@ FString::Printf(TEXT("PC : line %d  col %d"), LineSelect, ColSelect));
 			if (SelectedHandCard != NewCard)
 			{
 				SelectedHandCard->SelectCard(false);
+				SelectedHandCard->DisableHighlight();
+				
 				SelectedHandCard = NewCard;
 				SelectedHandCard->SelectCard(true);
+
+				bIsHandChoiceDone = true;
+				OnSendHandCardSelected.Broadcast(pos+1);
 			}
 			else
 			{
 				SelectedHandCard->SelectCard(false);
+				SelectedHandCard->DisableHighlight();
+				
 				SelectedHandCard = nullptr;
+				bIsHandChoiceDone = false;
+				OnSendHandCardSelected.Broadcast(3);
 			}
 		}
 		else
 		{
 			SelectedHandCard = NewCard;
 			SelectedHandCard->SelectCard(true);
+			bIsHandChoiceDone = true;
+			OnSendHandCardSelected.Broadcast(pos+1);
 		}
-		
 	}
+}
+
+void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 ColSelect)
+{
+	// TODO
 }
 
 EPosition UGameWidget::GetPlayerId()

@@ -72,9 +72,13 @@ struct FCardDataServer
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
 	FName RowName;
+	UPROPERTY()
 	EFamilyType FamilyType;
+	UPROPERTY()
 	int32 Score;
+	UPROPERTY()
 	EArcaneType ArcaneType;
 
 	FCardDataServer() :

@@ -22,6 +22,7 @@ void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 	if (GameWidget)
 	{
 		GameWidget->AddToViewport();
+		GameWidget->OnSendHandCardSelected.AddDynamic(this, &ANAFPlayerController::GetCardTypeSelected);
 	}
 	FInputModeGameAndUI InputMode;
 	InputMode.SetWidgetToFocus(GameWidget->TakeWidget()); 
@@ -103,6 +104,15 @@ bool ANAFPlayerController::ServerRPC_DrawCard_Validate()
 	return GameState && NafPS && GameState->ActiveId == NafPS->Id;
 }
 
+void ANAFPlayerController::ClientRPC_ActiveHand_Implementation(EPosition PlayerPosition)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald,
+	FString::Printf(TEXT("PC : ClientRPC_ActiveHand %s"), *EnumHelper::ToString(PlayerPosition)));
+	
+	GameWidget->StartHandSelection(PlayerPosition);
+	GameWidget->ActiveHandHighlight(PlayerPosition);
+}
+
 void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
 {
 	if (GEngine)
@@ -125,4 +135,33 @@ void ANAFPlayerController::NotifyTurnStart()
 	}
 	bIsMyTurn = true;
 	ServerRPC_DrawCard();
+}
+
+void ANAFPlayerController::EnableCardSelectionUI(EPosition PlayerId, ECardType CardType)
+{
+	GameWidget->ActivateHighlight(PlayerId, CardType);
+}
+
+void ANAFPlayerController::DisableCardSelectionUI()
+{
+	GameWidget->DeactivateHighlight();
+}
+
+void ANAFPlayerController::GetCardTypeSelected(uint8 PosInHand)
+{
+	ANAFPlayerState* NafPS = GetPlayerState<ANAFPlayerState>();
+	ECardType CardType = NafPS->GetCardType(PosInHand);
+
+	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
+FString::Printf(TEXT("PC : GetCardTypeSelected %s"), *EnumCardTypeHelper::ToString(CardType)));
+	
+	if (CardType != ECardType::NONE)
+	{
+		GameWidget->ActivateHighlight(NafPS->Id, CardType);
+	}
+	else
+	{
+		GameWidget->ActiveHandHighlight(NafPS->Id);
+		GameWidget->DeactivateHighlight();
+	}
 }

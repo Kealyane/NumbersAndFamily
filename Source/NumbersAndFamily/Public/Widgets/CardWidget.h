@@ -58,19 +58,26 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetSlotParams(bool IsPlayer1, uint8 LineParam, uint8 ColParam);
 
-	UFUNCTION(BlueprintCallable)
-	void SetSlotCoordParams(uint8 LineParam, uint8 ColParam);
+	// UFUNCTION(BlueprintCallable)
+	// void SetSlotCoordParams(uint8 LineParam, uint8 ColParam);
 
 	UFUNCTION(BlueprintCallable)
-	void CardClicked();
-
-	void DeactivateButton();
-	void ActivateButton();
-	void ShowCard(UTexture2D* CardImage);
-	void HideCard();
+	void CardClicked(); // Called in BP
+	
+	// void DeactivateButton(); // disable button
+	// void ActivateButton(); // enable button
+	
+	void ShowCard(UTexture2D* CardImage); // set image texture, card is occupied (true), OnPlaceCard
+	void HideCard(); // set alpha to hide image, card is occupied (false)
+	void EnableHighlight(); // background button to yellow, can be clicked (true)
+	void DisableHighlight(); // background button to white, can be clicked (false)
 	
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsCardSlotSelected = false;
+	
+	bool bIsCardOccupied = false;
+	bool bCanBeClicked = false;
+	bool bIsHandSelectionOnGoing = false;
 
 	void SelectCard(bool bIsSelected);
 };

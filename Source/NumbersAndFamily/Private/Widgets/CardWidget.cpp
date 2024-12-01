@@ -20,15 +20,18 @@ void UCardWidget::SetSlotParams(bool IsPlayer1, uint8 LineParam, uint8 ColParam)
 	Col = ColParam;
 }
 
-void UCardWidget::SetSlotCoordParams(uint8 LineParam, uint8 ColParam)
-{
-	Line = LineParam;
-	Col = ColParam;
-}
+// void UCardWidget::SetSlotCoordParams(uint8 LineParam, uint8 ColParam)
+// {
+// 	Line = LineParam;
+// 	Col = ColParam;
+// }
 
 void UCardWidget::CardClicked()
 {
-	OnClick.Broadcast(OwningPlayer, Line, Col);
+	if (bCanBeClicked)
+	{
+		OnClick.Broadcast(OwningPlayer, Line, Col);
+	}
 }
 
 void UCardWidget::SelectCard(bool bIsSelected)
@@ -48,18 +51,19 @@ void UCardWidget::SelectCard(bool bIsSelected)
 }
 
 
-void UCardWidget::ActivateButton()
-{
-	ButtonSlot->SetIsEnabled(true);
-}
-
-void UCardWidget::DeactivateButton()
-{
-	ButtonSlot->SetIsEnabled(false);
-}
+// void UCardWidget::ActivateButton()
+// {
+// 	ButtonSlot->SetIsEnabled(true);
+// }
+//
+// void UCardWidget::DeactivateButton()
+// {
+// 	ButtonSlot->SetIsEnabled(false);
+// }
 
 void UCardWidget::ShowCard(UTexture2D* CardImage)
 {
+	bIsCardOccupied = true;
 	ImageCard->SetBrushFromTexture(CardImage);
 	ImageCard->SetOpacity(1.f);
 	OnCardPlace.Broadcast();
@@ -67,6 +71,27 @@ void UCardWidget::ShowCard(UTexture2D* CardImage)
 
 void UCardWidget::HideCard()
 {
+	bIsCardOccupied = false;
 	ImageCard->SetOpacity(0.f);
 }
+
+void UCardWidget::EnableHighlight()
+{
+	bCanBeClicked = true;
+	ButtonSlot->SetBackgroundColor(FLinearColor::Yellow);
+}
+
+void UCardWidget::DisableHighlight()
+{
+	if (bIsHandSelectionOnGoing)
+	{
+		ButtonSlot->SetBackgroundColor(FLinearColor::Yellow);
+	}
+	else
+	{
+		bCanBeClicked = false;
+		ButtonSlot->SetBackgroundColor(FLinearColor::White);
+	}
+}
+
 

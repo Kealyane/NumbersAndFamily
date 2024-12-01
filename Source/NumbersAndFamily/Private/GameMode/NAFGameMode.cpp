@@ -108,6 +108,7 @@ void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 {
 	const FCardDataServer Card = Deck->DrawCard();
 	ActivePlayerState->StoreCardInHand(Card);
+	ActivePlayerState->ActiveHandChoice(ActivePlayerState->Id);
 	TArray<bool> HandCurrent = ActivePlayerState->HandStatus();
 	ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(ActivePlayerState->Id);
 	OpponentPS->UpdateHandUI(ActivePlayerState->Id,HandCurrent);

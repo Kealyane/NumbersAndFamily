@@ -8,6 +8,30 @@
 #include "NumbersAndFamily/NumbersAndFamily.h"
 #include "NAFPlayerState.generated.h"
 
+UENUM()
+enum class ECardType : uint8
+{
+	NORMAL,
+	SWITCH,
+	STEAL,
+	COPY,
+	NONE
+};
+namespace EnumCardTypeHelper
+{
+	static FString ToString(ECardType EnumValue)
+	{
+		switch (EnumValue)
+		{
+		case ECardType::SWITCH: return TEXT("SWITCH");
+		case ECardType::STEAL: return TEXT("STEAL");
+		case ECardType::COPY: return TEXT("COPY");
+		case ECardType::NORMAL: return TEXT("NORMAL");
+		default: return TEXT("NONE");
+		}
+	}
+}
+
 class ANAFPlayerController;
 /**
  * 
@@ -28,10 +52,13 @@ public:
 	void StoreCardInHand(FCardDataServer Card);
 	void UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus);
 	void ActiveTurn(EPosition ActiveId);
+	ECardType GetCardType(uint8 PosCard);
+	void ActiveHandChoice(EPosition ActiveId);
 	
 	// return true if slot is occupied 
 	TArray<bool> HandStatus();
 	ANAFPlayerController* GetNafPC() const;
+
 	
 protected:
 	UPROPERTY(Replicated)

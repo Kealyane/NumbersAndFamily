@@ -74,6 +74,37 @@ void ANAFPlayerState::ActiveTurn(EPosition ActiveId)
 	}
 }
 
+ECardType ANAFPlayerState::GetCardType(uint8 PosCard)
+{
+	if (PosCard == 1)
+	{
+		if (Card1.RowName.IsNone()) return ECardType::NONE;
+		if (Card1.FamilyType != EFamilyType::NONE) return ECardType::NORMAL;
+		if (Card1.ArcaneType == EArcaneType::COPY) return ECardType::COPY;
+		if (Card1.ArcaneType == EArcaneType::SWITCH) return ECardType::SWITCH;
+		if (Card1.ArcaneType == EArcaneType::STEAL) return ECardType::STEAL;
+	}
+	else if (PosCard == 2)
+	{
+		if (Card2.RowName.IsNone()) return ECardType::NONE;
+		if (Card2.FamilyType != EFamilyType::NONE) return ECardType::NORMAL;
+		if (Card2.ArcaneType == EArcaneType::COPY) return ECardType::COPY;
+		if (Card2.ArcaneType == EArcaneType::SWITCH) return ECardType::SWITCH;
+		if (Card2.ArcaneType == EArcaneType::STEAL) return ECardType::STEAL;
+	}
+	return ECardType::NONE;
+}
+
+void ANAFPlayerState::ActiveHandChoice(EPosition ActiveId)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
+	FString::Printf(TEXT("Player State %s : ActiveHandChoice %s"), *EnumHelper::ToString(Id), *EnumHelper::ToString(ActiveId)));
+	if (ANAFPlayerController* NafPC = GetNafPC())
+	{
+		NafPC->ClientRPC_ActiveHand(ActiveId);
+	}
+}
+
 TArray<bool> ANAFPlayerState::HandStatus()
 {
 	TArray<bool> Status;
@@ -97,5 +128,7 @@ void ANAFPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 ANAFPlayerController* ANAFPlayerState::GetNafPC() const
 {
-	return Cast<ANAFPlayerController>(GetPlayerController());
+	//return Cast<ANAFPlayerController>(GetPlayerController());
+	return Cast<ANAFPlayerController>(GetOwner());
 }
+
