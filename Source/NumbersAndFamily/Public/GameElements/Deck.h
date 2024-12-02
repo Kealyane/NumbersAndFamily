@@ -20,9 +20,9 @@ UENUM(BlueprintType)
 enum class EArcaneType : uint8
 {
 	NONE,
-	LOVERS,
-	FOOL,
-	NAMELESS,
+	COPY,
+	SWITCH,
+	STEAL,
 };
 
 namespace EnumCardHelper
@@ -42,9 +42,9 @@ namespace EnumCardHelper
 	{
 		switch (EnumValue)
 		{
-		case EArcaneType::FOOL: return TEXT("FOOL");
-		case EArcaneType::LOVERS: return TEXT("LOVERS");
-		case EArcaneType::NAMELESS: return TEXT("NAMELESS");
+		case EArcaneType::SWITCH: return TEXT("SWITCH");
+		case EArcaneType::COPY: return TEXT("COPY");
+		case EArcaneType::STEAL: return TEXT("STEAL");
 		default: return TEXT("NONE");
 		}
 	}
