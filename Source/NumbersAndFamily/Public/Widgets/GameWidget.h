@@ -17,6 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FClickCardSlotSignature, FVector, Bu
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FShowDeckCardSignature, EPosition, PlayerPos, UTexture2D*, CardRecto);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSendHandCardSelectedSignature, uint8, CardSlot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FClickBoardSlotSignature, uint8, Line, uint8, Col);
 /**
  * 
  */
@@ -152,6 +153,8 @@ public:
 	FShowDeckCardSignature OnCardDrawFromDeck;
 	UPROPERTY()
 	FSendHandCardSelectedSignature OnSendHandCardSelected;
+	UPROPERTY()
+	FClickBoardSlotSignature OnClickBoardSlot;
 
 protected:
 	virtual void NativeConstruct() override;

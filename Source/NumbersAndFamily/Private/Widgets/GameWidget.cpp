@@ -182,6 +182,8 @@ void UGameWidget::ActiveHandHighlight(EPosition PlayerId)
 
 void UGameWidget::DeactivateHandHighlight(EPosition PlayerId)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Turquoise,
+FString::Printf(TEXT("GameWidget : DeactivateHandHighlight id %s"), *EnumHelper::ToString(PlayerId)));
 	auto CurrentPlayerHand = PlayerPockets[PlayerId];
 	for (const auto& CardWidgets : CurrentPlayerHand)
 	{
@@ -359,7 +361,7 @@ void UGameWidget::OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 C
 
 void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 ColSelect)
 {
-	// TODO
+	OnClickBoardSlot.Broadcast(LineSelect, ColSelect);
 }
 
 EPosition UGameWidget::GetPlayerId()
