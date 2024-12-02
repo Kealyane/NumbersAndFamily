@@ -50,9 +50,12 @@ public:
 	void OnRep_Id();
 
 	void StoreCardInHand(FCardDataServer Card);
+	void RemoveCardInHand(uint8 IndexCard);
 	void UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus);
 	void ActiveTurn(EPosition ActiveId);
 	ECardType GetCardType(uint8 PosCard);
+	FCardDataServer GetSelectedCard();
+	uint8 GetIndexSelected() const { return IndexSelected; }
 	void ActiveHandChoice(EPosition ActiveId);
 	
 	// return true if slot is occupied 
@@ -65,6 +68,9 @@ protected:
 	FCardDataServer Card1;
 	UPROPERTY(Replicated)
 	FCardDataServer Card2;
+
+	FCardDataServer SelectedCard;
+	uint8 IndexSelected;
 	
 	UPROPERTY(Replicated)
 	int32 ScoreLine0;

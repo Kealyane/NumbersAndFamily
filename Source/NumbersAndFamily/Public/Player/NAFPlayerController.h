@@ -7,6 +7,7 @@
 #include "NumbersAndFamily/NumbersAndFamily.h"
 #include "NAFPlayerController.generated.h"
 
+struct FCardDataServer;
 enum class ECardType : uint8;
 class ANAFPlayerState;
 class UGameWidget;
@@ -21,6 +22,7 @@ class NUMBERSANDFAMILY_API ANAFPlayerController : public APlayerController
 private:
 	TObjectPtr<UGameWidget> GameWidget;
 	bool bIsMyTurn;
+	bool bIsEndTurn = false;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="MyPropperties|Widget")
@@ -46,17 +48,32 @@ public:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPC_DrawCard();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerRPC_PlaceNormalCard(FCardDataServer Card, uint8 IndexHandCard, uint8 Line, uint8 Col);
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_EndTurn(ANAFPlayerState* ActivePlayerState);
 
 	UFUNCTION()
 	void UpdateActiveTurnUI(EPosition ActivePosition);
 	UFUNCTION()
 	void NotifyTurnStart();
+	UFUNCTION()
+	void EndTurn();
+	UFUNCTION()
+	void UpdateBoardCard(const TArray<FName>& InBoardTableRow);
+
 
 	UFUNCTION()
 	void EnableCardSelectionUI(EPosition PlayerId, ECardType CardType);
-	UFUNCTION()
-	void DisableCardSelectionUI();
+	// UFUNCTION()
+	// void DisableCardSelectionUI();
 
 	UFUNCTION()
 	void GetCardTypeSelected(uint8 PosInHand);
+	UFUNCTION()
+	void GetSelectedHandCard(uint8 Line, uint8 Col);
+
+
+private:
+	bool IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col);
 };

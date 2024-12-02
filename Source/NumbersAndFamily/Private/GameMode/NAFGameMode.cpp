@@ -2,6 +2,8 @@
 
 
 #include "GameMode/NAFGameMode.h"
+
+#include "GameElements/Board.h"
 #include "GameFramework/GameState.h"
 #include "GameMode/NAFGameState.h"
 #include "Player/NAFPlayerController.h"
@@ -12,10 +14,11 @@ void ANAFGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : post login")));
-	}
+	// if (GEngine)
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : post login")));
+	// }
+	UE_LOG(LogTemp, Warning, TEXT("game mode : post login"));
 
 	int32 NumberOfPlayers = GameState->PlayerArray.Num();
 
@@ -47,7 +50,8 @@ void ANAFGameMode::LaunchGame()
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : launch game")));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : launch game")));
+		UE_LOG(LogTemp, Warning, TEXT("game mode : LaunchGame"));
 
 		UWorld* World = GetWorld();
 		
@@ -60,6 +64,7 @@ void ANAFGameMode::LaunchGame()
 		NafGameState = GetGameState<ANAFGameState>();
 		if (NafGameState)
 		{
+			NafGameState->SetStatus(EGameStatus::START);
 			NafGameState->OnLeaveLobby.Broadcast();
 		}
 
@@ -75,8 +80,11 @@ void ANAFGameMode::LaunchGame()
 		// Initialize Deck
 		if (World)
 		{
-			Deck = World->SpawnActor<ADeck>(DeckType);
+			Deck = World->SpawnActor<ADeck>(DeckClassType);
 			Deck->InitDeck();
+			Board = World->SpawnActor<ABoard>(BoardClassType);
+			Board->InitBoard();
+			NafGameState->InitBoardRow();
 		}
 
 		NafGameState->MultiRPC_PlaySoundStartGame();
@@ -98,19 +106,54 @@ void ANAFGameMode::LaunchGame()
 
 		// Initialize Active Player
 		const bool bIsPlayerLeft = FMath::RandBool();
-		const EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
+		//const EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
+
+		// DEBUG Client
+		const EPosition ActivePosition = EPosition::RIGHT;
+
+		// DEBUG Server
+		//const EPosition ActivePosition = EPosition::LEFT;
+		
 		NafGameState->SetActivePlayer(ActivePosition);
 		NafGameState->MultiRPC_UpdateActiveTurnUI();
+		NafGameState->SetStatus(EGameStatus::IN_GAME);
 	}
 }
 
 void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : DrawCard")));
+	UE_LOG(LogTemp, Warning, TEXT("game mode : DrawCard"));
 	const FCardDataServer Card = Deck->DrawCard();
 	ActivePlayerState->StoreCardInHand(Card);
 	ActivePlayerState->ActiveHandChoice(ActivePlayerState->Id);
 	TArray<bool> HandCurrent = ActivePlayerState->HandStatus();
 	ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(ActivePlayerState->Id);
 	OpponentPS->UpdateHandUI(ActivePlayerState->Id,HandCurrent);
+}
+
+void ANAFGameMode::RemoveCardFromHand(ANAFPlayerState* ActivePlayerState)
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : RemoveCardFromHand")));
+	UE_LOG(LogTemp, Warning, TEXT("game mode : RemoveCardFromHand"));
+	ActivePlayerState->RemoveCardInHand(IndexHandCardPlayed);
+	TArray<bool> HandCurrent = ActivePlayerState->HandStatus();
+	ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(ActivePlayerState->Id);
+	OpponentPS->UpdateHandUI(ActivePlayerState->Id,HandCurrent);
+}
+
+void ANAFGameMode::PlaceNormalCard(FCardDataServer Card, uint8 IndexHandCard, uint8 Line, uint8 Col)
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : PlaceNormalCard")));
+	UE_LOG(LogTemp, Warning, TEXT("game mode : PlaceNormalCard"));
+	IndexHandCardPlayed = IndexHandCard;
+	Board->PlaceNormalCard(Card, Line, Col);
+}
+
+void ANAFGameMode::EndTurn()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : EndTurn")));
+	UE_LOG(LogTemp, Warning, TEXT("game mode : EndTurn"));
+	NafGameState->SwitchPlayerTurn();
 }
 

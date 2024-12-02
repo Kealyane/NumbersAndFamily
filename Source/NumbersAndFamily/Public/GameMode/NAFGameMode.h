@@ -7,6 +7,8 @@
 #include "NAFGameMode.generated.h"
 
 
+struct FCardDataServer;
+class ABoard;
 class ANAFGameState;
 enum class EPosition : uint8;
 class ANAFPlayerState;
@@ -20,17 +22,25 @@ class NUMBERSANDFAMILY_API ANAFGameMode : public AGameMode
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category="Deck")
-	TSubclassOf<ADeck> DeckType;
+	UPROPERTY(EditDefaultsOnly, Category="GameElements")
+	TSubclassOf<ADeck> DeckClassType;
+	UPROPERTY(EditDefaultsOnly, Category="GameElements")
+	TSubclassOf<ABoard> BoardClassType;
 	
 	void PostLogin(APlayerController* NewPlayer) override;
 	void LaunchGame();
 
 public:
 	void DrawCard(ANAFPlayerState* ActivePlayerState);
+	void RemoveCardFromHand(ANAFPlayerState* ActivePlayerState);
+	void PlaceNormalCard(FCardDataServer Card, uint8 IndexHandCard, uint8 Line, uint8 Col);
+	void EndTurn();
 	
 private:
 	FTimerHandle WaitHandle;
 	TObjectPtr<ADeck> Deck;
+	TObjectPtr<ABoard> Board;
 	TObjectPtr<ANAFGameState> NafGameState;
+
+	uint8 IndexHandCardPlayed;
 };
