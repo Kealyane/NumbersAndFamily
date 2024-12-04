@@ -30,6 +30,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FLeaveLobbySignature OnLeaveLobby;
 
+	UPROPERTY(Replicated)
+	EGameStatus CurrentStatus;
+
 	UPROPERTY(ReplicatedUsing=OnRep_ActiveId)
 	EPosition ActiveId;
 	UFUNCTION()
@@ -50,7 +53,7 @@ public:
 	
 	UFUNCTION(NetMulticast, Unreliable)
 	void MultiRPC_PlaySoundStartGame();
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_UpdateActiveTurnUI(); // Show for both clients which one is active
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_UpdateBoardUI();
@@ -67,7 +70,5 @@ public:
 protected:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void PlaySound(USoundBase* Sound);
-
-private:
-	EGameStatus CurrentStatus;
+	
 };

@@ -62,6 +62,7 @@ void ANAFGameMode::LaunchGame()
 
 		// Link to Level Blueprint to remove lobby widget
 		NafGameState = GetGameState<ANAFGameState>();
+		
 		if (NafGameState)
 		{
 			NafGameState->SetStatus(EGameStatus::START);
@@ -156,4 +157,5 @@ void ANAFGameMode::EndTurn()
 	UE_LOG(LogTemp, Warning, TEXT("game mode : EndTurn"));
 	NafGameState->SwitchPlayerTurn();
 }
+
 

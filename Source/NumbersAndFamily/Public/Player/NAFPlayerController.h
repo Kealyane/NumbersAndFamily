@@ -76,4 +76,6 @@ public:
 
 private:
 	bool IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col);
+	bool IsActivePlayer() const;
+	EPosition GetPlayerId() const;
 };
