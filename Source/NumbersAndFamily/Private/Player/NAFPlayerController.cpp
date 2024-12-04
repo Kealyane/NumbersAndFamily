@@ -188,11 +188,16 @@ void ANAFPlayerController::NotifyTurnStart()
 
 void ANAFPlayerController::EndTurn()
 {
+	UE_LOG(LogTemp, Warning, TEXT("player controller : EndTurn"));
 // 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 // FString(TEXT("PC : EndTurn")));
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
 	ANAFGameState* GameState = GetWorld()->GetGameState<ANAFGameState>();
-	if (GameState && GameState->CurrentStatus != EGameStatus::IN_GAME) return;
+	if (GameState && GameState->CurrentStatus != EGameStatus::IN_GAME)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("player controller : Not IN_GAME, return"));
+		return;
+	}
 	if (GameState && NafPlayerState && NafPlayerState->Id == GameState->ActiveId)
 	{
 // 			GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
@@ -255,35 +260,36 @@ void ANAFPlayerController::UpdateBoardCard(const TArray<FName>& InBoardTableRow)
 	// GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 	// FString::Printf(TEXT("PC : UpdateBoardCard")));
 	UE_LOG(LogTemp, Warning, TEXT("player controller %s : UpdateBoardCard"), *EnumHelper::ToString(GetPlayerId()));
-		const FString ContextString(TEXT("Card Data Context"));
-		for (int i = 0; i < InBoardTableRow.Num(); i++)
+	const FString ContextString(TEXT("Card Data Context"));
+	for (int i = 0; i < InBoardTableRow.Num(); i++)
+	{
+		int row = i / 6;
+		int col = i % 6;
+		if (row >= 0 && row < 3 && col >= 0 && col < 6)
 		{
-			int row = i / 6;
-			int col = i % 6;
-			if (row >= 0 && row < 3 && col >= 0 && col < 6)
+			if (UCardWidget* CardSlot = GameWidget->BoardSlots[row][col])
 			{
-				if (UCardWidget* CardSlot = GameWidget->BoardSlots[row][col])
+				if (InBoardTableRow[i].IsNone())
 				{
-					if (InBoardTableRow[i].IsNone())
-					{
-						CardSlot->HideCard();
-					}
-					else
-					{
-						const FCardData* Data = DeckDataTable->FindRow<FCardData>(InBoardTableRow[i],ContextString);
-						if (GameWidget && Data)
-						{
-							CardSlot->ShowCard(Data->ImageRecto);
-						}
-					}
+					CardSlot->HideCard();
 				}
 				else
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
-FString::Printf(TEXT("PC : UpdateBoardCard no card slot")));
+					const FCardData* Data = DeckDataTable->FindRow<FCardData>(InBoardTableRow[i],ContextString);
+					if (GameWidget && Data)
+					{
+						UE_LOG(LogTemp, Warning, TEXT("player controller : UpdateBoardCard = show card"));
+						CardSlot->ShowCard(Data->ImageRecto);
+					}
 				}
 			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
+FString::Printf(TEXT("PC : UpdateBoardCard no card slot")));
+			}
 		}
+	}
 }
 
 bool ANAFPlayerController::IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col)

@@ -38,11 +38,10 @@ public:
 	UFUNCTION()
 	void OnRep_ActiveId();
 
-	//UPROPERTY(ReplicatedUsing=OnRep_BoardTableRow)
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing=OnRep_BoardTableRow)
 	TArray<FName> BoardTableRow;
-	// UFUNCTION()
-	// void OnRep_BoardTableRow();
+	UFUNCTION()
+	void OnRep_BoardTableRow();
 
 	UFUNCTION()
 	void SetActivePlayer(EPosition InActiveId);

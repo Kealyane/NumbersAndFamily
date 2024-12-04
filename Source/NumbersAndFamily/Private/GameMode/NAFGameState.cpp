@@ -10,29 +10,20 @@
 
 void ANAFGameState::OnRep_ActiveId()
 {
-
 	UE_LOG(LogTemp, Warning, TEXT("game state : OnRep_ActiveId"));
 	if (ANAFPlayerState* PS = GetNafPlayerState(ActiveId))
 	{
 		if (ANAFPlayerController* PC = PS->GetNafPC())
 		{
 			PC->NotifyTurnStart();
-			//PC->UpdateActiveTurnUI(ActiveId);
 		}
 	}
-	// if (ANAFPlayerState* OpponentPS = GetOpponentPlayerState(ActiveId))
-	// {
-	// 	if (ANAFPlayerController* OppPC = OpponentPS->GetNafPC())
-	// 		OppPC->UpdateActiveTurnUI(ActiveId);
-	// }
 }
 
-// void ANAFGameState::OnRep_BoardTableRow()
-// {
-// 	//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Magenta, FString(TEXT("game state : OnRep_BoardTableRow")));
-// 	UE_LOG(LogTemp, Warning, TEXT("game state : OnRep_BoardTableRow"));
-// 	MultiRPC_UpdateBoardUI();
-// }
+void ANAFGameState::OnRep_BoardTableRow()
+{
+	MultiRPC_UpdateBoardUI();
+}
 
 void ANAFGameState::SetActivePlayer(EPosition InActiveId)
 {
@@ -41,7 +32,8 @@ void ANAFGameState::SetActivePlayer(EPosition InActiveId)
 		//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Magenta, FString(TEXT("game state : SetActivePlayer")));
 		UE_LOG(LogTemp, Warning, TEXT("game state : SetActivePlayer"));
 		ActiveId = InActiveId;
-		OnRep_ActiveId();
+		if (IsNetMode(NM_ListenServer))
+			OnRep_ActiveId();
 	}
 }
 
@@ -52,8 +44,9 @@ void ANAFGameState::SetBoardName(const TArray<FName>& InBoardTableRow)
 		//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Magenta, FString(TEXT("game state : SetBoardName")));
 		UE_LOG(LogTemp, Warning, TEXT("game state : SetBoardName"));
 		BoardTableRow = InBoardTableRow;
-		MultiRPC_UpdateBoardUI();
-		//OnRep_BoardTableRow();
+		
+		if (IsNetMode(NM_ListenServer))
+			OnRep_BoardTableRow();
 	}
 }
 
@@ -74,32 +67,13 @@ void ANAFGameState::MultiRPC_UpdateActiveTurnUI_Implementation()
 
 void ANAFGameState::MultiRPC_UpdateBoardUI_Implementation()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("game state : MultiRPC_UpdateBoardUI_Implementation"));
 	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
 	if (PlayerController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("game state : MultiRPC_UpdateBoardUI_Implementation IN_GAME: launch end turn"));
+		UE_LOG(LogTemp, Warning, TEXT("game state : MultiRPC_UpdateBoardUI_Implementation IN_GAME"));
 		PlayerController->UpdateBoardCard(BoardTableRow);
 		PlayerController->EndTurn();
 	}
-
-	// for (APlayerState* PlayerState : PlayerArray)
-	// {
-	// 	if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
-	// 	{
-	// 		if (ANAFPlayerController* NafPC = NafPS->GetNafPC())
-	// 		{
-	// 			//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Magenta, FString::Printf(TEXT("game state : MultiRPC_UpdateBoardUI %s table row %d"), *EnumHelper::ToString(NafPS->Id), BoardTableRow.Num()));
-	// 			UE_LOG(LogTemp, Warning, TEXT("game state : MultiRPC_UpdateBoardUI_Implementation %s"),*EnumHelper::ToString(NafPS->Id));
-	// 			
-	// 			// NafPC->UpdateBoardCard(BoardTableRow);
-	// 			// if (NafPS->Id == ActiveId)
-	// 			// {
-	// 			// 	if (CurrentStatus == EGameStatus::IN_GAME) NafPC->EndTurn();
-	// 			// }
-	// 		}
-	// 	}
-	// }
 }
 
 void ANAFGameState::SwitchPlayerTurn()
@@ -154,7 +128,8 @@ void ANAFGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ANAFGameState, ActiveId);
-	//DOREPLIFETIME(ANAFGameState, BoardTableRow);
+	DOREPLIFETIME(ANAFGameState, BoardTableRow);
+	//DOREPLIFETIME(ANAFGameState, CurrentStatus);
 }
 
 void ANAFGameState::PlaySound(USoundBase* Sound)
