@@ -86,9 +86,17 @@ void ANAFPlayerState::UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus)
 		{
 			NafPC->ClientRPC_ShowPocketCardVerso(TargetId, 1);
 		}
+		else
+		{
+			NafPC->ClientRPC_PocketCardEmpty(TargetId, 1);
+		}
 		if (HandStatus[1])
 		{
 			NafPC->ClientRPC_ShowPocketCardVerso(TargetId, 2);
+		}
+		else
+		{
+			NafPC->ClientRPC_PocketCardEmpty(TargetId, 2);
 		}
 	}
 }
