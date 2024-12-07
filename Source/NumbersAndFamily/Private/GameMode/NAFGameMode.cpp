@@ -60,12 +60,11 @@ void ANAFGameMode::LaunchGame()
 			World->GetTimerManager().ClearTimer(WaitHandle);
 		}
 
-		// Link to Level Blueprint to remove lobby widget
 		NafGameState = GetGameState<ANAFGameState>();
 		
+		// Link to Level Blueprint to remove lobby widget
 		if (NafGameState)
 		{
-//			NafGameState->SetStatus(EGameStatus::START);
 			NafGameState->OnLeaveLobby.Broadcast();
 		}
 
@@ -89,7 +88,8 @@ void ANAFGameMode::LaunchGame()
 		}
 
 		NafGameState->MultiRPC_PlaySoundStartGame();
-		
+
+		// Give one card to both player 
 		for (APlayerState* PlayerState : NafGameState->PlayerArray)
 		{
 			if (PlayerState)
@@ -117,7 +117,6 @@ void ANAFGameMode::LaunchGame()
 		
 		NafGameState->SetActivePlayer(ActivePosition);
 		NafGameState->MultiRPC_UpdateActiveTurnUI();
-		//NafGameState->SetStatus(EGameStatus::IN_GAME);
 	}
 }
 

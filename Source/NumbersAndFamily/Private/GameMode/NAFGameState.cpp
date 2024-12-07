@@ -8,11 +8,6 @@
 #include "Player/NAFPlayerController.h"
 #include "Player/NAFPlayerState.h"
 
-// void ANAFGameState::OnRep_CurrentStatus()
-// {
-// 	UE_LOG(LogTemp, Warning, TEXT("game state : OnRep_CurrentStatus = %s"), *EnumGameStatusHelper::ToString(CurrentStatus));
-// }
-
 void ANAFGameState::OnRep_ActiveId()
 {
 	UE_LOG(LogTemp, Warning, TEXT("game state : OnRep_ActiveId"));
@@ -31,11 +26,6 @@ void ANAFGameState::OnRep_ActiveId()
 		}
 	}
 }
-
-// void ANAFGameState::OnRep_BoardTableRow()
-// {
-// 	MultiRPC_UpdateBoardUI();
-// }
 
 void ANAFGameState::SetActivePlayer(EPosition InActiveId)
 {
@@ -56,22 +46,9 @@ void ANAFGameState::SetBoardName(bool bAfterPlayerAction, const TArray<FName>& I
 		//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Magenta, FString(TEXT("game state : SetBoardName")));
 		UE_LOG(LogTemp, Warning, TEXT("game state : SetBoardName"));
 		BoardTableRow = InBoardTableRow;
-		MultiRPC_UpdateBoardUI(bAfterPlayerAction);
-		// if (IsNetMode(NM_ListenServer))
-		// 	OnRep_BoardTableRow();
+		MultiRPC_UpdateBoardUI(bAfterPlayerAction, InBoardTableRow);
 	}
 }
-
-// void ANAFGameState::SetStatus(EGameStatus NewStatus)
-// {
-// 	if (HasAuthority())
-// 	{
-// 		CurrentStatus = NewStatus;
-// 		UE_LOG(LogTemp, Warning, TEXT("game state : SetStatus = %s"), *EnumGameStatusHelper::ToString(CurrentStatus));
-// 		if (IsNetMode(NM_ListenServer))
-// 			OnRep_CurrentStatus();
-// 	}
-// }
 
 void ANAFGameState::MultiRPC_PlaySoundStartGame_Implementation()
 {
@@ -88,13 +65,13 @@ void ANAFGameState::MultiRPC_UpdateActiveTurnUI_Implementation()
 	}
 }
 
-void ANAFGameState::MultiRPC_UpdateBoardUI_Implementation(bool bAfterPlayerAction)
+void ANAFGameState::MultiRPC_UpdateBoardUI_Implementation(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow)
 {
 	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
 	if (PlayerController)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("game state : MultiRPC_UpdateBoardUI_Implementation"));
-		PlayerController->UpdateBoardCard(bAfterPlayerAction, BoardTableRow);
+		PlayerController->UpdateBoardCard(bAfterPlayerAction, InBoardTableRow);
 	}
 }
 
@@ -115,9 +92,7 @@ void ANAFGameState::InitBoardRow()
 	if (HasAuthority())
 	{
 		BoardTableRow.Init(FName("NONE"), 18);
-		MultiRPC_UpdateBoardUI(false);
-		// OnRep_BoardTableRow();
-		// CurrentStatus = EGameStatus::START;
+		MultiRPC_UpdateBoardUI(false, BoardTableRow);
 	}
 }
 
@@ -156,8 +131,7 @@ void ANAFGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ANAFGameState, ActiveId);
-	//DOREPLIFETIME(ANAFGameState, BoardTableRow);
-	//DOREPLIFETIME(ANAFGameState, CurrentStatus);
+	DOREPLIFETIME(ANAFGameState, BoardTableRow);
 }
 
 void ANAFGameState::PlaySound(USoundBase* Sound)

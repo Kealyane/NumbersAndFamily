@@ -43,34 +43,25 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FLeaveLobbySignature OnLeaveLobby;
 
-	// UPROPERTY(ReplicatedUsing=OnRep_CurrentStatus)
-	// EGameStatus CurrentStatus;
-	// UFUNCTION()
-	// void OnRep_CurrentStatus();
-
 	UPROPERTY(ReplicatedUsing=OnRep_ActiveId)
 	EPosition ActiveId;
 	UFUNCTION()
 	void OnRep_ActiveId();
-
-	//UPROPERTY(ReplicatedUsing=OnRep_BoardTableRow)
+	
+	UPROPERTY(Replicated)
 	TArray<FName> BoardTableRow;
-	//UFUNCTION()
-	//void OnRep_BoardTableRow();
 
 	UFUNCTION()
 	void SetActivePlayer(EPosition InActiveId);
 	UFUNCTION()
 	void SetBoardName(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow);
-	// UFUNCTION()
-	// void SetStatus(EGameStatus NewStatus);
 	
 	UFUNCTION(NetMulticast, Unreliable)
 	void MultiRPC_PlaySoundStartGame();
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_UpdateActiveTurnUI(); // Show for both clients which one is active
 	UFUNCTION(NetMulticast, Reliable)
-	void MultiRPC_UpdateBoardUI(bool bAfterPlayerAction);
+	void MultiRPC_UpdateBoardUI(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow);
 
 	UFUNCTION()
 	void SwitchPlayerTurn();
