@@ -19,6 +19,7 @@ void ANAFGameState::OnRep_ActiveId()
 			PlayerController->NotifyTurnStart(PlayerState->Id == ActiveId);
 		}
 	}
+	MultiRPC_UpdateActiveTurnUI();
 }
 
 void ANAFGameState::SetActivePlayer(EPosition InActiveId)
@@ -55,6 +56,7 @@ void ANAFGameState::MultiRPC_UpdateActiveTurnUI_Implementation()
 	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
 	if (PlayerController)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("game state : MultiRPC_UpdateActiveTurnUI_Implementation %s"), *EnumHelper::ToString(ActiveId));
 		PlayerController->UpdateActiveTurnUI(ActiveId);
 	}
 }

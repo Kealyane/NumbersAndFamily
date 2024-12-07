@@ -194,11 +194,6 @@ void ANAFPlayerController::EndTurn()
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
 	ANAFGameState* GameState = GetWorld()->GetGameState<ANAFGameState>();
 	UE_LOG(LogTemp, Warning, TEXT("PC : EndTurn"));
-	// if (GameState && GameState->CurrentStatus != EGameStatus::IN_GAME)
-	// {
-	// 	UE_LOG(LogTemp, Warning, TEXT("PC : EndTurn = %s, return"), *EnumGameStatusHelper::ToString(GameState->CurrentStatus));
-	// 	return;
-	// }
 	if (GameState && NafPlayerState && NafPlayerState->Id == GameState->ActiveId)
 	{
 // 			GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,

@@ -117,7 +117,6 @@ void ANAFGameMode::LaunchGame()
 		//const EPosition ActivePosition = EPosition::LEFT;
 		
 		NafGameState->SetActivePlayer(ActivePosition);
-		NafGameState->MultiRPC_UpdateActiveTurnUI();
 	}
 }
 
