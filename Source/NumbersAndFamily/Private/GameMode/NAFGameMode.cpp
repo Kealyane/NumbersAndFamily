@@ -96,7 +96,8 @@ void ANAFGameMode::LaunchGame()
 			{
 				if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
 				{
-					const FCardDataServer Card = Deck->DrawCard();
+					FCardDataServer Card = Deck->DrawCard();
+					Card.DebugCard(FName("Give Card to player"));
 					NafPS->StoreCardInHand(Card);
 					TArray<bool> HandCurrent = NafPS->HandStatus();
 					ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
@@ -124,7 +125,8 @@ void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : DrawCard")));
 	UE_LOG(LogTemp, Warning, TEXT("game mode : DrawCard"));
-	const FCardDataServer Card = Deck->DrawCard();
+	FCardDataServer Card = Deck->DrawCard();
+	Card.DebugCard(FName("Draw Card"));
 	ActivePlayerState->StoreCardInHand(Card);
 	ActivePlayerState->ActiveHandChoice(ActivePlayerState->Id);
 	TArray<bool> HandCurrent = ActivePlayerState->HandStatus();

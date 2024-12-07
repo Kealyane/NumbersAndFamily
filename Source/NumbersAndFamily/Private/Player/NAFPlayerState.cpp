@@ -39,11 +39,13 @@ void ANAFPlayerState::StoreCardInHand(FCardDataServer Card)
 	{
 		Card1 = Card;
 		CardPos = 1;
+		Card1.DebugCard(FName("StoreCardInHand 1"));
 	}
 	else if (Card2.RowName.IsNone())
 	{
 		Card2 = Card;
 		CardPos = 2;
+		Card2.DebugCard(FName("StoreCardInHand 2"));
 	}
 	if (ANAFPlayerController* NafPC = GetNafPC())
 	{
@@ -113,6 +115,7 @@ ECardType ANAFPlayerState::GetCardType(uint8 PosCard)
 	{
 		SelectedCard = Card1;
 		IndexSelected = 1;
+		SelectedCard.DebugCard(FName("GetCardType 1 selected"));
 		if (Card1.RowName.IsNone()) return ECardType::NONE;
 		if (Card1.FamilyType != EFamilyType::NONE) return ECardType::NORMAL;
 		if (Card1.ArcaneType == EArcaneType::COPY) return ECardType::COPY;
@@ -123,6 +126,7 @@ ECardType ANAFPlayerState::GetCardType(uint8 PosCard)
 	{
 		SelectedCard = Card2;
 		IndexSelected = 2;
+		SelectedCard.DebugCard(FName("GetCardType 2 selected"));
 		if (Card2.RowName.IsNone()) return ECardType::NONE;
 		if (Card2.FamilyType != EFamilyType::NONE) return ECardType::NORMAL;
 		if (Card2.ArcaneType == EArcaneType::COPY) return ECardType::COPY;
@@ -136,6 +140,7 @@ ECardType ANAFPlayerState::GetCardType(uint8 PosCard)
 
 FCardDataServer ANAFPlayerState::GetSelectedCard()
 {
+	SelectedCard.DebugCard(FName("Get Selected card"));
 	return SelectedCard;
 }
 

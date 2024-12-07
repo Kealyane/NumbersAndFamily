@@ -11,18 +11,12 @@
 void ANAFGameState::OnRep_ActiveId()
 {
 	UE_LOG(LogTemp, Warning, TEXT("game state : OnRep_ActiveId"));
-	if (ANAFPlayerState* PS = GetNafPlayerState(ActiveId))
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
 	{
-		if (ANAFPlayerController* PC = PS->GetNafPC())
+		if (ANAFPlayerState* PlayerState = PlayerController->GetPlayerState<ANAFPlayerState>())
 		{
-			PC->NotifyTurnStart(true);
-		}
-	}
-	if (ANAFPlayerState* PS = GetOpponentPlayerState(ActiveId))
-	{
-		if (ANAFPlayerController* PC = PS->GetNafPC())
-		{
-			PC->NotifyTurnStart(false);
+			PlayerController->NotifyTurnStart(PlayerState->Id == ActiveId);
 		}
 	}
 }

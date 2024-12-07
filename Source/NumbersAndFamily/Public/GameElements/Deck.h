@@ -103,6 +103,12 @@ struct FCardDataServer
 		ArcaneType = NewCard.ArcaneType;
 	}
 
+	void DebugCard(FName ActionName)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s : row %s - family %s - sore %d - arcane %s"),
+			*ActionName.ToString(), *RowName.ToString() ,*EnumCardHelper::FamilyToString(FamilyType), Score, *EnumCardHelper::ArcaneToString(ArcaneType));
+	}
+
 	bool operator==(const FCardDataServer& Other) const
 	{
 		return RowName == Other.RowName &&
