@@ -18,6 +18,19 @@ enum class EGameStatus : uint8
 	IN_GAME,
 	END,
 };
+namespace EnumGameStatusHelper
+{
+	static FString ToString(EGameStatus EnumValue)
+	{
+		switch (EnumValue)
+		{
+		case EGameStatus::START: return TEXT("START");
+		case EGameStatus::IN_GAME: return TEXT("IN_GAME");
+		case EGameStatus::END: return TEXT("END");
+		default: return TEXT("Unknown");
+		}
+	}
+}
 /**
  * 
  */
@@ -30,32 +43,34 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FLeaveLobbySignature OnLeaveLobby;
 
-	UPROPERTY(Replicated)
-	EGameStatus CurrentStatus;
+	// UPROPERTY(ReplicatedUsing=OnRep_CurrentStatus)
+	// EGameStatus CurrentStatus;
+	// UFUNCTION()
+	// void OnRep_CurrentStatus();
 
 	UPROPERTY(ReplicatedUsing=OnRep_ActiveId)
 	EPosition ActiveId;
 	UFUNCTION()
 	void OnRep_ActiveId();
 
-	UPROPERTY(ReplicatedUsing=OnRep_BoardTableRow)
+	//UPROPERTY(ReplicatedUsing=OnRep_BoardTableRow)
 	TArray<FName> BoardTableRow;
-	UFUNCTION()
-	void OnRep_BoardTableRow();
+	//UFUNCTION()
+	//void OnRep_BoardTableRow();
 
 	UFUNCTION()
 	void SetActivePlayer(EPosition InActiveId);
 	UFUNCTION()
-	void SetBoardName(const TArray<FName>& InBoardTableRow);
-	UFUNCTION()
-	void SetStatus(EGameStatus NewStatus) { CurrentStatus = NewStatus; }
+	void SetBoardName(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow);
+	// UFUNCTION()
+	// void SetStatus(EGameStatus NewStatus);
 	
 	UFUNCTION(NetMulticast, Unreliable)
 	void MultiRPC_PlaySoundStartGame();
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_UpdateActiveTurnUI(); // Show for both clients which one is active
 	UFUNCTION(NetMulticast, Reliable)
-	void MultiRPC_UpdateBoardUI();
+	void MultiRPC_UpdateBoardUI(bool bAfterPlayerAction);
 
 	UFUNCTION()
 	void SwitchPlayerTurn();

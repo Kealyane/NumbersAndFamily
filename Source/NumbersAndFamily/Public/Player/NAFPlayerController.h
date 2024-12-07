@@ -56,11 +56,11 @@ public:
 	UFUNCTION()
 	void UpdateActiveTurnUI(EPosition ActivePosition);
 	UFUNCTION()
-	void NotifyTurnStart();
+	void NotifyTurnStart(bool bInIsMyTurn);
 	UFUNCTION()
 	void EndTurn();
 	UFUNCTION()
-	void UpdateBoardCard(const TArray<FName>& InBoardTableRow);
+	void UpdateBoardCard(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow);
 
 
 	UFUNCTION()

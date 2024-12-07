@@ -50,7 +50,7 @@ void ABoard::SyncBoardWithGameState()
 	}
 	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
 	{
-		NafGS->SetBoardName(BoardRowNames);
+		NafGS->SetBoardName(true, BoardRowNames);
 	}
 	
 }

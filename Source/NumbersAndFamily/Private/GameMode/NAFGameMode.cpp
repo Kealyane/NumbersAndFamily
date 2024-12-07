@@ -65,7 +65,7 @@ void ANAFGameMode::LaunchGame()
 		
 		if (NafGameState)
 		{
-			NafGameState->SetStatus(EGameStatus::START);
+//			NafGameState->SetStatus(EGameStatus::START);
 			NafGameState->OnLeaveLobby.Broadcast();
 		}
 
@@ -104,20 +104,20 @@ void ANAFGameMode::LaunchGame()
 				}
 			}
 		}
-
+		
 		// Initialize Active Player
 		const bool bIsPlayerLeft = FMath::RandBool();
 		//const EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
-
+		
 		// DEBUG Client
 		const EPosition ActivePosition = EPosition::RIGHT;
-
+		
 		// DEBUG Server
 		//const EPosition ActivePosition = EPosition::LEFT;
 		
 		NafGameState->SetActivePlayer(ActivePosition);
 		NafGameState->MultiRPC_UpdateActiveTurnUI();
-		NafGameState->SetStatus(EGameStatus::IN_GAME);
+		//NafGameState->SetStatus(EGameStatus::IN_GAME);
 	}
 }
 
