@@ -33,7 +33,7 @@ void ANAFPlayerState::StoreCardInHand(FCardDataServer Card)
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 	// 		FString::Printf(TEXT("Player State %s : Store Card in hand"), *EnumHelper::ToString(Id)));
 	// }
-	UE_LOG(LogTemp, Warning, TEXT("player state %s : StoreCardInHand"), *EnumHelper::ToString(Id));
+	//UE_LOG(LogTemp, Warning, TEXT("player state %s : StoreCardInHand"), *EnumHelper::ToString(Id));
 	uint8 CardPos = 0;
 	if (Card1.RowName.IsNone())
 	{
@@ -57,7 +57,7 @@ void ANAFPlayerState::RemoveCardInHand(uint8 IndexCard)
 {
 	// GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 	// FString::Printf(TEXT("Player State %s : RemoveCardInHand %d"), *EnumHelper::ToString(Id), IndexSelected));
-	UE_LOG(LogTemp, Warning, TEXT("player state %s : RemoveCardInHand %d"), *EnumHelper::ToString(Id), IndexSelected);
+	//UE_LOG(LogTemp, Warning, TEXT("player state %s : RemoveCardInHand %d"), *EnumHelper::ToString(Id), IndexSelected);
 	if (IndexCard == 1)
 	{
 		Card1.ResetCard();
@@ -79,7 +79,7 @@ void ANAFPlayerState::UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus)
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 	// 		FString::Printf(TEXT("Player State %s : UpdateHandUI"), *EnumHelper::ToString(Id)));
 	// }
-	UE_LOG(LogTemp, Warning, TEXT("player state %s : UpdateHandUI"), *EnumHelper::ToString(Id));
+	//UE_LOG(LogTemp, Warning, TEXT("player state %s : UpdateHandUI"), *EnumHelper::ToString(Id));
 	if (ANAFPlayerController* NafPC = GetNafPC())
 	{
 		if (HandStatus[0])
@@ -108,7 +108,7 @@ void ANAFPlayerState::ActiveTurn(EPosition ActiveId)
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 	// 		FString::Printf(TEXT("Player State %s : Your turn"), *EnumHelper::ToString(Id)));
 	// }
-	UE_LOG(LogTemp, Warning, TEXT("player state %s : ActiveTurn"), *EnumHelper::ToString(Id));
+	//UE_LOG(LogTemp, Warning, TEXT("player state %s : ActiveTurn"), *EnumHelper::ToString(Id));
 }
 
 ECardType ANAFPlayerState::GetCardType(uint8 PosCard)
@@ -118,12 +118,12 @@ ECardType ANAFPlayerState::GetCardType(uint8 PosCard)
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 	// 		FString::Printf(TEXT("Player State %s : GetCardType"), *EnumHelper::ToString(Id)));
 	// }
-	UE_LOG(LogTemp, Warning, TEXT("player state %s : GetCardType"), *EnumHelper::ToString(Id));
+	//UE_LOG(LogTemp, Warning, TEXT("player state %s : GetCardType"), *EnumHelper::ToString(Id));
 	if (PosCard == 1)
 	{
 		SelectedCard = Card1;
 		IndexSelected = 1;
-		SelectedCard.DebugCard(FName("GetCardType 1 selected"));
+		//SelectedCard.DebugCard(FName("GetCardType 1 selected"));
 		if (Card1.RowName.IsNone()) return ECardType::NONE;
 		if (Card1.FamilyType != EFamilyType::NONE) return ECardType::NORMAL;
 		if (Card1.ArcaneType == EArcaneType::COPY) return ECardType::COPY;
@@ -134,7 +134,7 @@ ECardType ANAFPlayerState::GetCardType(uint8 PosCard)
 	{
 		SelectedCard = Card2;
 		IndexSelected = 2;
-		SelectedCard.DebugCard(FName("GetCardType 2 selected"));
+		//SelectedCard.DebugCard(FName("GetCardType 2 selected"));
 		if (Card2.RowName.IsNone()) return ECardType::NONE;
 		if (Card2.FamilyType != EFamilyType::NONE) return ECardType::NORMAL;
 		if (Card2.ArcaneType == EArcaneType::COPY) return ECardType::COPY;
@@ -156,7 +156,7 @@ void ANAFPlayerState::ActiveHandChoice(EPosition ActiveId)
 {
 	// GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 	// FString::Printf(TEXT("Player State %s : ActiveHandChoice %s"), *EnumHelper::ToString(Id), *EnumHelper::ToString(ActiveId)));
-	UE_LOG(LogTemp, Warning, TEXT("player state %s : ActiveHandChoice %s"), *EnumHelper::ToString(Id), *EnumHelper::ToString(ActiveId));
+	//UE_LOG(LogTemp, Warning, TEXT("player state %s : ActiveHandChoice %s"), *EnumHelper::ToString(Id), *EnumHelper::ToString(ActiveId));
 	if (ANAFPlayerController* NafPC = GetNafPC())
 	{
 		NafPC->ClientRPC_ActiveHand(ActiveId);
@@ -170,7 +170,7 @@ TArray<bool> ANAFPlayerState::HandStatus()
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 	// 		FString::Printf(TEXT("Player State %s : HandStatus"), *EnumHelper::ToString(Id)));
 	// }
-	UE_LOG(LogTemp, Warning, TEXT("player state %s : HandStatus"), *EnumHelper::ToString(Id));
+	//UE_LOG(LogTemp, Warning, TEXT("player state %s : HandStatus"), *EnumHelper::ToString(Id));
 	TArray<bool> Status;
 	Status.Add(!Card1.RowName.IsNone());
 	Status.Add(!Card2.RowName.IsNone());

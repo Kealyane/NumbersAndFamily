@@ -22,7 +22,6 @@ class NUMBERSANDFAMILY_API ANAFPlayerController : public APlayerController
 private:
 	TObjectPtr<UGameWidget> GameWidget;
 	bool bIsMyTurn;
-	bool bIsEndTurn = false;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="MyPropperties|Widget")
@@ -73,9 +72,15 @@ public:
 	UFUNCTION()
 	void GetSelectedHandCard(uint8 Line, uint8 Col);
 
-
+	UFUNCTION()
+	uint8 GetNbCardInBoard() const { return NbCardInBoard; }
+	UFUNCTION()
+	uint8 GetNbCardInOpponentBoard() const { return NBCardInOpponentBoard; }
+	
 private:
 	bool IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col);
 	bool IsActivePlayer() const;
 	EPosition GetPlayerId() const;
+	uint8 NbCardInBoard = 0;
+	uint8 NBCardInOpponentBoard = 0;
 };

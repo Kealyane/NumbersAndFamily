@@ -94,4 +94,9 @@ void UCardWidget::DisableHighlight()
 	}
 }
 
+void UCardWidget::SpecialCardFirstChoiceSelected()
+{
+	ButtonSlot->SetBackgroundColor(FLinearColor::Blue);
+}
+
 

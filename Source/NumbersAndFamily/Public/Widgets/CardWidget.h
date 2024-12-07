@@ -71,6 +71,7 @@ public:
 	void HideCard(); // set alpha to hide image, card is occupied (false)
 	void EnableHighlight(); // background button to yellow, can be clicked (true)
 	void DisableHighlight(); // background button to white, can be clicked (false)
+	void SpecialCardFirstChoiceSelected();
 	
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsCardSlotSelected = false;

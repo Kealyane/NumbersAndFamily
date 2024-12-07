@@ -19,7 +19,7 @@ void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald, FString(TEXT("PC : ShowGameBoard")));
 	// }
 	
-	UE_LOG(LogTemp, Warning, TEXT("PC %s: ClientRPC_ShowGameBoard_Implementation"), *EnumHelper::ToString(GetPlayerId()));
+	//UE_LOG(LogTemp, Warning, TEXT("PC %s: ClientRPC_ShowGameBoard_Implementation"), *EnumHelper::ToString(GetPlayerId()));
 	GameWidget = CreateWidget<UGameWidget>(this, GameWidgetType);
 	if (GameWidget)
 	{
@@ -44,7 +44,7 @@ void ANAFPlayerController::ClientRPC_PlaceCardInPocketUI_Implementation(EPositio
 	// {
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald, FString(TEXT("PC : show card in UI")));
 	// }
-	UE_LOG(LogTemp, Warning, TEXT("PC %s : ClientRPC_PlaceCardInPocketUI_Implementation"), *EnumHelper::ToString(GetPlayerId()));
+	//UE_LOG(LogTemp, Warning, TEXT("PC %s : ClientRPC_PlaceCardInPocketUI_Implementation"), *EnumHelper::ToString(GetPlayerId()));
 	
 	const FString ContextString(TEXT("Tower Data Context"));
 	const FCardData* Data = DeckDataTable->FindRow<FCardData>(CardRowName,ContextString);
@@ -64,7 +64,7 @@ void ANAFPlayerController::ClientRPC_ShowPocketCardVerso_Implementation(EPositio
 	// {
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald, FString(TEXT("PC ShowPocketCardVerso")));
 	// }
-	UE_LOG(LogTemp, Warning, TEXT("PC %s : ClientRPC_ShowPocketCardVerso_Implementation"), *EnumHelper::ToString(GetPlayerId()));
+	//UE_LOG(LogTemp, Warning, TEXT("PC %s : ClientRPC_ShowPocketCardVerso_Implementation"), *EnumHelper::ToString(GetPlayerId()));
 	if (GameWidget)
 	{
 		UCardWidget* CardUW = GameWidget->GetCardWidget(PlayerPosition, Pos);
@@ -81,7 +81,7 @@ void ANAFPlayerController::ClientRPC_PocketCardEmpty_Implementation(EPosition Pl
 	// {
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald, FString(TEXT("PC : Pocket Card Empty")));
 	// }
-	UE_LOG(LogTemp, Warning, TEXT("PC %s : ClientRPC_PocketCardEmpty_Implementation"), *EnumHelper::ToString(GetPlayerId()));
+	//UE_LOG(LogTemp, Warning, TEXT("PC %s : ClientRPC_PocketCardEmpty_Implementation"), *EnumHelper::ToString(GetPlayerId()));
 	if (GameWidget)
 	{
 		GameWidget->GetCardWidget(PlayerPosition, Pos)->HideCard();
@@ -101,7 +101,7 @@ void ANAFPlayerController::ServerRPC_DrawCard_Implementation()
 	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald, FString(TEXT("PC : DrawCard implementation")));
-		UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_DrawCard_Implementation"), *EnumHelper::ToString(GetPlayerId()));
+		//UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_DrawCard_Implementation"), *EnumHelper::ToString(GetPlayerId()));
 		GameMode->DrawCard(GetPlayerState<ANAFPlayerState>());
 	}
 }
@@ -109,7 +109,7 @@ void ANAFPlayerController::ServerRPC_DrawCard_Implementation()
 bool ANAFPlayerController::ServerRPC_DrawCard_Validate()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald, FString(TEXT("PC : DrawCard validation")));
-	UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_DrawCard_Validate"), *EnumHelper::ToString(GetPlayerId()));
+	//UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_DrawCard_Validate"), *EnumHelper::ToString(GetPlayerId()));
 	return IsActivePlayer();
 }
 
@@ -117,7 +117,7 @@ void ANAFPlayerController::ClientRPC_ActiveHand_Implementation(EPosition PlayerP
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald,
 	//FString::Printf(TEXT("PC : ClientRPC_ActiveHand %s"), *EnumHelper::ToString(PlayerPosition)));
-	UE_LOG(LogTemp, Warning, TEXT("PC %s : ClientRPC_ActiveHand_Implementation"), *EnumHelper::ToString(GetPlayerId()));
+	//UE_LOG(LogTemp, Warning, TEXT("PC %s : ClientRPC_ActiveHand_Implementation"), *EnumHelper::ToString(GetPlayerId()));
 	
 	GameWidget->StartHandSelection(PlayerPosition);
 	GameWidget->ActiveHandHighlight(PlayerPosition);
@@ -130,7 +130,7 @@ void ANAFPlayerController::ServerRPC_PlaceNormalCard_Implementation(FCardDataSer
 	{
 // 		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald,
 // FString::Printf(TEXT("PC : ServerRPC_PlaceNormalCard_implementation")));
-		UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_PlaceNormalCard_Implementation"), *EnumHelper::ToString(GetPlayerId()));
+		//UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_PlaceNormalCard_Implementation"), *EnumHelper::ToString(GetPlayerId()));
 		GameMode->PlaceNormalCard(Card, IndexHandCard, Line, Col);
 	}
 }
@@ -140,7 +140,7 @@ bool ANAFPlayerController::ServerRPC_PlaceNormalCard_Validate(FCardDataServer Ca
 {
 // 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald,
 // FString::Printf(TEXT("PC : ServerRPC_PlaceNormalCard_Validate")));
-	UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_PlaceNormalCard_Validate"), *EnumHelper::ToString(GetPlayerId()));
+	//UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_PlaceNormalCard_Validate"), *EnumHelper::ToString(GetPlayerId()));
 	if (Card.FamilyType == EFamilyType::NONE || IndexHandCard == 0) return false;
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
 	return IsActivePlayer() && IsCoordInPlayerIdSide(NafPlayerState->Id, Line, Col);
@@ -151,7 +151,7 @@ void ANAFPlayerController::ServerRPC_EndTurn_Implementation(ANAFPlayerState* Act
 	if (!IsActivePlayer()) return;
 	// GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald,
 	// FString::Printf(TEXT("PC : ServerRPC_EndTurn %s"), *EnumHelper::ToString(ActivePlayerState->Id)));
-	UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_EndTurn_Implementation"), *EnumHelper::ToString(GetPlayerId()));
+	//UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_EndTurn_Implementation"), *EnumHelper::ToString(GetPlayerId()));
 	
 	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
 	{
@@ -169,7 +169,7 @@ void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
 	// }
 	if (GameWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PC %s : UpdateActiveTurnUI"), *EnumHelper::ToString(GetPlayerId()));
+		//UE_LOG(LogTemp, Warning, TEXT("PC %s : UpdateActiveTurnUI"), *EnumHelper::ToString(GetPlayerId()));
 		GameWidget->ShowActivePlayer(ActivePosition);
 	}
 }
@@ -181,9 +181,8 @@ void ANAFPlayerController::NotifyTurnStart(bool bInIsMyTurn)
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 	// FString(TEXT("PC : Notify Active Turn")));
 	// }
-	UE_LOG(LogTemp, Warning, TEXT("PC %s : NotifyTurnStart"), *EnumHelper::ToString(GetPlayerId()));
+	//UE_LOG(LogTemp, Warning, TEXT("PC %s : NotifyTurnStart"), *EnumHelper::ToString(GetPlayerId()));
 	bIsMyTurn = bInIsMyTurn;
-	bIsEndTurn = false;
 	if (bIsMyTurn) ServerRPC_DrawCard();
 }
 
@@ -198,8 +197,7 @@ void ANAFPlayerController::EndTurn()
 	{
 // 			GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 // FString::Printf(TEXT("PC : EndTurn player %s"), *EnumHelper::ToString(NafPS->Id)));
-		UE_LOG(LogTemp, Warning, TEXT("PC %s is active player : EndTurn"), *EnumHelper::ToString(GetPlayerId()));
-		
+		//UE_LOG(LogTemp, Warning, TEXT("PC %s is active player : EndTurn"), *EnumHelper::ToString(GetPlayerId()));
 		GameWidget->EndHandSelection(NafPlayerState->Id);
 		GameWidget->DeactivateHandHighlight(NafPlayerState->Id);
 		GameWidget->DeactivateHighlight();
@@ -244,7 +242,7 @@ void ANAFPlayerController::GetSelectedHandCard(uint8 Line, uint8 Col)
 {
 	if (!IsActivePlayer()) return;
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
-	UE_LOG(LogTemp, Warning, TEXT("PC %s : GetSelectedHandCard"), *EnumHelper::ToString(GetPlayerId()));
+	//UE_LOG(LogTemp, Warning, TEXT("PC %s : GetSelectedHandCard"), *EnumHelper::ToString(GetPlayerId()));
 	if (NafPlayerState)
 	{
 		ServerRPC_PlaceNormalCard(NafPlayerState->GetSelectedCard(), NafPlayerState->GetIndexSelected(), Line, Col);
@@ -256,6 +254,13 @@ void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray
 	// GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 	// FString::Printf(TEXT("PC : UpdateBoardCard")));
 	UE_LOG(LogTemp, Warning, TEXT("PC %s : UpdateBoardCard"), *EnumHelper::ToString(GetPlayerId()));
+
+	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
+	if (!NafPlayerState) return;
+
+	NbCardInBoard = 0;
+	NBCardInOpponentBoard = 0;
+	
 	const FString ContextString(TEXT("Card Data Context"));
 	for (int i = 0; i < InBoardTableRow.Num(); i++)
 	{
@@ -276,6 +281,15 @@ void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray
 					{
 						UE_LOG(LogTemp, Warning, TEXT("PC : UpdateBoardCard = show card"));
 						CardSlot->ShowCard(Data->ImageRecto);
+						
+						if (IsCoordInPlayerIdSide(NafPlayerState->Id, row, col))
+						{
+							NbCardInBoard++; 
+						}
+						else
+						{
+							NBCardInOpponentBoard++;
+						}
 					}
 				}
 			}
@@ -286,6 +300,8 @@ FString::Printf(TEXT("PC : UpdateBoardCard no card slot")));
 			}
 		}
 	}
+	UE_LOG(LogTemp, Warning, TEXT("PC %s : UpdateBoardCard my card = %d - opponent = %d"),
+		*EnumHelper::ToString(NafPlayerState->Id), NbCardInBoard, NBCardInOpponentBoard);
 	if (bAfterPlayerAction)
 	{
 		EndTurn();
@@ -305,12 +321,12 @@ bool ANAFPlayerController::IsActivePlayer() const
 {
 	ANAFGameState* GameState = GetWorld()->GetGameState<ANAFGameState>();
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
-	if (GameState && NafPlayerState && NafPlayerState->Id == GameState->ActiveId)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PC : is active player : activeID = %s, playerID = %s"),
-			*EnumHelper::ToString(GameState->ActiveId),
-			*EnumHelper::ToString(NafPlayerState->Id));
-	}
+	// if (GameState && NafPlayerState && NafPlayerState->Id == GameState->ActiveId)
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("PC : is active player : activeID = %s, playerID = %s"),
+	// 		*EnumHelper::ToString(GameState->ActiveId),
+	// 		*EnumHelper::ToString(NafPlayerState->Id));
+	// }
 	return GameState && NafPlayerState && NafPlayerState->Id == GameState->ActiveId;
 }
 

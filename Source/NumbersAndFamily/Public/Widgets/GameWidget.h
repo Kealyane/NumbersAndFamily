@@ -176,4 +176,5 @@ private:
 
 	TObjectPtr<UCardWidget> FirstCardSelected = nullptr;
 	TObjectPtr<UCardWidget> SecondCardSelected = nullptr;
+	EPosition FirstCardPosition;
 };

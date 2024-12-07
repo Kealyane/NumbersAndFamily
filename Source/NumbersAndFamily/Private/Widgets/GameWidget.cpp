@@ -75,32 +75,43 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 		}
 		return;
 	}
-	if (CardType == ECardType::SWITCH || CardType == ECardType::STEAL)
+
+	ANAFPlayerController* PlayerController = GetOwningPlayer<ANAFPlayerController>();
+	if (!PlayerController) return;
+	ANAFPlayerState* PlayerState = PlayerController->GetPlayerState<ANAFPlayerState>();
+	if (!PlayerState) return;
+	
+	const EPosition ActivePlayerId = PlayerState->Id;
+	const EPosition OpponentPlayerId = PlayerState->Id == EPosition::LEFT ? EPosition::RIGHT : EPosition::LEFT;
+
+	// Switch 2 cards that are occupied on the same board
+	if (CardType == ECardType::SWITCH)
 	{
-		// if Switch : PlayerId needs to be the same as selected card
-		// if Steal : PlayerId needs to be opponent 
-		EPosition PlayerIdToHighlight = CardType == ECardType::SWITCH ? PlayerId
-						: (PlayerId == EPosition::LEFT) ? EPosition::RIGHT : EPosition::LEFT;
-		
 		if (FirstCardSelected == nullptr)
 		{
-			for (auto RowLeft : PlayerBoardSlots[EPosition::LEFT])
+			if (PlayerController->GetNbCardInBoard() >= 2)
 			{
-				for (int i = 0; i < RowLeft.Num(); i++)
+				for (auto RowActive : PlayerBoardSlots[ActivePlayerId])
 				{
-					if (RowLeft[i]->bIsCardOccupied)
+					for (int i = 0; i < RowActive.Num(); i++)
 					{
-						RowLeft[i]->EnableHighlight();
+						if (RowActive[i]->bIsCardOccupied)
+						{
+							RowActive[i]->EnableHighlight();
+						}
 					}
 				}
 			}
-			for (auto RowRight : PlayerBoardSlots[EPosition::RIGHT])
+			if (PlayerController->GetNbCardInOpponentBoard() >= 2)
 			{
-				for (int i = 0; i < RowRight.Num(); i++)
+				for (auto RowActive : PlayerBoardSlots[OpponentPlayerId])
 				{
-					if (RowRight[i]->bIsCardOccupied)
+					for (int i = 0; i < RowActive.Num(); i++)
 					{
-						RowRight[i]->EnableHighlight();
+						if (RowActive[i]->bIsCardOccupied)
+						{
+							RowActive[i]->EnableHighlight();
+						}
 					}
 				}
 			}
@@ -108,19 +119,73 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 		else
 		{
 			DeactivateHighlight();
-			for (auto RowLeft : PlayerBoardSlots[PlayerIdToHighlight])
+			FirstCardSelected->SpecialCardFirstChoiceSelected();
+			
+			for (auto RowActive : PlayerBoardSlots[FirstCardPosition])
 			{
-				for (int i = 0; i < RowLeft.Num(); i++)
+				for (int i = 0; i < RowActive.Num(); i++)
 				{
-					if (RowLeft[i]->bIsCardOccupied)
+					if (RowActive[i]->bIsCardOccupied == true)
 					{
-						RowLeft[i]->EnableHighlight();
+						RowActive[i]->EnableHighlight();
 					}
 				}
 			}
 		}
 		return;
 	}
+	// Steal one card from opponent or took one from board to place in opponent
+	if (CardType == ECardType::STEAL)
+	{
+		if (FirstCardSelected == nullptr)
+		{
+			if (PlayerController->GetNbCardInBoard() >= 1)
+			{
+				for (auto RowActive : PlayerBoardSlots[ActivePlayerId])
+				{
+					for (int i = 0; i < RowActive.Num(); i++)
+					{
+						if (RowActive[i]->bIsCardOccupied)
+						{
+							RowActive[i]->EnableHighlight();
+						}
+					}
+				}
+			}
+			if (PlayerController->GetNbCardInOpponentBoard() >= 1)
+			{
+				for (auto RowActive : PlayerBoardSlots[OpponentPlayerId])
+				{
+					for (int i = 0; i < RowActive.Num(); i++)
+					{
+						if (RowActive[i]->bIsCardOccupied)
+						{
+							RowActive[i]->EnableHighlight();
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			DeactivateHighlight();
+			FirstCardSelected->SpecialCardFirstChoiceSelected();
+			const EPosition OpposedBoard = FirstCardPosition == EPosition::LEFT ? EPosition::RIGHT : EPosition::LEFT;
+
+			for (auto RowActive : PlayerBoardSlots[OpposedBoard])
+			{
+				for (int i = 0; i < RowActive.Num(); i++)
+				{
+					if (RowActive[i]->bIsCardOccupied == false)
+					{
+						RowActive[i]->EnableHighlight();
+					}
+				}
+			}
+		}
+		return;
+	}
+	
 	if (CardType == ECardType::COPY)
 	{
 		if (FirstCardSelected == nullptr)
@@ -139,6 +204,7 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 		else
 		{
 			DeactivateHighlight();
+			FirstCardSelected->SpecialCardFirstChoiceSelected();
 			for (auto Row : PlayerBoardSlots[PlayerId])
 			{
 				for (int i = 0; i < Row.Num(); i++)
@@ -328,6 +394,7 @@ void UGameWidget::OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 C
 		UCardWidget* NewCard = PlayerPockets[Player][pos];
 		if (SelectedHandCard)
 		{
+			DeactivateHighlight();
 			if (SelectedHandCard != NewCard)
 			{
 				SelectedHandCard->SelectCard(false);
@@ -366,12 +433,16 @@ void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 
 
 EPosition UGameWidget::GetPlayerId()
 {
-	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	if (ANAFPlayerController* PlayerController = GetOwningPlayer<ANAFPlayerController>())
 	{
-		if (ANAFPlayerController* NafPC = Cast<ANAFPlayerController>(PlayerController))
-		{
-			return NafPC->GetPlayerState<ANAFPlayerState>()->Id;
-		}
+		return PlayerController->GetPlayerState<ANAFPlayerState>()->Id;
 	}
+	// if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	// {
+	// 	if (ANAFPlayerController* NafPC = Cast<ANAFPlayerController>(PlayerController))
+	// 	{
+	// 		return NafPC->GetPlayerState<ANAFPlayerState>()->Id;
+	// 	}
+	// }
 	return EPosition::SERVER;
 }
