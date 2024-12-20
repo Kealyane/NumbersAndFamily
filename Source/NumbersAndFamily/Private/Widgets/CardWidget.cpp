@@ -20,12 +20,6 @@ void UCardWidget::SetSlotParams(bool IsPlayer1, uint8 LineParam, uint8 ColParam)
 	Col = ColParam;
 }
 
-// void UCardWidget::SetSlotCoordParams(uint8 LineParam, uint8 ColParam)
-// {
-// 	Line = LineParam;
-// 	Col = ColParam;
-// }
-
 void UCardWidget::CardClicked()
 {
 	if (bCanBeClicked)
@@ -49,17 +43,6 @@ void UCardWidget::SelectCard(bool bIsSelected)
 		OnCardUnselected.Broadcast();
 	}
 }
-
-
-// void UCardWidget::ActivateButton()
-// {
-// 	ButtonSlot->SetIsEnabled(true);
-// }
-//
-// void UCardWidget::DeactivateButton()
-// {
-// 	ButtonSlot->SetIsEnabled(false);
-// }
 
 void UCardWidget::ShowCard(UTexture2D* CardImage)
 {
@@ -96,6 +79,7 @@ void UCardWidget::DisableHighlight()
 
 void UCardWidget::SpecialCardFirstChoiceSelected()
 {
+	bCanBeClicked = true;
 	ButtonSlot->SetBackgroundColor(FLinearColor::Blue);
 }
 

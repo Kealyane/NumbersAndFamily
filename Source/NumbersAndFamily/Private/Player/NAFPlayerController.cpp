@@ -140,7 +140,7 @@ bool ANAFPlayerController::ServerRPC_PlaceNormalCard_Validate(FCardDataServer Ca
 {
 // 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Emerald,
 // FString::Printf(TEXT("PC : ServerRPC_PlaceNormalCard_Validate")));
-	//UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_PlaceNormalCard_Validate"), *EnumHelper::ToString(GetPlayerId()));
+	UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_PlaceNormalCard_Validate (%d,%d)"), *EnumHelper::ToString(GetPlayerId()), Line, Col);
 	if (Card.FamilyType == EFamilyType::NONE || IndexHandCard == 0) return false;
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
 	return IsActivePlayer() && IsCoordInPlayerIdSide(NafPlayerState->Id, Line, Col);
@@ -242,9 +242,10 @@ void ANAFPlayerController::GetSelectedHandCard(uint8 Line, uint8 Col)
 {
 	if (!IsActivePlayer()) return;
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
-	//UE_LOG(LogTemp, Warning, TEXT("PC %s : GetSelectedHandCard"), *EnumHelper::ToString(GetPlayerId()));
+	UE_LOG(LogTemp, Warning, TEXT("PC %s : GetSelectedHandCard"), *EnumHelper::ToString(GetPlayerId()));
 	if (NafPlayerState)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("PC %s : GetSelectedHandCard (%d,%d)"), *EnumHelper::ToString(GetPlayerId()), Line, Col);
 		ServerRPC_PlaceNormalCard(NafPlayerState->GetSelectedCard(), NafPlayerState->GetIndexSelected(), Line, Col);
 	}
 }

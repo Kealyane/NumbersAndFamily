@@ -10,15 +10,6 @@
 #include "Player/NAFPlayerController.h"
 #include "Player/NAFPlayerState.h"
 
-void UGameWidget::ButtonCardClicked(FVector ButtonPos)
-{
-	OnClickCard.Broadcast(ButtonPos);
-}
-
-void UGameWidget::ShowDeckCard(EPosition PlayerPos, UTexture2D* CardRecto)
-{
-	OnCardDrawFromDeck.Broadcast(PlayerPos, CardRecto);
-}
 
 void UGameWidget::ShowActivePlayer(EPosition ActivePlayer)
 {
@@ -57,11 +48,16 @@ void UGameWidget::EndHandSelection(EPosition ActivePlayer)
 
 void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Turquoise,
-	FString::Printf(TEXT("GameWidget : active highlight id %s card %s"), *EnumHelper::ToString(PlayerId), *EnumCardTypeHelper::ToString(CardType)));
+	//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Turquoise,
+	//FString::Printf(TEXT("GameWidget : active highlight id %s card %s"), *EnumHelper::ToString(PlayerId), *EnumCardTypeHelper::ToString(CardType)));
+	UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight id %s card %s"), *EnumHelper::ToString(PlayerId), *EnumCardTypeHelper::ToString(CardType));
+
+	HandCardTypeSelected = CardType;
+	UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight init HandCardTypeSelected (%s)"), *EnumCardTypeHelper::ToString(HandCardTypeSelected));
 	
 	if (CardType == ECardType::NORMAL)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight Normal (%s)"), *EnumCardTypeHelper::ToString(CardType));
 		for (auto Row : PlayerBoardSlots[PlayerId])
 		{
 			for (int i = 0; i < Row.Num(); i++)
@@ -87,10 +83,12 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 	// Switch 2 cards that are occupied on the same board
 	if (CardType == ECardType::SWITCH)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight Switch (%s)"), *EnumCardTypeHelper::ToString(CardType));
 		if (FirstCardSelected == nullptr)
 		{
 			if (PlayerController->GetNbCardInBoard() >= 2)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight First Card to pick - Current Board has enough card"));
 				for (auto RowActive : PlayerBoardSlots[ActivePlayerId])
 				{
 					for (int i = 0; i < RowActive.Num(); i++)
@@ -104,6 +102,7 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 			}
 			if (PlayerController->GetNbCardInOpponentBoard() >= 2)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight First Card to pick - Opponent Board has enough card"));
 				for (auto RowActive : PlayerBoardSlots[OpponentPlayerId])
 				{
 					for (int i = 0; i < RowActive.Num(); i++)
@@ -118,8 +117,8 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 		}
 		else
 		{
+			UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight Second Card to pick"));
 			DeactivateHighlight();
-			FirstCardSelected->SpecialCardFirstChoiceSelected();
 			
 			for (auto RowActive : PlayerBoardSlots[FirstCardPosition])
 			{
@@ -131,16 +130,19 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 					}
 				}
 			}
+			FirstCardSelected->SpecialCardFirstChoiceSelected();
 		}
 		return;
 	}
 	// Steal one card from opponent or took one from board to place in opponent
 	if (CardType == ECardType::STEAL)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight Steal (%s)"), *EnumCardTypeHelper::ToString(CardType));
 		if (FirstCardSelected == nullptr)
 		{
 			if (PlayerController->GetNbCardInBoard() >= 1)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight First Card to pick - Current Board has enough card"));
 				for (auto RowActive : PlayerBoardSlots[ActivePlayerId])
 				{
 					for (int i = 0; i < RowActive.Num(); i++)
@@ -154,6 +156,7 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 			}
 			if (PlayerController->GetNbCardInOpponentBoard() >= 1)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight First Card to pick - Opponent Board has enough card"));
 				for (auto RowActive : PlayerBoardSlots[OpponentPlayerId])
 				{
 					for (int i = 0; i < RowActive.Num(); i++)
@@ -168,8 +171,8 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 		}
 		else
 		{
+			UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight Second Card to pick"));
 			DeactivateHighlight();
-			FirstCardSelected->SpecialCardFirstChoiceSelected();
 			const EPosition OpposedBoard = FirstCardPosition == EPosition::LEFT ? EPosition::RIGHT : EPosition::LEFT;
 
 			for (auto RowActive : PlayerBoardSlots[OpposedBoard])
@@ -182,14 +185,18 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 					}
 				}
 			}
+			FirstCardSelected->SpecialCardFirstChoiceSelected();
 		}
 		return;
 	}
 	
 	if (CardType == ECardType::COPY)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight Copy (%s)"), *EnumCardTypeHelper::ToString(CardType));
 		if (FirstCardSelected == nullptr)
 		{
+			if (PlayerController->GetNbCardInBoard() == 0) return;
+			UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight first Card to pick"));
 			for (auto RowLeft : PlayerBoardSlots[PlayerId])
 			{
 				for (int i = 0; i < RowLeft.Num(); i++)
@@ -203,8 +210,8 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 		}
 		else
 		{
+			UE_LOG(LogTemp, Warning, TEXT("GameWidget : active highlight Second Card to pick"));
 			DeactivateHighlight();
-			FirstCardSelected->SpecialCardFirstChoiceSelected();
 			for (auto Row : PlayerBoardSlots[PlayerId])
 			{
 				for (int i = 0; i < Row.Num(); i++)
@@ -216,6 +223,7 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 					}
 				}
 			}
+			FirstCardSelected->SpecialCardFirstChoiceSelected();
 		}
 	}
 }
@@ -236,8 +244,8 @@ void UGameWidget::DeactivateHighlight()
 
 void UGameWidget::ActiveHandHighlight(EPosition PlayerId)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Turquoise,
-	FString::Printf(TEXT("GameWidget : ActiveHandHighlight id %s"), *EnumHelper::ToString(PlayerId)));
+	// GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Turquoise,
+	// FString::Printf(TEXT("GameWidget : ActiveHandHighlight id %s"), *EnumHelper::ToString(PlayerId)));
 	
 	auto CurrentPlayerHand = PlayerPockets[PlayerId];
 	for (const auto& CardWidgets : CurrentPlayerHand)
@@ -248,8 +256,8 @@ void UGameWidget::ActiveHandHighlight(EPosition PlayerId)
 
 void UGameWidget::DeactivateHandHighlight(EPosition PlayerId)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Turquoise,
-FString::Printf(TEXT("GameWidget : DeactivateHandHighlight id %s"), *EnumHelper::ToString(PlayerId)));
+// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Turquoise,
+// FString::Printf(TEXT("GameWidget : DeactivateHandHighlight id %s"), *EnumHelper::ToString(PlayerId)));
 	auto CurrentPlayerHand = PlayerPockets[PlayerId];
 	for (const auto& CardWidgets : CurrentPlayerHand)
 	{
@@ -295,7 +303,7 @@ void UGameWidget::NativeConstruct()
 
 	for (int i = 0; i < 3; i++)
 	{
-		for (int j = 0; j < 5; j++)
+		for (int j = 0; j < 6; j++)
 		{
 			BoardSlots[i][j]->SetSlotParams(j < 3, i, j);
 		}
@@ -413,6 +421,8 @@ void UGameWidget::OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 C
 				
 				SelectedHandCard = nullptr;
 				bIsHandChoiceDone = false;
+				HandCardTypeSelected = ECardType::NONE;
+				FirstCardSelected = nullptr;
 				OnSendHandCardSelected.Broadcast(3);
 			}
 		}
@@ -423,12 +433,109 @@ void UGameWidget::OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 C
 			bIsHandChoiceDone = true;
 			OnSendHandCardSelected.Broadcast(pos+1);
 		}
+
 	}
 }
 
 void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 ColSelect)
 {
-	OnClickBoardSlot.Broadcast(LineSelect, ColSelect);
+	if (LineSelect < 3 && ColSelect < 6)
+	{
+		if (FirstCardSelected == nullptr)
+		{
+			FirstCardSelected = BoardSlots[LineSelect][ColSelect];
+			FirstCardSelected->SpecialCardFirstChoiceSelected();
+			FirstCardPosition = Player;
+			UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected = assign FirstCardSelected"));
+		}
+		else
+		{
+			// if special card and first card is the same => cancel action
+			if (FirstCardSelected && FirstCardSelected->Line == LineSelect && FirstCardSelected->Col == ColSelect)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected = click FirstCardSelected => cancel"));
+
+				FirstCardSelected = nullptr;				
+				DeactivateHighlight();
+				ActivateHighlight(GetPlayerId(),HandCardTypeSelected);
+				return;
+			}
+			UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected = assign SecondCardSelected"));
+			SecondCardSelected = BoardSlots[LineSelect][ColSelect];
+			SecondCardSelected->SpecialCardFirstChoiceSelected();
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Wrong slot coordinates, received (%d,%d)"), LineSelect, ColSelect);
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected = HandCardTypeSelected (%s)"), *EnumCardTypeHelper::ToString(HandCardTypeSelected));
+	
+	// if normal card
+	if (HandCardTypeSelected == ECardType::NORMAL)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected = Broadcast play normal card (%d,%d)"), LineSelect, ColSelect);
+		OnClickBoardSlot.Broadcast(LineSelect, ColSelect);
+		FirstCardSelected = nullptr;
+		SecondCardSelected = nullptr;
+		return;
+	}
+
+	if (HandCardTypeSelected == ECardType::COPY)
+	{
+		if (FirstCardSelected && !SecondCardSelected)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected COPY = Highlight second selection"));
+			// Show Copy on special card
+			// Broadcast show card copy
+			ActivateHighlight(GetPlayerId(), HandCardTypeSelected);
+			return;
+		}
+		if (FirstCardSelected && SecondCardSelected)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected COPY = Broadcast play COPY card"));
+			// Broadcast Play Copy
+			FirstCardSelected = nullptr;
+			SecondCardSelected = nullptr;
+			return;
+		}
+	}
+	if (HandCardTypeSelected == ECardType::SWITCH)
+	{
+		if (FirstCardSelected && !SecondCardSelected)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected SWITCH = Highlight second selection"));
+			ActivateHighlight(GetPlayerId(), HandCardTypeSelected);
+			return;
+		}
+		if (FirstCardSelected && SecondCardSelected)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected SWITCH = Broadcast play SWITCH card"));
+			// Broadcast Play Switch
+			FirstCardSelected = nullptr;
+			SecondCardSelected = nullptr;
+			return;
+		}
+	}
+	if (HandCardTypeSelected == ECardType::STEAL)
+	{
+		if (FirstCardSelected && !SecondCardSelected)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected STEAL = Highlight second selection"));
+			ActivateHighlight(GetPlayerId(), HandCardTypeSelected);
+			return;
+		}
+		if (FirstCardSelected && SecondCardSelected)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected STEAL = Broadcast play STEAL card"));
+			// Broadcast Play Steal
+			FirstCardSelected = nullptr;
+			SecondCardSelected = nullptr;
+			return;
+		}
+	}
 }
 
 EPosition UGameWidget::GetPlayerId()
@@ -437,12 +544,5 @@ EPosition UGameWidget::GetPlayerId()
 	{
 		return PlayerController->GetPlayerState<ANAFPlayerState>()->Id;
 	}
-	// if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
-	// {
-	// 	if (ANAFPlayerController* NafPC = Cast<ANAFPlayerController>(PlayerController))
-	// 	{
-	// 		return NafPC->GetPlayerState<ANAFPlayerState>()->Id;
-	// 	}
-	// }
 	return EPosition::SERVER;
 }

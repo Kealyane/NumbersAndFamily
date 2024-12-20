@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "NumbersAndFamily/NumbersAndFamily.h"
+#include "Player/NAFPlayerState.h"
 #include "GameWidget.generated.h"
 
 
@@ -12,9 +13,6 @@ enum class ECardType : uint8;
 class UTextBlock;
 class UScoreWidget;
 class UCardWidget;
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FClickCardSlotSignature, FVector, ButtonPos);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FShowDeckCardSignature, EPosition, PlayerPos, UTexture2D*, CardRecto);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSendHandCardSelectedSignature, uint8, CardSlot);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FClickBoardSlotSignature, uint8, Line, uint8, Col);
@@ -115,13 +113,6 @@ public:
 
 	TTuple<ECardZone,TObjectPtr<UCardWidget>> SelectedCard;
 	
-
-	UFUNCTION(BlueprintCallable)
-	void ButtonCardClicked(FVector ButtonPos);
-
-	UFUNCTION(BlueprintCallable)
-	void ShowDeckCard(EPosition PlayerPos, UTexture2D* CardRecto);
-
 	UFUNCTION()
 	void ShowActivePlayer(EPosition ActivePlayer);
 	UFUNCTION()
@@ -146,11 +137,7 @@ public:
 	UCardWidget* GetCardWidget(EPosition PlayerPos, uint8 CardPos) const;
 
 	// EVENTS
-	
-	UPROPERTY(BlueprintAssignable)
-	FClickCardSlotSignature OnClickCard;
-	UPROPERTY(BlueprintAssignable)
-	FShowDeckCardSignature OnCardDrawFromDeck;
+
 	UPROPERTY()
 	FSendHandCardSelectedSignature OnSendHandCardSelected;
 	UPROPERTY()
@@ -176,5 +163,6 @@ private:
 
 	TObjectPtr<UCardWidget> FirstCardSelected = nullptr;
 	TObjectPtr<UCardWidget> SecondCardSelected = nullptr;
-	EPosition FirstCardPosition;
+	EPosition FirstCardPosition = EPosition::SERVER;
+	ECardType HandCardTypeSelected = ECardType::NONE;
 };
