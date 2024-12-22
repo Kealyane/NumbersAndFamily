@@ -9,8 +9,17 @@ ADeck::ADeck()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void ADeck::InitDeck()
+bool ADeck::InitDeck()
 {
+	if (DeckDataTable == nullptr || DeckDataTable->GetRowMap().Num() == 0)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Red,
+				FString::Printf(TEXT("Deck : Data Table DT_Deck is empty, you have to initialize it")));
+			return false;
+		}
+	}
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Cyan,
@@ -29,6 +38,7 @@ void ADeck::InitDeck()
 			Data->Score,
 			Data->ArcaneType));
 	}
+	return true;
 }
 
 FCardDataServer ADeck::DrawCard()

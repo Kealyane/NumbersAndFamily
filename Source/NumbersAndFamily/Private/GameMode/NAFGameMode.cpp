@@ -81,7 +81,7 @@ void ANAFGameMode::LaunchGame()
 		if (World)
 		{
 			Deck = World->SpawnActor<ADeck>(DeckClassType);
-			Deck->InitDeck();
+			if (!Deck->InitDeck()) return;
 			Board = World->SpawnActor<ABoard>(BoardClassType);
 			Board->InitBoard();
 			NafGameState->InitBoardRow();

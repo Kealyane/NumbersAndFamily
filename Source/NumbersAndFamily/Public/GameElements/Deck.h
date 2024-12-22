@@ -133,7 +133,7 @@ protected:
 	TArray<FCardDataServer> Deck;
 
 public:	
-	void InitDeck();
+	bool InitDeck();
 	FCardDataServer DrawCard();
 	void BackToDeck(FCardDataServer Card);	
 
