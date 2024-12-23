@@ -16,6 +16,12 @@ class UCardWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSendHandCardSelectedSignature, uint8, CardSlot);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FClickBoardSlotSignature, uint8, Line, uint8, Col);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FActiveSwitchSignature,
+											EPosition, Card1Pos, uint8, Card1Line, uint8, Card1Col,
+											EPosition, Card2Pos, uint8, Card2Line, uint8, Card2Col);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FActiveStealSignature,
+											EPosition, Card1Pos, uint8, Card1Line, uint8, Card1Col,
+											EPosition, Card2Pos, uint8, Card2Line, uint8, Card2Col);
 /**
  * 
  */
@@ -142,6 +148,10 @@ public:
 	FSendHandCardSelectedSignature OnSendHandCardSelected;
 	UPROPERTY()
 	FClickBoardSlotSignature OnClickBoardSlot;
+	UPROPERTY()
+	FActiveSwitchSignature OnActiveSwitch;
+	UPROPERTY()
+	FActiveStealSignature OnActiveSteal;
 
 protected:
 	virtual void NativeConstruct() override;

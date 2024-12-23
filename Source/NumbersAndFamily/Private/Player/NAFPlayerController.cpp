@@ -26,6 +26,7 @@ void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 		GameWidget->AddToViewport();
 		GameWidget->OnSendHandCardSelected.AddDynamic(this, &ANAFPlayerController::GetCardTypeSelected);
 		GameWidget->OnClickBoardSlot.AddDynamic(this, &ANAFPlayerController::GetSelectedHandCard);
+		GameWidget->OnActiveSwitch.AddDynamic(this, &ANAFPlayerController::HandleSwitch);
 		GameWidget->SetIsFocusable(true);
 	}
 	FInputModeGameAndUI InputMode;
@@ -160,6 +161,28 @@ void ANAFPlayerController::ServerRPC_EndTurn_Implementation(ANAFPlayerState* Act
 	}
 }
 
+
+void ANAFPlayerController::ServerRPC_ActiveSwitch_Implementation(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
+{
+	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->SwitchCardsInBoard(Card1Line, Card1Col, Card2Line, Card2Col);
+	}
+}
+
+bool ANAFPlayerController::ServerRPC_ActiveSwitch_Validate(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
+{
+	ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr) return false;
+	return Card1Pos == Card2Pos &&
+		IsCoordInPlayerIdSide(Card1Pos, Card1Line,  Card1Col) &&
+		IsCoordInPlayerIdSide(Card2Pos, Card2Line, Card2Col) &&
+		GameMode->IsCoordOccupiedInBoard(Card1Line, Card1Col) &&
+		GameMode->IsCoordOccupiedInBoard(Card2Line, Card2Col);
+}
+
 void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
 {
 	// if (GEngine)
@@ -248,6 +271,12 @@ void ANAFPlayerController::GetSelectedHandCard(uint8 Line, uint8 Col)
 		UE_LOG(LogTemp, Warning, TEXT("PC %s : GetSelectedHandCard (%d,%d)"), *EnumHelper::ToString(GetPlayerId()), Line, Col);
 		ServerRPC_PlaceNormalCard(NafPlayerState->GetSelectedCard(), NafPlayerState->GetIndexSelected(), Line, Col);
 	}
+}
+
+void ANAFPlayerController::HandleSwitch(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col, EPosition Card2Pos,
+	uint8 Card2Line, uint8 Card2Col)
+{
+	ServerRPC_ActiveSwitch(Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
 }
 
 void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow)

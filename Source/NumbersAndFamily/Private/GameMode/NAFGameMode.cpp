@@ -158,4 +158,14 @@ void ANAFGameMode::EndTurn()
 	NafGameState->SwitchPlayerTurn();
 }
 
+bool ANAFGameMode::IsCoordOccupiedInBoard(uint8 Line, uint8 Col)
+{
+	return Board->IsCoordOccupied(Line, Col);
+}
+
+void ANAFGameMode::SwitchCardsInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
+{
+	Board->SwitchCard(Card1Line, Card1Col, Card2Line, Card2Col);
+}
+
 

@@ -29,22 +29,29 @@ void ABoard::PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col)
 	SyncBoardWithGameState();
 }
 
+bool ABoard::IsCoordOccupied(uint8 Line, uint8 Col)
+{
+	return !BoardGame[Line][Col].RowName.IsNone();
+}
+
+void ABoard::SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
+{
+	FCardDataServer Tmp = BoardGame[Card1Line][Card1Col];
+	BoardGame[Card1Line][Card1Col] = BoardGame[Card2Line][Card2Col];
+	BoardGame[Card2Line][Card2Col] = Tmp;
+	SyncBoardWithGameState();
+}
+
 void ABoard::SyncBoardWithGameState()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Board SyncBoardWithGameState"));
 	int index = 0;
+	
 	for (int i = 0; i < NB_LINE; i++)
 	{
 		for (int j = 0; j < NB_COLUMN; j++)
 		{
-			// if (BoardGame[i][j].RowName.IsNone())
-			// {
-			// 	BoardRowNames[index] = FName("NONE");
-			// }
-			// else
-			// {
-				BoardRowNames[index] = BoardGame[i][j].RowName;
-			//}
+			BoardRowNames[index] = BoardGame[i][j].RowName;
 			index++;
 		}
 	}

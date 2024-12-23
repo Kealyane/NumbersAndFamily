@@ -513,7 +513,8 @@ void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 
 		if (FirstCardSelected && SecondCardSelected)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected SWITCH = Broadcast play SWITCH card"));
-			// Broadcast Play Switch
+			OnActiveSwitch.Broadcast(FirstCardSelected->OwningPlayer, FirstCardSelected->Line, FirstCardSelected->Col,
+									SecondCardSelected->OwningPlayer, SecondCardSelected->Line, SecondCardSelected->Col);
 			FirstCardSelected = nullptr;
 			SecondCardSelected = nullptr;
 			return;

@@ -49,6 +49,9 @@ public:
 	void ServerRPC_DrawCard();
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPC_PlaceNormalCard(FCardDataServer Card, uint8 IndexHandCard, uint8 Line, uint8 Col);
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerRPC_ActiveSwitch(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_EndTurn(ANAFPlayerState* ActivePlayerState);
 
@@ -71,6 +74,9 @@ public:
 	void GetCardTypeSelected(uint8 PosInHand);
 	UFUNCTION()
 	void GetSelectedHandCard(uint8 Line, uint8 Col);
+	UFUNCTION()
+	void HandleSwitch(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 
 	UFUNCTION()
 	uint8 GetNbCardInBoard() const { return NbCardInBoard; }
