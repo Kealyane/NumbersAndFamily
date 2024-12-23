@@ -52,10 +52,10 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPC_PlaceNormalCard(FCardDataServer Card, uint8 IndexHandCard, uint8 Line, uint8 Col);
 	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerRPC_ActiveSwitch(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+	void ServerRPC_ActiveSwitch(uint8 IndexHandCard, EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerRPC_ActiveSteal(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+	void ServerRPC_ActiveSteal(uint8 IndexHandCard, EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_RequestCardData(uint8 Line, uint8 Col);

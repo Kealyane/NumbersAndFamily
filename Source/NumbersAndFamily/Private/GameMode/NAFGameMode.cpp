@@ -172,6 +172,7 @@ void ANAFGameMode::SwitchCardsInBoard(uint8 IndexHandCard, uint8 Card1Line, uint
 void ANAFGameMode::StealCardInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
 {
 	IndexHandCardPlayed = IndexHandCard;
+	UE_LOG(LogTemp, Warning, TEXT("GameMode StealCardInBoard, IndexHandCardPlayed = %d"), IndexHandCardPlayed);
 	Board->StealCard(Card1Line, Card1Col, Card2Line, Card2Col);
 }
 

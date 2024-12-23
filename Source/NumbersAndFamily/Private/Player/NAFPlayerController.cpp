@@ -165,7 +165,7 @@ void ANAFPlayerController::ServerRPC_EndTurn_Implementation(ANAFPlayerState* Act
 }
 
 
-void ANAFPlayerController::ServerRPC_ActiveSwitch_Implementation(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+void ANAFPlayerController::ServerRPC_ActiveSwitch_Implementation(uint8 IndexHandCard, EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
 {
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
@@ -173,11 +173,11 @@ void ANAFPlayerController::ServerRPC_ActiveSwitch_Implementation(EPosition Card1
 	
 	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		GameMode->SwitchCardsInBoard(NafPlayerState->GetIndexSelected(), Card1Line, Card1Col, Card2Line, Card2Col);
+		GameMode->SwitchCardsInBoard(IndexHandCard, Card1Line, Card1Col, Card2Line, Card2Col);
 	}
 }
 
-bool ANAFPlayerController::ServerRPC_ActiveSwitch_Validate(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+bool ANAFPlayerController::ServerRPC_ActiveSwitch_Validate(uint8 IndexHandCard, EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
 {
 	ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode());
@@ -190,7 +190,7 @@ bool ANAFPlayerController::ServerRPC_ActiveSwitch_Validate(EPosition Card1Pos, u
 		GameMode->IsCoordOccupiedInBoard(Card2Line, Card2Col);
 }
 
-void ANAFPlayerController::ServerRPC_ActiveSteal_Implementation(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+void ANAFPlayerController::ServerRPC_ActiveSteal_Implementation(uint8 IndexHandCard, EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
 {
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
@@ -198,11 +198,11 @@ void ANAFPlayerController::ServerRPC_ActiveSteal_Implementation(EPosition Card1P
 	
 	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		GameMode->StealCardInBoard(NafPlayerState->GetIndexSelected(), Card1Line, Card1Col, Card2Line, Card2Col);
+		GameMode->StealCardInBoard(IndexHandCard, Card1Line, Card1Col, Card2Line, Card2Col);
 	}
 }
 
-bool ANAFPlayerController::ServerRPC_ActiveSteal_Validate(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+bool ANAFPlayerController::ServerRPC_ActiveSteal_Validate(uint8 IndexHandCard, EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
 {
 	ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode());
@@ -338,7 +338,7 @@ void ANAFPlayerController::GetCardTypeSelected(uint8 PosInHand)
 		
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
 	// FString::Printf(TEXT("PC : GetCardTypeSelected %s"), *EnumCardTypeHelper::ToString(CardType)));
-	UE_LOG(LogTemp, Warning, TEXT("PC %s : GetCardTypeSelected"), *EnumHelper::ToString(GetPlayerId()));
+	UE_LOG(LogTemp, Warning, TEXT("PC %s : GetCardTypeSelected, index in hand %d"), *EnumHelper::ToString(GetPlayerId()), NafPlayerState->GetIndexSelected());
 
 	if (CardType != ECardType::NONE)
 	{
@@ -367,13 +367,17 @@ void ANAFPlayerController::GetSelectedHandCard(uint8 Line, uint8 Col)
 void ANAFPlayerController::HandleSwitch(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col, EPosition Card2Pos,
 	uint8 Card2Line, uint8 Card2Col)
 {
-	ServerRPC_ActiveSwitch(Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
+	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
+	if (!NafPlayerState) return;
+	ServerRPC_ActiveSwitch(NafPlayerState->GetIndexSelected(), Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
 }
 
 void ANAFPlayerController::HandleSteal(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col, EPosition Card2Pos,
 	uint8 Card2Line, uint8 Card2Col)
 {
-	ServerRPC_ActiveSteal(Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
+	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
+	if (!NafPlayerState) return;
+	ServerRPC_ActiveSteal(NafPlayerState->GetIndexSelected(), Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
 }
 
 void ANAFPlayerController::ShowCopyCardInHand(uint8 Line, uint8 Col)
