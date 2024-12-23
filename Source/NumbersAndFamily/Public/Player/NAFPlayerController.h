@@ -52,6 +52,9 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPC_ActiveSwitch(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerRPC_ActiveSteal(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_EndTurn(ANAFPlayerState* ActivePlayerState);
 
@@ -77,6 +80,9 @@ public:
 	UFUNCTION()
 	void HandleSwitch(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
+	UFUNCTION()
+	void HandleSteal(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col); // Card2 is empty slot
 
 	UFUNCTION()
 	uint8 GetNbCardInBoard() const { return NbCardInBoard; }

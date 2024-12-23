@@ -20,6 +20,7 @@ public:
 	void PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col);
 	bool IsCoordOccupied(uint8 Line, uint8 Col);
 	void SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
+	void StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
 
 protected:
 	const int NB_LINE = 3;

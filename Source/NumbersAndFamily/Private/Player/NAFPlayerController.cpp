@@ -27,6 +27,7 @@ void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 		GameWidget->OnSendHandCardSelected.AddDynamic(this, &ANAFPlayerController::GetCardTypeSelected);
 		GameWidget->OnClickBoardSlot.AddDynamic(this, &ANAFPlayerController::GetSelectedHandCard);
 		GameWidget->OnActiveSwitch.AddDynamic(this, &ANAFPlayerController::HandleSwitch);
+		GameWidget->OnActiveSteal.AddDynamic(this, &ANAFPlayerController::HandleSteal);
 		GameWidget->SetIsFocusable(true);
 	}
 	FInputModeGameAndUI InputMode;
@@ -176,11 +177,34 @@ bool ANAFPlayerController::ServerRPC_ActiveSwitch_Validate(EPosition Card1Pos, u
 {
 	ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode());
 	if (GameMode == nullptr) return false;
+	
 	return Card1Pos == Card2Pos &&
 		IsCoordInPlayerIdSide(Card1Pos, Card1Line,  Card1Col) &&
 		IsCoordInPlayerIdSide(Card2Pos, Card2Line, Card2Col) &&
 		GameMode->IsCoordOccupiedInBoard(Card1Line, Card1Col) &&
 		GameMode->IsCoordOccupiedInBoard(Card2Line, Card2Col);
+}
+
+void ANAFPlayerController::ServerRPC_ActiveSteal_Implementation(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
+{
+	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->StealCardInBoard(Card1Line, Card1Col, Card2Line, Card2Col);
+	}
+}
+
+bool ANAFPlayerController::ServerRPC_ActiveSteal_Validate(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
+{
+	ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr) return false;
+
+	return Card1Pos != Card2Pos &&
+		IsCoordInPlayerIdSide(Card1Pos, Card1Line, Card1Col) &&
+		IsCoordInPlayerIdSide(Card2Pos, Card2Line, Card2Col) &&
+		GameMode->IsCoordOccupiedInBoard(Card1Line, Card1Col) &&
+		!GameMode->IsCoordOccupiedInBoard(Card2Line, Card2Col);
 }
 
 void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
@@ -277,6 +301,12 @@ void ANAFPlayerController::HandleSwitch(EPosition Card1Pos, uint8 Card1Line, uin
 	uint8 Card2Line, uint8 Card2Col)
 {
 	ServerRPC_ActiveSwitch(Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
+}
+
+void ANAFPlayerController::HandleSteal(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col, EPosition Card2Pos,
+	uint8 Card2Line, uint8 Card2Col)
+{
+	ServerRPC_ActiveSteal(Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
 }
 
 void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow)

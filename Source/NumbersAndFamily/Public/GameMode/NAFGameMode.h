@@ -36,6 +36,7 @@ public:
 	void PlaceNormalCard(FCardDataServer Card, uint8 IndexHandCard, uint8 Line, uint8 Col);
 	bool IsCoordOccupiedInBoard(uint8 Line, uint8 Col);
 	void SwitchCardsInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
+	void StealCardInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
 	void EndTurn();
 	
 private:

@@ -42,6 +42,13 @@ void ABoard::SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 
 	SyncBoardWithGameState();
 }
 
+void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
+{
+	BoardGame[Card2Line][Card2Col] = BoardGame[Card1Line][Card1Col];
+	BoardGame[Card1Line][Card1Col].ResetCard();
+	SyncBoardWithGameState();
+}
+
 void ABoard::SyncBoardWithGameState()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Board SyncBoardWithGameState"));

@@ -168,4 +168,9 @@ void ANAFGameMode::SwitchCardsInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Car
 	Board->SwitchCard(Card1Line, Card1Col, Card2Line, Card2Col);
 }
 
+void ANAFGameMode::StealCardInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
+{
+	Board->StealCard(Card1Line, Card1Col, Card2Line, Card2Col);
+}
+
 
