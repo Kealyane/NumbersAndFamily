@@ -30,6 +30,8 @@ protected:
 	TObjectPtr<UDataTable> DeckDataTable;
 	UPROPERTY(EditAnywhere, Category="MyPropperties|Card")
 	TObjectPtr<UTexture2D> CardVerso;
+	UPROPERTY(EditAnywhere, Category="MyPropperties|Card")
+	TObjectPtr<UTexture2D> CopyCardTexture;
 
 	void PlaySound(USoundBase* Sound);
 	
@@ -54,6 +56,13 @@ public:
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPC_ActiveSteal(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_RequestCardData(uint8 Line, uint8 Col);
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_ReceiveCardDate(FName CardRowName);
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerRPC_ActiveCopy(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_EndTurn(ANAFPlayerState* ActivePlayerState);
@@ -83,11 +92,18 @@ public:
 	UFUNCTION()
 	void HandleSteal(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col); // Card2 is empty slot
+	UFUNCTION()
+	void ShowCopyCardInHand(uint8 Line, uint8 Col);
+	UFUNCTION()
+	void HandleCopy(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col); // Card2 is empty slot
 
 	UFUNCTION()
 	uint8 GetNbCardInBoard() const { return NbCardInBoard; }
 	UFUNCTION()
 	uint8 GetNbCardInOpponentBoard() const { return NBCardInOpponentBoard; }
+	UFUNCTION()
+	UTexture2D* GetCopyTexture() const { return CopyCardTexture; }
 	
 private:
 	bool IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col);
@@ -95,4 +111,5 @@ private:
 	EPosition GetPlayerId() const;
 	uint8 NbCardInBoard = 0;
 	uint8 NBCardInOpponentBoard = 0;
+
 };

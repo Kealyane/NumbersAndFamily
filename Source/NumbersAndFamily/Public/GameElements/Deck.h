@@ -103,6 +103,18 @@ struct FCardDataServer
 		ArcaneType = NewCard.ArcaneType;
 	}
 
+	void SetArcaneFromCopy(FCardDataServer CardCopied)
+	{
+		FamilyType = CardCopied.FamilyType;
+		Score = CardCopied.Score;
+	}
+
+	void ResetArcaneCopy()
+	{
+		FamilyType = EFamilyType::NONE;
+		Score = 0;
+	}
+
 	void DebugCard(FName ActionName)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s : row %s - family %s - sore %d - arcane %s"),
@@ -136,5 +148,5 @@ public:
 	bool InitDeck();
 	FCardDataServer DrawCard();
 	void BackToDeck(FCardDataServer Card);	
-
+	FName GetRowNameFromDataServer(FCardDataServer Card);
 };

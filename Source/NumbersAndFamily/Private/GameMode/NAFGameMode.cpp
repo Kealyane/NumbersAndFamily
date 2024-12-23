@@ -173,4 +173,21 @@ void ANAFGameMode::StealCardInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2
 	Board->StealCard(Card1Line, Card1Col, Card2Line, Card2Col);
 }
 
+FName ANAFGameMode::GetCardDataRowName(uint8 Line, uint8 Col)
+{
+	return Board->GetCardDataRowName(Line, Col);
+}
+
+void ANAFGameMode::CopyCardInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card)
+{
+	Board->CopyCard(Card1Line, Card1Col, Card2Line, Card2Col, Card);
+}
+
+FName ANAFGameMode::GetRowNameFromDataServer(FCardDataServer Card)
+{
+	return Deck->GetRowNameFromDataServer(Card);
+}
+
+
+
 

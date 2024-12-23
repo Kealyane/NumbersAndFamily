@@ -290,6 +290,10 @@ UCardWidget* UGameWidget::GetCardWidget(EPosition PlayerPos, uint8 CardPos) cons
 	return WBP_Card_P2_Pocket_1;
 }
 
+void UGameWidget::SwitchTexture(EPosition PlayerId, uint8 HandSlotIndex, UTexture2D* CardTexture)
+{
+	GetCardWidget(PlayerId, HandSlotIndex)->SwitchTexture(CardTexture);
+}
 
 
 void UGameWidget::NativeConstruct()
@@ -403,6 +407,8 @@ void UGameWidget::OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 C
 		if (SelectedHandCard)
 		{
 			DeactivateHighlight();
+			if (HandCardTypeSelected == ECardType::COPY) OnShowCopyCardInHand.Broadcast(9,9);
+			
 			if (SelectedHandCard != NewCard)
 			{
 				SelectedHandCard->SelectCard(false);
@@ -454,7 +460,9 @@ void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 
 			if (FirstCardSelected && FirstCardSelected->Line == LineSelect && FirstCardSelected->Col == ColSelect)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected = click FirstCardSelected => cancel"));
-
+				
+				if (HandCardTypeSelected == ECardType::COPY) OnShowCopyCardInHand.Broadcast(9,9);
+				
 				FirstCardSelected = nullptr;				
 				DeactivateHighlight();
 				ActivateHighlight(GetPlayerId(),HandCardTypeSelected);
@@ -489,6 +497,7 @@ void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected COPY = Highlight second selection"));
 			// Show Copy on special card
+			OnShowCopyCardInHand.Broadcast(FirstCardSelected->Line, FirstCardSelected->Col);
 			// Broadcast show card copy
 			ActivateHighlight(GetPlayerId(), HandCardTypeSelected);
 			return;
@@ -496,7 +505,8 @@ void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 
 		if (FirstCardSelected && SecondCardSelected)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Game Widget : OnBoardCardSelected COPY = Broadcast play COPY card"));
-			// Broadcast Play Copy
+			OnActiveCopy.Broadcast(FirstCardSelected->OwningPlayer, FirstCardSelected->Line, FirstCardSelected->Col,
+									SecondCardSelected->OwningPlayer, SecondCardSelected->Line, SecondCardSelected->Col);
 			FirstCardSelected = nullptr;
 			SecondCardSelected = nullptr;
 			return;

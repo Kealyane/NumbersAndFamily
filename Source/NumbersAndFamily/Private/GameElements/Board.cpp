@@ -2,7 +2,11 @@
 
 
 #include "GameElements/Board.h"
+
+#include "GameMode/NAFGameMode.h"
 #include "GameMode/NAFGameState.h"
+
+class ANAFGameMode;
 
 ABoard::ABoard()
 {
@@ -49,6 +53,20 @@ void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 C
 	SyncBoardWithGameState();
 }
 
+FName ABoard::GetCardDataRowName(uint8 Line, uint8 Col)
+{
+	if (Line >= 3 && Col >= 6) return FName("NONE");
+	return BoardGame[Line][Col].RowName;
+}
+
+void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Board CopyCard"));
+	Card.SetArcaneFromCopy(BoardGame[Card1Line][Card1Col]);
+	BoardGame[Card2Line][Card2Col] = Card;
+	SyncBoardWithGameState();
+}
+
 void ABoard::SyncBoardWithGameState()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Board SyncBoardWithGameState"));
@@ -58,7 +76,19 @@ void ABoard::SyncBoardWithGameState()
 	{
 		for (int j = 0; j < NB_COLUMN; j++)
 		{
-			BoardRowNames[index] = BoardGame[i][j].RowName;
+			if (BoardGame[i][j].ArcaneType == EArcaneType::COPY)
+			{
+				if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
+				{
+					FName CopyCardName = GameMode->GetRowNameFromDataServer(BoardGame[i][j]);
+					BoardRowNames[index] = CopyCardName;
+					UE_LOG(LogTemp, Warning, TEXT("Board SyncBoardWithGameState : card to copy %s"),*CopyCardName.ToString());
+				}
+			}
+			else
+			{
+				BoardRowNames[index] = BoardGame[i][j].RowName;
+			}
 			index++;
 		}
 	}

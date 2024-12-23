@@ -83,4 +83,9 @@ void UCardWidget::SpecialCardFirstChoiceSelected()
 	ButtonSlot->SetBackgroundColor(FLinearColor::Blue);
 }
 
+void UCardWidget::SwitchTexture(UTexture2D* CardImage)
+{
+	ImageCard->SetBrushFromTexture(CardImage);
+}
+
 

@@ -72,6 +72,7 @@ public:
 	void EnableHighlight(); // background button to yellow, can be clicked (true)
 	void DisableHighlight(); // background button to white, can be clicked (false)
 	void SpecialCardFirstChoiceSelected();
+	void SwitchTexture(UTexture2D* CardImage);
 	
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsCardSlotSelected = false;

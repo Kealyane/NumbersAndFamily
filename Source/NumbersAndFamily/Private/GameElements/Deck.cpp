@@ -65,6 +65,24 @@ void ADeck::BackToDeck(FCardDataServer Card)
 	Deck.Add(Card);
 }
 
+FName ADeck::GetRowNameFromDataServer(FCardDataServer Card)
+{
+	if (DeckDataTable)
+	{
+		TMap<FName, uint8*> RowMap = DeckDataTable->GetRowMap();
+		
+		for (const TPair<FName, uint8*>& Row : RowMap)
+		{
+			FCardData* CardData = reinterpret_cast<FCardData*>(Row.Value);
+			if (CardData && CardData->FamilyType == Card.FamilyType && CardData->Score == Card.Score)
+			{
+				return Row.Key;
+			}
+		}
+	}
+	return FName("NONE");
+}
+
 
 
 

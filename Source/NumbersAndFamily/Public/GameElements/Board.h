@@ -21,6 +21,8 @@ public:
 	bool IsCoordOccupied(uint8 Line, uint8 Col);
 	void SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
 	void StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
+	FName GetCardDataRowName(uint8 Line, uint8 Col);
+	void CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card);
 
 protected:
 	const int NB_LINE = 3;

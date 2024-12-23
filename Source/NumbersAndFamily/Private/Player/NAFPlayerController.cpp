@@ -28,6 +28,8 @@ void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 		GameWidget->OnClickBoardSlot.AddDynamic(this, &ANAFPlayerController::GetSelectedHandCard);
 		GameWidget->OnActiveSwitch.AddDynamic(this, &ANAFPlayerController::HandleSwitch);
 		GameWidget->OnActiveSteal.AddDynamic(this, &ANAFPlayerController::HandleSteal);
+		GameWidget->OnShowCopyCardInHand.AddDynamic(this, &ANAFPlayerController::ShowCopyCardInHand);
+		GameWidget->OnActiveCopy.AddDynamic(this, &ANAFPlayerController::HandleCopy);
 		GameWidget->SetIsFocusable(true);
 	}
 	FInputModeGameAndUI InputMode;
@@ -48,7 +50,7 @@ void ANAFPlayerController::ClientRPC_PlaceCardInPocketUI_Implementation(EPositio
 	// }
 	//UE_LOG(LogTemp, Warning, TEXT("PC %s : ClientRPC_PlaceCardInPocketUI_Implementation"), *EnumHelper::ToString(GetPlayerId()));
 	
-	const FString ContextString(TEXT("Tower Data Context"));
+	const FString ContextString(TEXT("Card Data Context"));
 	const FCardData* Data = DeckDataTable->FindRow<FCardData>(CardRowName,ContextString);
 	
 	if (GameWidget && Data)
@@ -207,6 +209,61 @@ bool ANAFPlayerController::ServerRPC_ActiveSteal_Validate(EPosition Card1Pos, ui
 		!GameMode->IsCoordOccupiedInBoard(Card2Line, Card2Col);
 }
 
+void ANAFPlayerController::ServerRPC_RequestCardData_Implementation(uint8 Line, uint8 Col)
+{
+	ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr) return;
+
+	FName RowName = GameMode->GetCardDataRowName(Line,Col);
+	ClientRPC_ReceiveCardDate(RowName);
+}
+
+void ANAFPlayerController::ClientRPC_ReceiveCardDate_Implementation(FName CardRowName)
+{
+	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
+	if (!NafPlayerState) return;
+
+	if (CardRowName.IsNone())
+	{
+		GameWidget->SwitchTexture(NafPlayerState->Id, NafPlayerState->GetIndexSelected(),CopyCardTexture);
+		return;
+	}
+
+	const FString ContextString(TEXT("Card Data Context"));
+	const FCardData* Data = DeckDataTable->FindRow<FCardData>(CardRowName,ContextString);
+	
+	if (Data)
+	{
+		GameWidget->SwitchTexture(NafPlayerState->Id, NafPlayerState->GetIndexSelected(),Data->ImageRecto);
+	}
+}
+
+void ANAFPlayerController::ServerRPC_ActiveCopy_Implementation(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
+{
+	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
+	if (!NafPlayerState) return;
+	
+	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_ActiveCopy_Implementation"), *EnumHelper::ToString(GetPlayerId()));
+		GameMode->CopyCardInBoard(Card1Line, Card1Col, Card2Line, Card2Col, NafPlayerState->GetSelectedCard());
+	}
+}
+
+bool ANAFPlayerController::ServerRPC_ActiveCopy_Validate(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
+{
+	ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr) return false;
+
+	return Card1Pos == Card2Pos &&
+	IsCoordInPlayerIdSide(Card1Pos, Card1Line, Card1Col) &&
+	IsCoordInPlayerIdSide(Card2Pos, Card2Line, Card2Col) &&
+	GameMode->IsCoordOccupiedInBoard(Card1Line, Card1Col) &&
+	!GameMode->IsCoordOccupiedInBoard(Card2Line, Card2Col);
+}
+
 void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
 {
 	// if (GEngine)
@@ -309,6 +366,27 @@ void ANAFPlayerController::HandleSteal(EPosition Card1Pos, uint8 Card1Line, uint
 	ServerRPC_ActiveSteal(Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
 }
 
+void ANAFPlayerController::ShowCopyCardInHand(uint8 Line, uint8 Col)
+{
+	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
+	if (!NafPlayerState) return;
+	
+	if (Line == 9)
+	{
+		GameWidget->SwitchTexture(NafPlayerState->Id, NafPlayerState->GetIndexSelected(), CopyCardTexture);
+	}
+	else
+	{
+		ServerRPC_RequestCardData(Line, Col);
+	}
+}
+
+void ANAFPlayerController::HandleCopy(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col, EPosition Card2Pos,
+	uint8 Card2Line, uint8 Card2Col)
+{
+	ServerRPC_ActiveCopy(Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
+}
+
 void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow)
 {
 	// GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
@@ -396,3 +474,5 @@ EPosition ANAFPlayerController::GetPlayerId() const
 	if (!NafPlayerState) return EPosition::SERVER;
 	return NafPlayerState->Id;
 }
+
+
