@@ -510,6 +510,7 @@ void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 
 									SecondCardSelected->OwningPlayer, SecondCardSelected->Line, SecondCardSelected->Col);
 			FirstCardSelected = nullptr;
 			SecondCardSelected = nullptr;
+			HandCardTypeSelected = ECardType::NONE;
 			return;
 		}
 	}
