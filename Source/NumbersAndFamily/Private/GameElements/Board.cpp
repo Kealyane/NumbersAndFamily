@@ -62,7 +62,9 @@ FName ABoard::GetCardDataRowName(uint8 Line, uint8 Col)
 void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Board CopyCard"));
+	Card.DebugCard("Board Copy Card : ");
 	Card.SetArcaneFromCopy(BoardGame[Card1Line][Card1Col]);
+	Card.DebugCard("Board Copy Card after set : ");
 	BoardGame[Card2Line][Card2Col] = Card;
 	SyncBoardWithGameState();
 }

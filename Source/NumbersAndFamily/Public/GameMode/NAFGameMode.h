@@ -35,10 +35,10 @@ public:
 	void RemoveCardFromHand(ANAFPlayerState* ActivePlayerState);
 	void PlaceNormalCard(FCardDataServer Card, uint8 IndexHandCard, uint8 Line, uint8 Col);
 	bool IsCoordOccupiedInBoard(uint8 Line, uint8 Col);
-	void SwitchCardsInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
-	void StealCardInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
+	void SwitchCardsInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
+	void StealCardInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
 	FName GetCardDataRowName(uint8 Line, uint8 Col);
-	void CopyCardInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card);
+	void CopyCardInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card);
 	FName GetRowNameFromDataServer(FCardDataServer Card);
 	void EndTurn();
 	

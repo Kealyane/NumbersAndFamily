@@ -163,13 +163,15 @@ bool ANAFGameMode::IsCoordOccupiedInBoard(uint8 Line, uint8 Col)
 	return Board->IsCoordOccupied(Line, Col);
 }
 
-void ANAFGameMode::SwitchCardsInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
+void ANAFGameMode::SwitchCardsInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
 {
+	IndexHandCardPlayed = IndexHandCard;
 	Board->SwitchCard(Card1Line, Card1Col, Card2Line, Card2Col);
 }
 
-void ANAFGameMode::StealCardInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
+void ANAFGameMode::StealCardInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
 {
+	IndexHandCardPlayed = IndexHandCard;
 	Board->StealCard(Card1Line, Card1Col, Card2Line, Card2Col);
 }
 
@@ -178,8 +180,10 @@ FName ANAFGameMode::GetCardDataRowName(uint8 Line, uint8 Col)
 	return Board->GetCardDataRowName(Line, Col);
 }
 
-void ANAFGameMode::CopyCardInBoard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card)
+void ANAFGameMode::CopyCardInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card)
 {
+	IndexHandCardPlayed = IndexHandCard;
+	Card.DebugCard("GameMode Copy Card ");
 	Board->CopyCard(Card1Line, Card1Col, Card2Line, Card2Col, Card);
 }
 

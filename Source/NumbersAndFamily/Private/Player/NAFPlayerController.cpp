@@ -168,9 +168,12 @@ void ANAFPlayerController::ServerRPC_EndTurn_Implementation(ANAFPlayerState* Act
 void ANAFPlayerController::ServerRPC_ActiveSwitch_Implementation(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
 {
+	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
+	if (!NafPlayerState) return;
+	
 	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		GameMode->SwitchCardsInBoard(Card1Line, Card1Col, Card2Line, Card2Col);
+		GameMode->SwitchCardsInBoard(NafPlayerState->GetIndexSelected(), Card1Line, Card1Col, Card2Line, Card2Col);
 	}
 }
 
@@ -190,9 +193,12 @@ bool ANAFPlayerController::ServerRPC_ActiveSwitch_Validate(EPosition Card1Pos, u
 void ANAFPlayerController::ServerRPC_ActiveSteal_Implementation(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
 {
+	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
+	if (!NafPlayerState) return;
+	
 	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		GameMode->StealCardInBoard(Card1Line, Card1Col, Card2Line, Card2Col);
+		GameMode->StealCardInBoard(NafPlayerState->GetIndexSelected(), Card1Line, Card1Col, Card2Line, Card2Col);
 	}
 }
 
@@ -238,7 +244,8 @@ void ANAFPlayerController::ClientRPC_ReceiveCardDate_Implementation(FName CardRo
 	}
 }
 
-void ANAFPlayerController::ServerRPC_ActiveCopy_Implementation(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+void ANAFPlayerController::ServerRPC_ActiveCopy_Implementation(FCardDataServer Card, uint8 IndexHandCard,
+	EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
 {
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
@@ -247,11 +254,14 @@ void ANAFPlayerController::ServerRPC_ActiveCopy_Implementation(EPosition Card1Po
 	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PC %s : ServerRPC_ActiveCopy_Implementation"), *EnumHelper::ToString(GetPlayerId()));
-		GameMode->CopyCardInBoard(Card1Line, Card1Col, Card2Line, Card2Col, NafPlayerState->GetSelectedCard());
+		NafPlayerState->GetSelectedCard().DebugCard("PC : ServerRPC_ActiveCopy_Implementation :");
+		GameMode->CopyCardInBoard(IndexHandCard,
+			Card1Line, Card1Col, Card2Line, Card2Col, Card);
 	}
 }
 
-bool ANAFPlayerController::ServerRPC_ActiveCopy_Validate(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+bool ANAFPlayerController::ServerRPC_ActiveCopy_Validate(FCardDataServer Card, uint8 IndexHandCard,
+	EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 	EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col)
 {
 	ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode());
@@ -384,7 +394,11 @@ void ANAFPlayerController::ShowCopyCardInHand(uint8 Line, uint8 Col)
 void ANAFPlayerController::HandleCopy(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col, EPosition Card2Pos,
 	uint8 Card2Line, uint8 Card2Col)
 {
-	ServerRPC_ActiveCopy(Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
+	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
+	NafPlayerState->GetSelectedCard().DebugCard("PC : HandleCopy");
+	ServerRPC_ActiveCopy(NafPlayerState->GetSelectedCard(),NafPlayerState->GetIndexSelected(),
+		Card1Pos, Card1Line, Card1Col,
+		Card2Pos, Card2Line, Card2Col);
 }
 
 void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow)

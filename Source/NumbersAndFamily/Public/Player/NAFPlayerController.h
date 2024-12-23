@@ -62,7 +62,7 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_ReceiveCardDate(FName CardRowName);
 	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerRPC_ActiveCopy(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
+	void ServerRPC_ActiveCopy(FCardDataServer Card, uint8 IndexHandCard, EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col,
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_EndTurn(ANAFPlayerState* ActivePlayerState);

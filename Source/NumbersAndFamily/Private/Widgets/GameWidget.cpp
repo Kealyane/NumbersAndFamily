@@ -182,6 +182,7 @@ void UGameWidget::ActivateHighlight(EPosition PlayerId, ECardType CardType)
 					if (RowActive[i]->bIsCardOccupied == false)
 					{
 						RowActive[i]->EnableHighlight();
+						break;
 					}
 				}
 			}

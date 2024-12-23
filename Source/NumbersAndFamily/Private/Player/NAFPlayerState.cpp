@@ -148,7 +148,7 @@ ECardType ANAFPlayerState::GetCardType(uint8 PosCard)
 
 FCardDataServer ANAFPlayerState::GetSelectedCard()
 {
-	SelectedCard.DebugCard(FName("Get Selected card"));
+	SelectedCard.DebugCard(FName("Player State : Get Selected card"));
 	return SelectedCard;
 }
 

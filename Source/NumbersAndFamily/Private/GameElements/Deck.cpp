@@ -43,11 +43,11 @@ bool ADeck::InitDeck()
 
 FCardDataServer ADeck::DrawCard()
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Cyan,
-			FString::Printf(TEXT("Deck : Draw Card")));
-	}
+	// if (GEngine)
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Cyan,
+	// 		FString::Printf(TEXT("Deck : Draw Card")));
+	// }
 	
 	Algo::RandomShuffle(Deck);
 	const FCardDataServer CardDrawn = Deck[0];
@@ -57,11 +57,11 @@ FCardDataServer ADeck::DrawCard()
 
 void ADeck::BackToDeck(FCardDataServer Card)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Cyan,
-			FString::Printf(TEXT("Deck : Card back to deck")));
-	}
+	// if (GEngine)
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Cyan,
+	// 		FString::Printf(TEXT("Deck : Card back to deck")));
+	// }
 	Deck.Add(Card);
 }
 
