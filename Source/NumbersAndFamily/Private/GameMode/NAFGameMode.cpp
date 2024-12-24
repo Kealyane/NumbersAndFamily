@@ -126,6 +126,12 @@ void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : DrawCard")));
 	UE_LOG(LogTemp, Warning, TEXT("game mode : DrawCard"));
 	FCardDataServer Card = Deck->DrawCard();
+	if (Card.RowName.IsNone())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Red,
+	 FString::Printf(TEXT("GameMode : Can't draw card, empty")));
+		return;
+	}
 	Card.DebugCard(FName("Draw Card"));
 	ActivePlayerState->StoreCardInHand(Card);
 	ActivePlayerState->ActiveHandChoice(ActivePlayerState->Id);

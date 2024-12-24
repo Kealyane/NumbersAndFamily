@@ -435,7 +435,7 @@ void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray
 					const FCardData* Data = DeckDataTable->FindRow<FCardData>(InBoardTableRow[i],ContextString);
 					if (GameWidget && Data)
 					{
-						UE_LOG(LogTemp, Warning, TEXT("PC : UpdateBoardCard = show card"));
+						//UE_LOG(LogTemp, Warning, TEXT("PC : UpdateBoardCard = show card"));
 						CardSlot->ShowCard(Data->ImageRecto);
 						
 						if (IsCoordInPlayerIdSide(NafPlayerState->Id, row, col))

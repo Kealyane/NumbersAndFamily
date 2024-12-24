@@ -35,6 +35,7 @@ private:
 	TObjectPtr<ADeck> Deck;
 
 	void DeleteCardWithSameScore(uint8 Line, uint8 Col);
+	void DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col);
 	
 	void SyncBoardWithGameState();
 };
