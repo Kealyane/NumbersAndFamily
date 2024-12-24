@@ -38,4 +38,6 @@ private:
 	void DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col);
 	
 	void SyncBoardWithGameState();
+	bool IsLineFull(uint8 Line, uint8 Col);
+	bool IsFamily(uint8 Line, uint8 Col);
 };

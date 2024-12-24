@@ -32,12 +32,12 @@ void ABoard::InitParamDeck(ADeck* InDeck)
 void ABoard::PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Board Place normal card"));
+	
 	if (!BoardGame[Line][Col].RowName.IsNone()) return;
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("board : PlaceNormalCard")));
 	BoardGame[Line][Col] = Card;
 	
-	DeleteCardWithSameScore(Line, Col);
-	if (Col == 0 || Col == 5) DeleteCardsBecauseOfFamily(Line, Col);
+	if (IsLineFull(Line, Col) && IsFamily(Line, Col)) DeleteCardsBecauseOfFamily(Line, Col);
+	else DeleteCardWithSameScore(Line, Col);
 	
 	SyncBoardWithGameState();
 }
@@ -53,11 +53,11 @@ void ABoard::SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 
 	BoardGame[Card1Line][Card1Col] = BoardGame[Card2Line][Card2Col];
 	BoardGame[Card2Line][Card2Col] = Tmp;
 	
-	DeleteCardWithSameScore(Card1Line, Card1Col);
-	if (Card1Col == 0 || Card1Col == 5) DeleteCardsBecauseOfFamily(Card1Line, Card1Col);
+	if (IsLineFull(Card1Line,Card1Col) && IsFamily(Card1Line, Card1Col)) DeleteCardsBecauseOfFamily(Card1Line, Card1Col);
+	else DeleteCardWithSameScore(Card1Line, Card1Col);
 	
-	DeleteCardWithSameScore(Card2Line, Card2Col);
-	if (Card2Col == 0 || Card2Col == 5) DeleteCardsBecauseOfFamily(Card2Line, Card2Col);
+	if (IsLineFull(Card2Line, Card2Col) && IsFamily(Card2Line, Card2Col)) DeleteCardsBecauseOfFamily(Card2Line, Card2Col);
+	else DeleteCardWithSameScore(Card2Line, Card2Col);
 	
 	SyncBoardWithGameState();
 }
@@ -66,9 +66,11 @@ void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 C
 {
 	BoardGame[Card2Line][Card2Col] = BoardGame[Card1Line][Card1Col];
 	BoardGame[Card1Line][Card1Col].ResetCard();
+
+	if (IsLineFull(Card2Line, Card2Col) && IsFamily(Card2Line, Card2Col)) DeleteCardsBecauseOfFamily(Card2Line, Card2Col);
+	else DeleteCardWithSameScore(Card2Line, Card2Col);
 	
-	DeleteCardWithSameScore(Card2Line, Card2Col);
-	if (Card2Col == 0 || Card2Col == 5) DeleteCardsBecauseOfFamily(Card2Line, Card2Col);
+	DeleteCardWithSameScore(Card1Line, Card1Col);
 	
 	SyncBoardWithGameState();
 }
@@ -82,13 +84,12 @@ FName ABoard::GetCardDataRowName(uint8 Line, uint8 Col)
 void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Board CopyCard"));
-	//Card.DebugCard("Board Copy Card : ");
+
 	Card.SetArcaneFromCopy(BoardGame[Card1Line][Card1Col]);
-	//Card.DebugCard("Board Copy Card after set : ");
 	BoardGame[Card2Line][Card2Col] = Card;
 
-	DeleteCardWithSameScore(Card2Line, Card2Col);
-	if (Card2Col == 0 || Card2Col == 5) DeleteCardsBecauseOfFamily(Card2Line, Card2Col);
+	if (IsLineFull(Card2Line, Card2Col) && IsFamily(Card2Line, Card2Col)) DeleteCardsBecauseOfFamily(Card2Line, Card2Col);
+	else DeleteCardWithSameScore(Card2Line, Card2Col);
 	
 	SyncBoardWithGameState();
 }
@@ -96,6 +97,7 @@ void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Ca
 void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 {
 	const int32 CardScore = BoardGame[Line][Col].Score;
+	uint8 Counter = 0;
 	if (Col < 3)
 	{
 		// Look in Player 2 side
@@ -111,6 +113,12 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 						Deck->BackToDeck(BoardGame[Line][i]);
 					}
 					BoardGame[Line][i].ResetCard();
+					Counter++;
+				}
+				else
+				{
+					BoardGame[Line][i-Counter] = BoardGame[Line][i];
+					if (Counter != 0) BoardGame[Line][i].ResetCard();
 				}
 			}
 		}
@@ -118,8 +126,10 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 	else
 	{
 		// Look in Player 1 side
-		for (int i = 0; i < 3; i++)
+		for (int i = 2; i >= 0; i--)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Board : to delete look col %d"), i);
+
 			if (!BoardGame[Line][i].RowName.IsNone())
 			{
 				if (BoardGame[Line][i].Score == CardScore)
@@ -130,6 +140,12 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 						Deck->BackToDeck(BoardGame[Line][i]);
 					}
 					BoardGame[Line][i].ResetCard();
+					Counter++;
+				}
+				else
+				{
+					BoardGame[Line][i+Counter] = BoardGame[Line][i];
+					if (Counter != 0) BoardGame[Line][i].ResetCard();
 				}
 			}
 		}
@@ -138,47 +154,34 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 
 void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 {
-	EFamilyType CardFamily = BoardGame[Line][Col].FamilyType;
-	if (Col == 0)
+	if (Col < 3)
 	{
-		// Look in Player 1 side
-		bool bSameFamily = CardFamily == BoardGame[Line][1].FamilyType && CardFamily == BoardGame[Line][2].FamilyType;
-
-		if (bSameFamily)
+		// Remove line in Player 2 side
+		for (int i = 3; i < 6; i++)
 		{
-			// Remove line in Player 2 side
-			for (int i = 3; i < 6; i++)
+			if (BoardGame[Line][i].RowName.IsNone()) continue;
+			
+			if (BoardGame[Line][i].ArcaneType != EArcaneType::COPY)
 			{
-				if (BoardGame[Line][i].RowName.IsNone()) continue;
-				
-				if (BoardGame[Line][i].ArcaneType != EArcaneType::COPY)
-				{
-					//BoardGame[Line][i].DebugCard("DeleteCardsBecauseOfFamily");
-					Deck->BackToDeck(BoardGame[Line][i]);
-				}
-				BoardGame[Line][i].ResetCard();
-			}			
+				//BoardGame[Line][i].DebugCard("DeleteCardsBecauseOfFamily");
+				Deck->BackToDeck(BoardGame[Line][i]);
+			}
+			BoardGame[Line][i].ResetCard();
 		}
 	}
 	else
 	{
-		// Look in Player 2 side
-		bool bSameFamily = CardFamily == BoardGame[Line][3].FamilyType && CardFamily == BoardGame[Line][4].FamilyType;
-
-		if (bSameFamily)
+		// Remove line in Player 1 side
+		for (int i = 0; i < 3; i++)
 		{
-			// Remove line in Player 1 side
-			for (int i = 0; i < 3; i++)
+			if (BoardGame[Line][i].RowName.IsNone()) continue;
+			
+			if (BoardGame[Line][i].ArcaneType != EArcaneType::COPY)
 			{
-				if (BoardGame[Line][i].RowName.IsNone()) continue;
-				
-				if (BoardGame[Line][i].ArcaneType != EArcaneType::COPY)
-				{
-					//BoardGame[Line][i].DebugCard("DeleteCardsBecauseOfFamily");
-					Deck->BackToDeck(BoardGame[Line][i]);
-				}
-				BoardGame[Line][i].ResetCard();
-			}			
+				//BoardGame[Line][i].DebugCard("DeleteCardsBecauseOfFamily");
+				Deck->BackToDeck(BoardGame[Line][i]);
+			}
+			BoardGame[Line][i].ResetCard();
 		}
 	}
 }
@@ -199,7 +202,7 @@ void ABoard::SyncBoardWithGameState()
 				{
 					FName CopyCardName = GameMode->GetRowNameFromDataServer(BoardGame[i][j]);
 					BoardRowNames[index] = CopyCardName;
-					UE_LOG(LogTemp, Warning, TEXT("Board SyncBoardWithGameState : card to copy %s"),*CopyCardName.ToString());
+					//UE_LOG(LogTemp, Warning, TEXT("Board SyncBoardWithGameState : card to copy %s"),*CopyCardName.ToString());
 				}
 			}
 			else
@@ -214,5 +217,34 @@ void ABoard::SyncBoardWithGameState()
 		NafGS->SetBoardName(true, BoardRowNames);
 	}
 	
+}
+
+bool ABoard::IsLineFull(uint8 Line, uint8 Col)
+{
+	if (Col < 3)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (BoardGame[Line][i].RowName.IsNone()) return false;
+		}
+		return true;
+	}
+	for (int i = 3; i < 6; i++)
+	{
+		if (BoardGame[Line][i].RowName.IsNone()) return false;
+	}
+	return true;
+}
+
+bool ABoard::IsFamily(uint8 Line, uint8 Col)
+{
+	if (Col < 3)
+	{
+		return BoardGame[Line][0].FamilyType == BoardGame[Line][1].FamilyType &&
+			BoardGame[Line][0].FamilyType == BoardGame[Line][2].FamilyType;
+	}
+
+	return BoardGame[Line][5].FamilyType == BoardGame[Line][3].FamilyType &&
+		BoardGame[Line][5].FamilyType == BoardGame[Line][4].FamilyType;
 }
 

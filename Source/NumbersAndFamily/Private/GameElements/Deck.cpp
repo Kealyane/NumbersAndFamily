@@ -71,9 +71,15 @@ void ADeck::BackToDeck(FCardDataServer Card)
 	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Cyan,
 	// 		FString::Printf(TEXT("Deck : Card back to deck")));
 	// }
-	UE_LOG(LogTemp, Warning, TEXT("Deck BackToDeck : deck length %d"), Deck.Num());
+	//UE_LOG(LogTemp, Warning, TEXT("Deck BackToDeck : deck length %d"), Deck.Num());
+	if (Deck.Contains(Card))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Red,
+				FString::Printf(TEXT("Deck : Card already in deck")));
+		return;
+	}
 	Deck.Add(Card);
-	UE_LOG(LogTemp, Warning, TEXT("Deck BackToDeck : deck length after adding card %d"), Deck.Num());
+	//UE_LOG(LogTemp, Warning, TEXT("Deck BackToDeck : deck length after adding card %d"), Deck.Num());
 }
 
 FName ADeck::GetRowNameFromDataServer(FCardDataServer Card)
