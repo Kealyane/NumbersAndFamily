@@ -24,12 +24,18 @@ void ABoard::InitBoard()
 	BoardRowNames.Init(FName("NONE"),NB_LINE * NB_COLUMN);
 }
 
+void ABoard::InitParamDeck(ADeck* InDeck)
+{
+	Deck = InDeck;
+}
+
 void ABoard::PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Board Place normal card"));
 	if (!BoardGame[Line][Col].RowName.IsNone()) return;
 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("board : PlaceNormalCard")));
 	BoardGame[Line][Col] = Card;
+	DeleteCardWithSameScore(Line, Col);
 	SyncBoardWithGameState();
 }
 
@@ -43,6 +49,10 @@ void ABoard::SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 
 	FCardDataServer Tmp = BoardGame[Card1Line][Card1Col];
 	BoardGame[Card1Line][Card1Col] = BoardGame[Card2Line][Card2Col];
 	BoardGame[Card2Line][Card2Col] = Tmp;
+	
+	DeleteCardWithSameScore(Card1Line, Card1Col);
+	DeleteCardWithSameScore(Card2Line, Card2Col);
+	
 	SyncBoardWithGameState();
 }
 
@@ -50,6 +60,9 @@ void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 C
 {
 	BoardGame[Card2Line][Card2Col] = BoardGame[Card1Line][Card1Col];
 	BoardGame[Card1Line][Card1Col].ResetCard();
+	
+	DeleteCardWithSameScore(Card2Line, Card2Col);
+	
 	SyncBoardWithGameState();
 }
 
@@ -62,12 +75,54 @@ FName ABoard::GetCardDataRowName(uint8 Line, uint8 Col)
 void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Board CopyCard"));
-	Card.DebugCard("Board Copy Card : ");
+	//Card.DebugCard("Board Copy Card : ");
 	Card.SetArcaneFromCopy(BoardGame[Card1Line][Card1Col]);
-	Card.DebugCard("Board Copy Card after set : ");
+	//Card.DebugCard("Board Copy Card after set : ");
 	BoardGame[Card2Line][Card2Col] = Card;
+
+	DeleteCardWithSameScore(Card2Line, Card2Col);
+	
 	SyncBoardWithGameState();
 }
+
+void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
+{
+	const int32 CardScore = BoardGame[Line][Col].Score;
+	if (Col < 3)
+	{
+		// Look in Player 2 side
+		for (int i = 3; i < 6; i++)
+		{
+			if (!BoardGame[Line][i].RowName.IsNone())
+			{
+				if (BoardGame[Line][i].Score == CardScore)
+				{
+					if (BoardGame[Line][i].ArcaneType != EArcaneType::COPY)
+					{
+						Deck->BackToDeck(BoardGame[Line][i]);
+					}
+					BoardGame[Line][i].ResetCard();
+				}
+			}
+		}
+	}
+	else
+	{
+		// Look in Player 1 side
+		for (int i = 0; i < 3; i++)
+		{
+			if (!BoardGame[Line][i].RowName.IsNone())
+			{
+				if (BoardGame[Line][i].Score == CardScore)
+				{
+					Deck->BackToDeck(BoardGame[Line][i]);
+					BoardGame[Line][i].ResetCard();
+				}
+			}
+		}
+	}
+}
+
 
 void ABoard::SyncBoardWithGameState()
 {

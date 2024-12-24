@@ -17,6 +17,7 @@ public:
 	ABoard();
 
 	void InitBoard();
+	void InitParamDeck(ADeck* InDeck);
 	void PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col);
 	bool IsCoordOccupied(uint8 Line, uint8 Col);
 	void SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
@@ -31,6 +32,9 @@ protected:
 private:
 	TArray<TArray<FCardDataServer>> BoardGame;
 	TArray<FName> BoardRowNames;
+	TObjectPtr<ADeck> Deck;
 
+	void DeleteCardWithSameScore(uint8 Line, uint8 Col);
+	
 	void SyncBoardWithGameState();
 };
