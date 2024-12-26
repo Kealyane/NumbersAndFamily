@@ -139,8 +139,7 @@ public:
 	void ActiveHandHighlight(EPosition PlayerId);
 	UFUNCTION()
 	void DeactivateHandHighlight(EPosition PlayerId);
-
-	void ResetPlayerCardDeck(EPosition PlayerPos);
+	
 	UCardWidget* GetCardWidget(EPosition PlayerPos, uint8 CardPos) const;
 	UFUNCTION()
 	void SwitchTexture(EPosition PlayerId, uint8 HandSlotIndex, UTexture2D* CardTexture);

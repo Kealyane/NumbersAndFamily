@@ -25,8 +25,6 @@ void ANAFGameState::SetActivePlayer(EPosition InActiveId)
 {
 	if (HasAuthority())
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Magenta, FString(TEXT("game state : SetActivePlayer")));
-		UE_LOG(LogTemp, Warning, TEXT("game state : SetActivePlayer"));
 		ActiveId = InActiveId;
 		if (IsNetMode(NM_ListenServer))
 			OnRep_ActiveId();
@@ -37,8 +35,6 @@ void ANAFGameState::SetBoardName(bool bAfterPlayerAction, const TArray<FName>& I
 {
 	if (HasAuthority())
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Magenta, FString(TEXT("game state : SetBoardName")));
-		UE_LOG(LogTemp, Warning, TEXT("game state : SetBoardName"));
 		BoardTableRow = InBoardTableRow;
 		MultiRPC_UpdateBoardUI(bAfterPlayerAction, InBoardTableRow);
 	}
@@ -55,7 +51,6 @@ void ANAFGameState::MultiRPC_UpdateActiveTurnUI_Implementation()
 	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
 	if (PlayerController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("game state : MultiRPC_UpdateActiveTurnUI_Implementation %s"), *EnumHelper::ToString(ActiveId));
 		PlayerController->UpdateActiveTurnUI(ActiveId);
 	}
 }
@@ -65,7 +60,6 @@ void ANAFGameState::MultiRPC_UpdateBoardUI_Implementation(bool bAfterPlayerActio
 	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
 	if (PlayerController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("game state : MultiRPC_UpdateBoardUI_Implementation"));
 		PlayerController->UpdateBoardCard(bAfterPlayerAction, InBoardTableRow);
 	}
 }
@@ -76,7 +70,6 @@ void ANAFGameState::MultiRPC_UpdateScores_Implementation(int32 PLeftScore0, int3
 	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
 	if (PlayerController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("game state : MultiRPC_UpdateScores_Implementation"));
 		PlayerController->UpdateScores(PLeftScore0, PLeftScore1, PLeftScore2, PLeftTotalScore,
 			PRightScore0, PRightScore1, PRightScore2, PRightTotalScore);
 	}

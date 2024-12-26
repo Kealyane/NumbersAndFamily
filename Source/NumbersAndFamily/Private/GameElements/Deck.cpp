@@ -20,12 +20,7 @@ bool ADeck::InitDeck()
 			return false;
 		}
 	}
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Cyan,
-			FString::Printf(TEXT("Deck : Init Deck")));
-	}
-	
+
 	TArray<FName> RowNames = DeckDataTable->GetRowNames();
 	const FString ContextString(TEXT("Tower Data Context"));
 
@@ -43,20 +38,14 @@ bool ADeck::InitDeck()
 
 FCardDataServer ADeck::DrawCard()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Deck draw card : length %d"), Deck.Num());
-	// if (GEngine)
-	// {
-	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Cyan,
-	// 		FString::Printf(TEXT("Deck : Draw Card")));
-	// }
 	if (Deck.Num() == 0)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Deck draw card : 0"));
 		return FCardDataServer();
 	}
 	Algo::RandomShuffle(Deck);
 	FCardDataServer CardDrawn = Deck[0];
-	//CardDrawn.DebugCard("Deck Draw Card Value");
+
+	// Do not remove special cards
 	if (CardDrawn.ArcaneType == EArcaneType::NONE)
 	{
 		Deck.Remove(CardDrawn);
@@ -66,20 +55,12 @@ FCardDataServer ADeck::DrawCard()
 
 void ADeck::BackToDeck(FCardDataServer Card)
 {
-	// if (GEngine)
-	// {
-	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Cyan,
-	// 		FString::Printf(TEXT("Deck : Card back to deck")));
-	// }
-	//UE_LOG(LogTemp, Warning, TEXT("Deck BackToDeck : deck length %d"), Deck.Num());
 	if (Deck.Contains(Card))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Red,
-				FString::Printf(TEXT("Deck : Card already in deck")));
+		UE_LOG(LogTemp, Warning, TEXT("Deck : Card already in deck"));
 		return;
 	}
 	Deck.Add(Card);
-	//UE_LOG(LogTemp, Warning, TEXT("Deck BackToDeck : deck length after adding card %d"), Deck.Num());
 }
 
 FName ADeck::GetRowNameFromDataServer(FCardDataServer Card)

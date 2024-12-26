@@ -13,12 +13,6 @@
 void ANAFGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	
-	// if (GEngine)
-	// {
-	// 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : post login")));
-	// }
-	UE_LOG(LogTemp, Warning, TEXT("game mode : post login"));
 
 	int32 NumberOfPlayers = GameState->PlayerArray.Num();
 
@@ -50,78 +44,66 @@ void ANAFGameMode::LaunchGame()
 {
 	bIsGameOver = false;
 	Winner = EPosition::SERVER;
+
+	UWorld* World = GetWorld();
 	
-	if (GEngine)
+	if (World)
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : launch game")));
-		UE_LOG(LogTemp, Warning, TEXT("game mode : LaunchGame"));
-
-		UWorld* World = GetWorld();
-		
-		if (World)
-		{
-			World->GetTimerManager().ClearTimer(WaitHandle);
-		}
-
-		NafGameState = GetGameState<ANAFGameState>();
-		
-		// Link to Level Blueprint to remove lobby widget
-		if (NafGameState)
-		{
-			NafGameState->OnLeaveLobby.Broadcast();
-		}
-
-		// Show UI
-		for (FConstPlayerControllerIterator PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; ++PCIterator)
-		{
-			if (ANAFPlayerController* NafPlayerController = Cast<ANAFPlayerController>(*PCIterator))
-			{
-				NafPlayerController->ClientRPC_ShowGameBoard();
-			}
-		}
-
-		// Initialize Deck
-		if (World)
-		{
-			Deck = World->SpawnActor<ADeck>(DeckClassType);
-			if (!Deck->InitDeck()) return;
-			Board = World->SpawnActor<ABoard>(BoardClassType);
-			Board->InitBoard();
-			Board->InitParamDeck(Deck);
-			NafGameState->InitBoardRow();
-		}
-
-		NafGameState->MultiRPC_PlaySoundStartGame();
-
-		// Give one card to both player 
-		for (APlayerState* PlayerState : NafGameState->PlayerArray)
-		{
-			if (PlayerState)
-			{
-				if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
-				{
-					FCardDataServer Card = Deck->DrawCard();
-					Card.DebugCard(FName("Give Card to player"));
-					NafPS->StoreCardInHand(Card);
-					TArray<bool> HandCurrent = NafPS->HandStatus();
-					ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
-					OpponentPS->UpdateHandUI(NafPS->Id,HandCurrent);
-				}
-			}
-		}
-		
-		// Initialize Active Player
-		const bool bIsPlayerLeft = FMath::RandBool();
-		//const EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
-		
-		// DEBUG Client
-		const EPosition ActivePosition = EPosition::RIGHT;
-		
-		// DEBUG Server
-		//const EPosition ActivePosition = EPosition::LEFT;
-		
-		NafGameState->SetActivePlayer(ActivePosition);
+		World->GetTimerManager().ClearTimer(WaitHandle);
 	}
+
+	NafGameState = GetGameState<ANAFGameState>();
+	
+	// Link to Level Blueprint to remove lobby widget
+	if (NafGameState)
+	{
+		NafGameState->OnLeaveLobby.Broadcast();
+	}
+
+	// Show UI
+	for (FConstPlayerControllerIterator PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; ++PCIterator)
+	{
+		if (ANAFPlayerController* NafPlayerController = Cast<ANAFPlayerController>(*PCIterator))
+		{
+			NafPlayerController->ClientRPC_ShowGameBoard();
+		}
+	}
+
+	// Initialize Deck
+	if (World)
+	{
+		Deck = World->SpawnActor<ADeck>(DeckClassType);
+		if (!Deck->InitDeck()) return;
+		Board = World->SpawnActor<ABoard>(BoardClassType);
+		Board->InitBoard();
+		Board->InitParamDeck(Deck);
+		NafGameState->InitBoardRow();
+	}
+
+	NafGameState->MultiRPC_PlaySoundStartGame();
+
+	// Give one card to both player 
+	for (APlayerState* PlayerState : NafGameState->PlayerArray)
+	{
+		if (PlayerState)
+		{
+			if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
+			{
+				FCardDataServer Card = Deck->DrawCard();
+				NafPS->StoreCardInHand(Card);
+				TArray<bool> HandCurrent = NafPS->HandStatus();
+				ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
+				OpponentPS->UpdateHandUI(NafPS->Id,HandCurrent);
+			}
+		}
+	}
+	
+	// Initialize Active Player
+	const bool bIsPlayerLeft = FMath::RandBool();
+	const EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
+	
+	NafGameState->SetActivePlayer(ActivePosition);
+
 }
 
 void ANAFGameMode::EndGame()
@@ -139,16 +121,14 @@ void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 		EndGame();
 		return;
 	}
-	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : DrawCard")));
-	UE_LOG(LogTemp, Warning, TEXT("game mode : DrawCard"));
+
 	FCardDataServer Card = Deck->DrawCard();
 	if (Card.RowName.IsNone())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Red,
-	 FString::Printf(TEXT("GameMode : Can't draw card, empty")));
+		UE_LOG(LogTemp, Warning, TEXT("GameMode : Can't draw card, empty"));
 		return;
 	}
-	//Card.DebugCard(FName("Draw Card"));
+
 	ActivePlayerState->StoreCardInHand(Card);
 	ActivePlayerState->ActiveHandChoice(ActivePlayerState->Id);
 	TArray<bool> HandCurrent = ActivePlayerState->HandStatus();
@@ -158,8 +138,6 @@ void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 
 void ANAFGameMode::RemoveCardFromHand(ANAFPlayerState* ActivePlayerState)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : RemoveCardFromHand")));
-	UE_LOG(LogTemp, Warning, TEXT("game mode : RemoveCardFromHand"));
 	ActivePlayerState->RemoveCardInHand(IndexHandCardPlayed);
 	TArray<bool> HandCurrent = ActivePlayerState->HandStatus();
 	ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(ActivePlayerState->Id);
@@ -168,16 +146,12 @@ void ANAFGameMode::RemoveCardFromHand(ANAFPlayerState* ActivePlayerState)
 
 void ANAFGameMode::PlaceNormalCard(FCardDataServer Card, uint8 IndexHandCard, uint8 Line, uint8 Col)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : PlaceNormalCard")));
-	UE_LOG(LogTemp, Warning, TEXT("game mode : PlaceNormalCard"));
 	IndexHandCardPlayed = IndexHandCard;
 	Board->PlaceNormalCard(Card, Line, Col);
 }
 
 void ANAFGameMode::EndTurn()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : EndTurn")));
-	UE_LOG(LogTemp, Warning, TEXT("game mode : EndTurn"));
 	NafGameState->SwitchPlayerTurn();
 }
 
@@ -195,7 +169,6 @@ void ANAFGameMode::SwitchCardsInBoard(uint8 IndexHandCard, uint8 Card1Line, uint
 void ANAFGameMode::StealCardInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
 {
 	IndexHandCardPlayed = IndexHandCard;
-	UE_LOG(LogTemp, Warning, TEXT("GameMode StealCardInBoard, IndexHandCardPlayed = %d"), IndexHandCardPlayed);
 	Board->StealCard(Card1Line, Card1Col, Card2Line, Card2Col);
 }
 
@@ -207,7 +180,6 @@ FName ANAFGameMode::GetCardDataRowName(uint8 Line, uint8 Col)
 void ANAFGameMode::CopyCardInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card)
 {
 	IndexHandCardPlayed = IndexHandCard;
-	Card.DebugCard("GameMode Copy Card ");
 	Board->CopyCard(Card1Line, Card1Col, Card2Line, Card2Col, Card);
 }
 

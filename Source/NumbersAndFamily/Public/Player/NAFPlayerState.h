@@ -53,8 +53,7 @@ public:
 	void RemoveCardInHand(uint8 IndexCard);
 	void UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus);
 	void ActiveHandChoice(EPosition ActiveId);
-
-	void ActiveTurn(EPosition ActiveId);
+	
 	void UpdateScores(int32 InScoreLine0, int32 InScoreLine1, int32 InScoreLine2, int32 InTotalScore);
 	
 	ECardType GetCardType(uint8 PosCard);
