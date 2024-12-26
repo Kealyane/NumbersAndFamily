@@ -253,14 +253,16 @@ bool ABoard::IsFamily(uint8 Line, uint8 Col)
 void ABoard::MoveCards(uint8 Line, uint8 Col)
 {
 	TArray<FCardDataServer> NewLine;
-	NewLine.Init(FCardDataServer(),3);
 	
 	if (Col < 3)
 	{
+		int j = 2;
+		NewLine.Init(FCardDataServer(),3);
 		for (int i = 2; i >= 0; i--)
 		{
 			if (BoardGame[Line][i].RowName.IsNone()) continue;
-			NewLine[i] = BoardGame[Line][i];
+			NewLine[j] = BoardGame[Line][i];
+			j--;
 		}
 		NewLine.Append(&BoardGame[Line][3],3);
 	}
@@ -270,8 +272,15 @@ void ABoard::MoveCards(uint8 Line, uint8 Col)
 		for (int i = 3; i < 6; i++)
 		{
 			if (BoardGame[Line][i].RowName.IsNone()) continue;
-			NewLine[i] = BoardGame[Line][i];
+			NewLine.Add(BoardGame[Line][i]);
 		}
+		if (NewLine.Num() != 6)
+		{
+			for (int i = NewLine.Num(); i < 6; i++)
+			{
+				NewLine.Add(FCardDataServer());
+			}
+		}	
 	}
 	BoardGame[Line] = NewLine;
 }
@@ -281,10 +290,10 @@ bool ABoard::HasHoles(uint8 Line, uint8 Col)
 	if (Col < 3)
 	{
 		return BoardGame[Line][2].RowName.IsNone() && (!BoardGame[Line][1].RowName.IsNone() || !BoardGame[Line][0].RowName.IsNone()) ||
-			BoardGame[Line][1].RowName.IsNone() && !BoardGame[Line][0].RowName.IsNone();
+			BoardGame[Line][1].RowName.IsNone() && (!BoardGame[Line][0].RowName.IsNone() || !BoardGame[Line][2].RowName.IsNone());
 	}
 	return BoardGame[Line][3].RowName.IsNone() && (!BoardGame[Line][4].RowName.IsNone() || !BoardGame[Line][5].RowName.IsNone()) ||
-			BoardGame[Line][4].RowName.IsNone() && !BoardGame[Line][5].RowName.IsNone();
+			BoardGame[Line][4].RowName.IsNone() && (!BoardGame[Line][5].RowName.IsNone() || !BoardGame[Line][3].RowName.IsNone());
 }
 
 void ABoard::ComputeScores()
