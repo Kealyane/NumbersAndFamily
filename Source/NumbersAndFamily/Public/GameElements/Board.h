@@ -40,4 +40,6 @@ private:
 	void SyncBoardWithGameState();
 	bool IsLineFull(uint8 Line, uint8 Col);
 	bool IsFamily(uint8 Line, uint8 Col);
+	void MoveCards(uint8 Line, uint8 Col);
+	bool HasHoles(uint8 Line, uint8 Col);
 };

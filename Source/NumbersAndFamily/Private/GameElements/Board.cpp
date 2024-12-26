@@ -11,7 +11,6 @@ class ANAFGameMode;
 ABoard::ABoard()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
 }
 
 void ABoard::InitBoard()
@@ -31,8 +30,6 @@ void ABoard::InitParamDeck(ADeck* InDeck)
 
 void ABoard::PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Board Place normal card"));
-	
 	if (!BoardGame[Line][Col].RowName.IsNone()) return;
 	BoardGame[Line][Col] = Card;
 	
@@ -70,7 +67,7 @@ void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 C
 	if (IsLineFull(Card2Line, Card2Col) && IsFamily(Card2Line, Card2Col)) DeleteCardsBecauseOfFamily(Card2Line, Card2Col);
 	else DeleteCardWithSameScore(Card2Line, Card2Col);
 	
-	DeleteCardWithSameScore(Card1Line, Card1Col);
+	if (HasHoles(Card1Line, Card1Col)) MoveCards(Card1Line, Card1Col);
 	
 	SyncBoardWithGameState();
 }
@@ -83,8 +80,6 @@ FName ABoard::GetCardDataRowName(uint8 Line, uint8 Col)
 
 void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Board CopyCard"));
-
 	Card.SetArcaneFromCopy(BoardGame[Card1Line][Card1Col]);
 	BoardGame[Card2Line][Card2Col] = Card;
 
@@ -109,7 +104,6 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 				{
 					if (BoardGame[Line][i].ArcaneType != EArcaneType::COPY)
 					{
-						//BoardGame[Line][i].DebugCard("DeleteCardWithSameScore");
 						Deck->BackToDeck(BoardGame[Line][i]);
 					}
 					BoardGame[Line][i].ResetCard();
@@ -128,15 +122,12 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 		// Look in Player 1 side
 		for (int i = 2; i >= 0; i--)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Board : to delete look col %d"), i);
-
 			if (!BoardGame[Line][i].RowName.IsNone())
 			{
 				if (BoardGame[Line][i].Score == CardScore)
 				{
 					if (BoardGame[Line][i].ArcaneType != EArcaneType::COPY)
 					{
-						//BoardGame[Line][i].DebugCard("DeleteCardWithSameScore");
 						Deck->BackToDeck(BoardGame[Line][i]);
 					}
 					BoardGame[Line][i].ResetCard();
@@ -163,7 +154,6 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 			
 			if (BoardGame[Line][i].ArcaneType != EArcaneType::COPY)
 			{
-				//BoardGame[Line][i].DebugCard("DeleteCardsBecauseOfFamily");
 				Deck->BackToDeck(BoardGame[Line][i]);
 			}
 			BoardGame[Line][i].ResetCard();
@@ -178,7 +168,6 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 			
 			if (BoardGame[Line][i].ArcaneType != EArcaneType::COPY)
 			{
-				//BoardGame[Line][i].DebugCard("DeleteCardsBecauseOfFamily");
 				Deck->BackToDeck(BoardGame[Line][i]);
 			}
 			BoardGame[Line][i].ResetCard();
@@ -243,8 +232,44 @@ bool ABoard::IsFamily(uint8 Line, uint8 Col)
 		return BoardGame[Line][0].FamilyType == BoardGame[Line][1].FamilyType &&
 			BoardGame[Line][0].FamilyType == BoardGame[Line][2].FamilyType;
 	}
-
 	return BoardGame[Line][5].FamilyType == BoardGame[Line][3].FamilyType &&
 		BoardGame[Line][5].FamilyType == BoardGame[Line][4].FamilyType;
+}
+
+void ABoard::MoveCards(uint8 Line, uint8 Col)
+{
+	TArray<FCardDataServer> NewLine;
+	NewLine.Init(FCardDataServer(),3);
+	
+	if (Col < 3)
+	{
+		for (int i = 2; i >= 0; i--)
+		{
+			if (BoardGame[Line][i].RowName.IsNone()) continue;
+			NewLine[i] = BoardGame[Line][i];
+		}
+		NewLine.Append(&BoardGame[Line][3],3);
+	}
+	else
+	{
+		NewLine.Append(&BoardGame[Line][0],3);
+		for (int i = 3; i < 6; i++)
+		{
+			if (BoardGame[Line][i].RowName.IsNone()) continue;
+			NewLine[i] = BoardGame[Line][i];
+		}
+	}
+	BoardGame[Line] = NewLine;
+}
+
+bool ABoard::HasHoles(uint8 Line, uint8 Col)
+{
+	if (Col < 3)
+	{
+		return BoardGame[Line][2].RowName.IsNone() && (!BoardGame[Line][1].RowName.IsNone() || !BoardGame[Line][0].RowName.IsNone()) ||
+			BoardGame[Line][1].RowName.IsNone() && !BoardGame[Line][0].RowName.IsNone();
+	}
+	return BoardGame[Line][3].RowName.IsNone() && (!BoardGame[Line][4].RowName.IsNone() || !BoardGame[Line][5].RowName.IsNone()) ||
+			BoardGame[Line][4].RowName.IsNone() && !BoardGame[Line][5].RowName.IsNone();
 }
 
