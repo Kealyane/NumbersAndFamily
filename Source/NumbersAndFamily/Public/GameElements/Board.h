@@ -42,4 +42,7 @@ private:
 	bool IsFamily(uint8 Line, uint8 Col);
 	void MoveCards(uint8 Line, uint8 Col);
 	bool HasHoles(uint8 Line, uint8 Col);
+	void ComputeScores();
+	int32 ComputeLineScoreLeft(uint8 Line);
+	int32 ComputeLineScoreRight(uint8 Line);
 };

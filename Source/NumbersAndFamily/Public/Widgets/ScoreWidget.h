@@ -29,13 +29,8 @@ public:
 	class UTextBlock* Score;
 
 	UFUNCTION()
-	void UpdateScoreText(uint8 ScoreValue);
-
-	UFUNCTION(BlueprintCallable)
-	void SetScoreParams(bool IsPlayer1, uint8 LineParam, bool bIsTotalScoreParam);
-	UFUNCTION(BlueprintCallable)
-	void SetScoreCoordParams(uint8 LineParam, bool bIsTotalScoreParam);
-	UFUNCTION(BlueprintCallable)
+	void UpdateScoreText(int32 ScoreValue);
+	UFUNCTION()
 	void InitScore();
 	
 	UPROPERTY(BlueprintAssignable)

@@ -10,7 +10,6 @@
 
 void ANAFGameState::OnRep_ActiveId()
 {
-	UE_LOG(LogTemp, Warning, TEXT("game state : OnRep_ActiveId"));
 	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
 	if (PlayerController)
 	{
@@ -71,12 +70,22 @@ void ANAFGameState::MultiRPC_UpdateBoardUI_Implementation(bool bAfterPlayerActio
 	}
 }
 
+void ANAFGameState::MultiRPC_UpdateScores_Implementation(int32 PLeftScore0, int32 PLeftScore1, int32 PLeftScore2,
+	int32 PLeftTotalScore, int32 PRightScore0, int32 PRightScore1, int32 PRightScore2, int32 PRightTotalScore)
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("game state : MultiRPC_UpdateScores_Implementation"));
+		PlayerController->UpdateScores(PLeftScore0, PLeftScore1, PLeftScore2, PLeftTotalScore,
+			PRightScore0, PRightScore1, PRightScore2, PRightTotalScore);
+	}
+}
+
 void ANAFGameState::SwitchPlayerTurn()
 {
 	if (HasAuthority())
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Magenta, FString(TEXT("game state : SwitchPlayerTurn")));
-		UE_LOG(LogTemp, Warning, TEXT("game state : SwitchPlayerTurn"));
 		ActiveId = ActiveId == EPosition::LEFT ? EPosition::RIGHT : EPosition::LEFT;
 		OnRep_ActiveId();
 	}
@@ -84,12 +93,20 @@ void ANAFGameState::SwitchPlayerTurn()
 
 void ANAFGameState::InitBoardRow()
 {
-	UE_LOG(LogTemp, Warning, TEXT("game state : InitBoardRow"));
 	if (HasAuthority())
 	{
 		BoardTableRow.Init(FName("NONE"), 18);
 		MultiRPC_UpdateBoardUI(false, BoardTableRow);
 	}
+}
+
+void ANAFGameState::UpdateScores(int32 PLeftScore0, int32 PLeftScore1, int32 PLeftScore2, int32 PLeftTotalScore,
+	int32 PRightScore0, int32 PRightScore1, int32 PRightScore2, int32 PRightTotalScore)
+{
+	ANAFPlayerState* PlayerLeft = GetNafPlayerState(EPosition::LEFT);
+	if (PlayerLeft) PlayerLeft->UpdateScores(PLeftScore0, PLeftScore1, PLeftScore2, PLeftTotalScore);
+	ANAFPlayerState* PlayerRight = GetNafPlayerState(EPosition::RIGHT);
+	if (PlayerRight) PlayerRight->UpdateScores(PRightScore0, PRightScore1, PRightScore2, PRightTotalScore);
 }
 
 ANAFPlayerState* ANAFGameState::GetOpponentPlayerState(EPosition CurrentId)

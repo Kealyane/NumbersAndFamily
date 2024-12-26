@@ -178,6 +178,7 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 
 void ABoard::SyncBoardWithGameState()
 {
+	ComputeScores();
 	//UE_LOG(LogTemp, Warning, TEXT("Board SyncBoardWithGameState"));
 	int index = 0;
 	
@@ -271,5 +272,69 @@ bool ABoard::HasHoles(uint8 Line, uint8 Col)
 	}
 	return BoardGame[Line][3].RowName.IsNone() && (!BoardGame[Line][4].RowName.IsNone() || !BoardGame[Line][5].RowName.IsNone()) ||
 			BoardGame[Line][4].RowName.IsNone() && !BoardGame[Line][5].RowName.IsNone();
+}
+
+void ABoard::ComputeScores()
+{
+	int32 LeftScore0 = ComputeLineScoreLeft(0);
+	int32 LeftScore1 = ComputeLineScoreLeft(1);
+	int32 LeftScore2 = ComputeLineScoreLeft(2);
+	int32 LeftTotalScore = LeftScore0 + LeftScore1 + LeftScore2;
+	int32 RightScore0 = ComputeLineScoreRight(0);
+	int32 RightScore1 = ComputeLineScoreRight(1);
+	int32 RightScore2 = ComputeLineScoreRight(2);
+	int32 RightTotalScore = RightScore0 + RightScore1 + RightScore2;
+
+	if (ANAFGameState* GameState = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		// Update UI
+		GameState->MultiRPC_UpdateScores(LeftScore0, LeftScore1, LeftScore2, LeftTotalScore,
+								RightScore0, RightScore1, RightScore2, RightTotalScore);
+		// Update Datas (Server/Client)
+		GameState->UpdateScores(LeftScore0, LeftScore1, LeftScore2, LeftTotalScore,
+								RightScore0, RightScore1, RightScore2, RightTotalScore);
+	}
+}
+
+int32 ABoard::ComputeLineScoreLeft(uint8 Line)
+{
+	if (BoardGame[Line][0].Score == BoardGame[Line][1].Score && BoardGame[Line][1].Score == BoardGame[Line][2].Score)
+	{
+		return BoardGame[Line][0].Score * 3;
+	}
+	if (BoardGame[Line][0].Score == BoardGame[Line][1].Score)
+	{
+		return BoardGame[Line][0].Score * 2 + BoardGame[Line][2].Score;
+	}
+	if (BoardGame[Line][1].Score == BoardGame[Line][2].Score)
+	{
+		return BoardGame[Line][1].Score * 2 + BoardGame[Line][0].Score;
+	}
+	if (BoardGame[Line][0].Score == BoardGame[Line][2].Score)
+	{
+		return BoardGame[Line][0].Score * 2 + BoardGame[Line][1].Score;
+	}
+	return BoardGame[Line][0].Score + BoardGame[Line][1].Score + BoardGame[Line][2].Score;
+}
+
+int32 ABoard::ComputeLineScoreRight(uint8 Line)
+{
+	if (BoardGame[Line][3].Score == BoardGame[Line][4].Score && BoardGame[Line][4].Score == BoardGame[Line][5].Score)
+	{
+		return BoardGame[Line][3].Score * 3;
+	}
+	if (BoardGame[Line][3].Score == BoardGame[Line][4].Score)
+	{
+		return BoardGame[Line][3].Score * 2 + BoardGame[Line][5].Score;
+	}
+	if (BoardGame[Line][4].Score == BoardGame[Line][5].Score)
+	{
+		return BoardGame[Line][4].Score * 2 + BoardGame[Line][3].Score;
+	}
+	if (BoardGame[Line][3].Score == BoardGame[Line][5].Score)
+	{
+		return BoardGame[Line][3].Score * 2 + BoardGame[Line][4].Score;
+	}
+	return BoardGame[Line][3].Score + BoardGame[Line][4].Score + BoardGame[Line][5].Score;
 }
 

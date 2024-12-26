@@ -296,6 +296,19 @@ void UGameWidget::SwitchTexture(EPosition PlayerId, uint8 HandSlotIndex, UTextur
 	GetCardWidget(PlayerId, HandSlotIndex)->SwitchTexture(CardTexture);
 }
 
+void UGameWidget::UpdateScores(int32 PLeftScore0, int32 PLeftScore1, int32 PLeftScore2, int32 PLeftTotalScore,
+	int32 PRightScore0, int32 PRightScore1, int32 PRightScore2, int32 PRightTotalScore)
+{
+	WBP_ScoreP1_0->UpdateScoreText(PLeftScore0);
+	WBP_ScoreP1_1->UpdateScoreText(PLeftScore1);
+	WBP_ScoreP1_2->UpdateScoreText(PLeftScore2);
+	WBP_ScoreP1_Total->UpdateScoreText(PLeftTotalScore);
+	WBP_ScoreP2_0->UpdateScoreText(PRightScore0);
+	WBP_ScoreP2_1->UpdateScoreText(PRightScore1);
+	WBP_ScoreP2_2->UpdateScoreText(PRightScore2);
+	WBP_ScoreP2_Total->UpdateScoreText(PRightTotalScore);
+}
+
 
 void UGameWidget::NativeConstruct()
 {

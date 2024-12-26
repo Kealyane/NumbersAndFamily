@@ -62,12 +62,17 @@ public:
 	void MultiRPC_UpdateActiveTurnUI(); // Show for both clients which one is active
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_UpdateBoardUI(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow);
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_UpdateScores(int32 PLeftScore0,int32 PLeftScore1,int32 PLeftScore2,int32 PLeftTotalScore,
+		int32 PRightScore0,int32 PRightScore1,int32 PRightScore2,int32 PRightTotalScore);
 
 	UFUNCTION()
 	void SwitchPlayerTurn();
 	UFUNCTION()
 	void InitBoardRow();
-
+	UFUNCTION()
+	void UpdateScores(int32 PLeftScore0,int32 PLeftScore1,int32 PLeftScore2,int32 PLeftTotalScore,
+		int32 PRightScore0,int32 PRightScore1,int32 PRightScore2,int32 PRightTotalScore);
 
 	ANAFPlayerState* GetOpponentPlayerState(EPosition CurrentId);
 	ANAFPlayerState* GetNafPlayerState(EPosition Id);

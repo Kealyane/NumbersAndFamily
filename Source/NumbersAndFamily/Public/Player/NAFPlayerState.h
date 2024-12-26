@@ -57,6 +57,7 @@ public:
 	FCardDataServer GetSelectedCard();
 	uint8 GetIndexSelected() const { return IndexSelected; }
 	void ActiveHandChoice(EPosition ActiveId);
+	void UpdateScores(int32 InScoreLine0, int32 InScoreLine1, int32 InScoreLine2, int32 InTotalScore);
 	
 	// return true if slot is occupied 
 	TArray<bool> HandStatus();
@@ -72,14 +73,23 @@ protected:
 	FCardDataServer SelectedCard;
 	uint8 IndexSelected;
 	
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing=OnRep_ScoreLine0)
 	int32 ScoreLine0;
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing=OnRep_ScoreLine1)
 	int32 ScoreLine1;
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing=OnRep_ScoreLine2)
 	int32 ScoreLine2;
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing=OnRep_TotalScore)
 	int32 TotalScore;
+
+	UFUNCTION()
+	void OnRep_ScoreLine0();
+	UFUNCTION()
+	void OnRep_ScoreLine1();
+	UFUNCTION()
+	void OnRep_ScoreLine2();
+	UFUNCTION()
+	void OnRep_TotalScore();
 	
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 	

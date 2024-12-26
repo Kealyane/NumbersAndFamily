@@ -2,8 +2,6 @@
 
 
 #include "Player/NAFPlayerState.h"
-
-#include "GameMode/NAFGameState.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/NAFPlayerController.h"
 
@@ -39,13 +37,13 @@ void ANAFPlayerState::StoreCardInHand(FCardDataServer Card)
 	{
 		Card1 = Card;
 		CardPos = 1;
-		Card1.DebugCard(FName("StoreCardInHand 1"));
+		//Card1.DebugCard(FName("StoreCardInHand 1"));
 	}
 	else if (Card2.RowName.IsNone())
 	{
 		Card2 = Card;
 		CardPos = 2;
-		Card2.DebugCard(FName("StoreCardInHand 2"));
+		//Card2.DebugCard(FName("StoreCardInHand 2"));
 	}
 	if (ANAFPlayerController* NafPC = GetNafPC())
 	{
@@ -148,7 +146,7 @@ ECardType ANAFPlayerState::GetCardType(uint8 PosCard)
 
 FCardDataServer ANAFPlayerState::GetSelectedCard()
 {
-	SelectedCard.DebugCard(FName("Player State : Get Selected card"));
+	//SelectedCard.DebugCard(FName("Player State : Get Selected card"));
 	return SelectedCard;
 }
 
@@ -163,18 +161,40 @@ void ANAFPlayerState::ActiveHandChoice(EPosition ActiveId)
 	}
 }
 
+void ANAFPlayerState::UpdateScores(int32 InScoreLine0, int32 InScoreLine1, int32 InScoreLine2, int32 InTotalScore)
+{
+	if (HasAuthority())
+	{
+		ScoreLine0 = InScoreLine0;
+		ScoreLine1 = InScoreLine1;
+		ScoreLine2 = InScoreLine2;
+		TotalScore = InTotalScore;
+	}
+}
+
 TArray<bool> ANAFPlayerState::HandStatus()
 {
-	// if (GEngine)
-	// {
-	// 	GEngine->AddOnScreenDebugMessage(-1, 90.f, FColor::Yellow,
-	// 		FString::Printf(TEXT("Player State %s : HandStatus"), *EnumHelper::ToString(Id)));
-	// }
 	//UE_LOG(LogTemp, Warning, TEXT("player state %s : HandStatus"), *EnumHelper::ToString(Id));
 	TArray<bool> Status;
 	Status.Add(!Card1.RowName.IsNone());
 	Status.Add(!Card2.RowName.IsNone());
 	return Status;
+}
+
+void ANAFPlayerState::OnRep_ScoreLine0()
+{
+}
+
+void ANAFPlayerState::OnRep_ScoreLine1()
+{
+}
+
+void ANAFPlayerState::OnRep_ScoreLine2()
+{
+}
+
+void ANAFPlayerState::OnRep_TotalScore()
+{
 }
 
 void ANAFPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -192,7 +212,6 @@ void ANAFPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 ANAFPlayerController* ANAFPlayerState::GetNafPC() const
 {
-	//return Cast<ANAFPlayerController>(GetPlayerController());
-	return Cast<ANAFPlayerController>(GetOwner());
+	return Cast<ANAFPlayerController>(GetPlayerController());
 }
 

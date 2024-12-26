@@ -75,12 +75,13 @@ public:
 	void EndTurn();
 	UFUNCTION()
 	void UpdateBoardCard(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow);
+	UFUNCTION()
+	void UpdateScores(int32 PLeftScore0,int32 PLeftScore1,int32 PLeftScore2,int32 PLeftTotalScore,
+		int32 PRightScore0,int32 PRightScore1,int32 PRightScore2,int32 PRightTotalScore);
 
 
 	UFUNCTION()
 	void EnableCardSelectionUI(EPosition PlayerId, ECardType CardType);
-	// UFUNCTION()
-	// void DisableCardSelectionUI();
 
 	UFUNCTION()
 	void GetCardTypeSelected(uint8 PosInHand);

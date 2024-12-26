@@ -5,31 +5,11 @@
 
 #include "Components/TextBlock.h"
 
-void UScoreWidget::UpdateScoreText(uint8 ScoreValue)
+void UScoreWidget::UpdateScoreText(int32 ScoreValue)
 {
 	FString ScoreString = FString::Printf(TEXT("%d"), ScoreValue);
 	Score->SetText(FText::FromString(ScoreString));
 	OnScoreUpdated.Broadcast();
-}
-
-void UScoreWidget::SetScoreParams(bool IsPlayer1, uint8 LineParam, bool bIsTotalScoreParam = false)
-{
-	if (IsPlayer1)
-	{
-		OwningPlayer = EPosition::LEFT;
-	}
-	else
-	{
-		OwningPlayer = EPosition::RIGHT;
-	}
-	SetScoreCoordParams(LineParam, bIsTotalScoreParam);
-}
-
-void UScoreWidget::SetScoreCoordParams(uint8 LineParam, bool bIsTotalScoreParam)
-{
-	Line = LineParam;
-	bIsTotalScore = bIsTotalScoreParam;
-	InitScore();
 }
 
 void UScoreWidget::InitScore()

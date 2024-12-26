@@ -464,6 +464,16 @@ FString::Printf(TEXT("PC : UpdateBoardCard no card slot")));
 	}
 }
 
+void ANAFPlayerController::UpdateScores(int32 PLeftScore0, int32 PLeftScore1, int32 PLeftScore2, int32 PLeftTotalScore,
+	int32 PRightScore0, int32 PRightScore1, int32 PRightScore2, int32 PRightTotalScore)
+{
+	if (GameWidget)
+	{
+		GameWidget->UpdateScores(PLeftScore0, PLeftScore1, PLeftScore2, PLeftTotalScore,
+			PRightScore0, PRightScore1, PRightScore2, PRightTotalScore);
+	}
+}
+
 bool ANAFPlayerController::IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col)
 {
 	if (PlayerId == EPosition::LEFT)

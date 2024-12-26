@@ -140,12 +140,13 @@ public:
 	UFUNCTION()
 	void DeactivateHandHighlight(EPosition PlayerId);
 
-	// UFUNCTION(BlueprintCallable)
-	// void StashArcane();
-
 	void ResetPlayerCardDeck(EPosition PlayerPos);
 	UCardWidget* GetCardWidget(EPosition PlayerPos, uint8 CardPos) const;
+	UFUNCTION()
 	void SwitchTexture(EPosition PlayerId, uint8 HandSlotIndex, UTexture2D* CardTexture);
+	UFUNCTION()
+	void UpdateScores(int32 PLeftScore0,int32 PLeftScore1,int32 PLeftScore2,int32 PLeftTotalScore,
+		int32 PRightScore0,int32 PRightScore1,int32 PRightScore2,int32 PRightTotalScore);
 
 	// EVENTS
 
