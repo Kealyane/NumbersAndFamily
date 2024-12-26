@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Player/NAFPlayerState.h"
 #include "Widgets/CardWidget.h"
+#include "Widgets/EndGameWidget.h"
 #include "Widgets/GameWidget.h"
 
 void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
@@ -98,6 +99,27 @@ void ANAFPlayerController::PlaySound(USoundBase* Sound)
 	{
 		UGameplayStatics::PlaySound2D(this, Sound);
 	}
+}
+
+void ANAFPlayerController::ShowEndGamePanel(EPosition WinningPlayerId)
+{
+	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
+	if (!NafPlayerState) return;
+	
+	EndGameWidget = CreateWidget<UEndGameWidget>(this, EndGameWidgetType);
+	if (EndGameWidget)
+	{
+		EndGameWidget->AddToViewport(5);
+		EndGameWidget->SetIsFocusable(true);
+		EndGameWidget->SetEndGameText(NafPlayerState->Id==WinningPlayerId, NafPlayerState->GetTotalScore());
+	}
+	FInputModeGameAndUI InputMode;
+	InputMode.SetWidgetToFocus(EndGameWidget->TakeWidget()); 
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	bShowMouseCursor = true;
+	bEnableClickEvents = true;
+	bEnableMouseOverEvents = true;
+	SetInputMode(InputMode);
 }
 
 void ANAFPlayerController::ServerRPC_DrawCard_Implementation()

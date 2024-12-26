@@ -7,6 +7,7 @@
 #include "NumbersAndFamily/NumbersAndFamily.h"
 #include "NAFPlayerController.generated.h"
 
+class UEndGameWidget;
 struct FCardDataServer;
 enum class ECardType : uint8;
 class ANAFPlayerState;
@@ -21,11 +22,14 @@ class NUMBERSANDFAMILY_API ANAFPlayerController : public APlayerController
 
 private:
 	TObjectPtr<UGameWidget> GameWidget;
+	TObjectPtr<UEndGameWidget> EndGameWidget;
 	bool bIsMyTurn;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="MyPropperties|Widget")
 	TSubclassOf<UGameWidget> GameWidgetType;
+	UPROPERTY(EditDefaultsOnly, Category="MyPropperties|Widget")
+	TSubclassOf<UEndGameWidget> EndGameWidgetType;
 	UPROPERTY(EditAnywhere, Category="MyPropperties|DataTable")
 	TObjectPtr<UDataTable> DeckDataTable;
 	UPROPERTY(EditAnywhere, Category="MyPropperties|Card")
@@ -46,6 +50,7 @@ public:
 	void ClientRPC_PocketCardEmpty(EPosition PlayerPosition, uint8 Pos);
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_ActiveHand(EPosition PlayerPosition);
+
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPC_DrawCard();
@@ -78,7 +83,8 @@ public:
 	UFUNCTION()
 	void UpdateScores(int32 PLeftScore0,int32 PLeftScore1,int32 PLeftScore2,int32 PLeftTotalScore,
 		int32 PRightScore0,int32 PRightScore1,int32 PRightScore2,int32 PRightTotalScore);
-
+	UFUNCTION()
+	void ShowEndGamePanel(EPosition WinningPlayerId);
 
 	UFUNCTION()
 	void EnableCardSelectionUI(EPosition PlayerId, ECardType CardType);

@@ -29,18 +29,23 @@ protected:
 	
 	void PostLogin(APlayerController* NewPlayer) override;
 	void LaunchGame();
+	void EndGame();
 
 public:
 	void DrawCard(ANAFPlayerState* ActivePlayerState);
+	void EndTurn();
+
 	void RemoveCardFromHand(ANAFPlayerState* ActivePlayerState);
+
 	void PlaceNormalCard(FCardDataServer Card, uint8 IndexHandCard, uint8 Line, uint8 Col);
-	bool IsCoordOccupiedInBoard(uint8 Line, uint8 Col);
 	void SwitchCardsInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
 	void StealCardInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col);
-	FName GetCardDataRowName(uint8 Line, uint8 Col);
 	void CopyCardInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col, FCardDataServer Card);
+	
+	bool IsCoordOccupiedInBoard(uint8 Line, uint8 Col);
+	FName GetCardDataRowName(uint8 Line, uint8 Col);
 	FName GetRowNameFromDataServer(FCardDataServer Card);
-	void EndTurn();
+	void SetGameOverInfos(EPosition WinnerId);
 	
 private:
 	FTimerHandle WaitHandle;
@@ -49,4 +54,6 @@ private:
 	TObjectPtr<ANAFGameState> NafGameState;
 
 	uint8 IndexHandCardPlayed;
+	bool bIsGameOver;
+	EPosition Winner; 
 };

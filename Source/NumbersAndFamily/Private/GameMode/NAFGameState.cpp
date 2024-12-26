@@ -82,6 +82,15 @@ void ANAFGameState::MultiRPC_UpdateScores_Implementation(int32 PLeftScore0, int3
 	}
 }
 
+void ANAFGameState::MultiRPC_EndGame_Implementation(EPosition InWinner)
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->ShowEndGamePanel(InWinner);
+	}
+}
+
 void ANAFGameState::SwitchPlayerTurn()
 {
 	if (HasAuthority())

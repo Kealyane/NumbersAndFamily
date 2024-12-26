@@ -65,6 +65,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_UpdateScores(int32 PLeftScore0,int32 PLeftScore1,int32 PLeftScore2,int32 PLeftTotalScore,
 		int32 PRightScore0,int32 PRightScore1,int32 PRightScore2,int32 PRightTotalScore);
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_EndGame(EPosition InWinner);
 
 	UFUNCTION()
 	void SwitchPlayerTurn();

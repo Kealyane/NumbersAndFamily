@@ -48,6 +48,9 @@ void ANAFGameMode::PostLogin(APlayerController* NewPlayer)
 
 void ANAFGameMode::LaunchGame()
 {
+	bIsGameOver = false;
+	Winner = EPosition::SERVER;
+	
 	if (GEngine)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : launch game")));
@@ -121,8 +124,21 @@ void ANAFGameMode::LaunchGame()
 	}
 }
 
+void ANAFGameMode::EndGame()
+{
+	if (NafGameState)
+	{
+		NafGameState->MultiRPC_EndGame(Winner);
+	}
+}
+
 void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 {
+	if (bIsGameOver)
+	{
+		EndGame();
+		return;
+	}
 	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("game mode : DrawCard")));
 	UE_LOG(LogTemp, Warning, TEXT("game mode : DrawCard"));
 	FCardDataServer Card = Deck->DrawCard();
@@ -132,7 +148,7 @@ void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 	 FString::Printf(TEXT("GameMode : Can't draw card, empty")));
 		return;
 	}
-	Card.DebugCard(FName("Draw Card"));
+	//Card.DebugCard(FName("Draw Card"));
 	ActivePlayerState->StoreCardInHand(Card);
 	ActivePlayerState->ActiveHandChoice(ActivePlayerState->Id);
 	TArray<bool> HandCurrent = ActivePlayerState->HandStatus();
@@ -198,6 +214,12 @@ void ANAFGameMode::CopyCardInBoard(uint8 IndexHandCard, uint8 Card1Line, uint8 C
 FName ANAFGameMode::GetRowNameFromDataServer(FCardDataServer Card)
 {
 	return Deck->GetRowNameFromDataServer(Card);
+}
+
+void ANAFGameMode::SetGameOverInfos(EPosition WinnerId)
+{
+	bIsGameOver = true;
+	Winner = WinnerId;
 }
 
 

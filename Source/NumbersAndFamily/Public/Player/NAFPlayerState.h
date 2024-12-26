@@ -52,18 +52,20 @@ public:
 	void StoreCardInHand(FCardDataServer Card);
 	void RemoveCardInHand(uint8 IndexCard);
 	void UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus);
+	void ActiveHandChoice(EPosition ActiveId);
+
 	void ActiveTurn(EPosition ActiveId);
+	void UpdateScores(int32 InScoreLine0, int32 InScoreLine1, int32 InScoreLine2, int32 InTotalScore);
+	
 	ECardType GetCardType(uint8 PosCard);
 	FCardDataServer GetSelectedCard();
 	uint8 GetIndexSelected() const { return IndexSelected; }
-	void ActiveHandChoice(EPosition ActiveId);
-	void UpdateScores(int32 InScoreLine0, int32 InScoreLine1, int32 InScoreLine2, int32 InTotalScore);
-	
+	int32 GetTotalScore() const { return TotalScore; }
+
 	// return true if slot is occupied 
 	TArray<bool> HandStatus();
 	ANAFPlayerController* GetNafPC() const;
 
-	
 protected:
 	UPROPERTY(Replicated)
 	FCardDataServer Card1;

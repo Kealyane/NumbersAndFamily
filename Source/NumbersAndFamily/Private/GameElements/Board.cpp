@@ -5,6 +5,7 @@
 
 #include "GameMode/NAFGameMode.h"
 #include "GameMode/NAFGameState.h"
+#include "NumbersAndFamily/NumbersAndFamily.h"
 
 class ANAFGameMode;
 
@@ -179,20 +180,26 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 void ABoard::SyncBoardWithGameState()
 {
 	ComputeScores();
-	//UE_LOG(LogTemp, Warning, TEXT("Board SyncBoardWithGameState"));
+
+	uint8 NbCardsLeft = 0;
+	uint8 NbCardsRight = 0;
+	
 	int index = 0;
+	
+	ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode());
 	
 	for (int i = 0; i < NB_LINE; i++)
 	{
 		for (int j = 0; j < NB_COLUMN; j++)
 		{
+			if (!BoardGame[i][j].RowName.IsNone()) j < 3 ? NbCardsLeft++ : NbCardsRight++;
+
 			if (BoardGame[i][j].ArcaneType == EArcaneType::COPY)
 			{
-				if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
+				if (GameMode)
 				{
 					FName CopyCardName = GameMode->GetRowNameFromDataServer(BoardGame[i][j]);
 					BoardRowNames[index] = CopyCardName;
-					//UE_LOG(LogTemp, Warning, TEXT("Board SyncBoardWithGameState : card to copy %s"),*CopyCardName.ToString());
 				}
 			}
 			else
@@ -202,6 +209,12 @@ void ABoard::SyncBoardWithGameState()
 			index++;
 		}
 	}
+	
+	// Check GameOver
+	if (NbCardsLeft == 9) GameMode->SetGameOverInfos(EPosition::LEFT);
+	if (NbCardsRight == 9)GameMode->SetGameOverInfos(EPosition::RIGHT);
+
+	// Set the board
 	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
 	{
 		NafGS->SetBoardName(true, BoardRowNames);

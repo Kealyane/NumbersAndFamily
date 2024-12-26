@@ -34,14 +34,20 @@ private:
 	TArray<FName> BoardRowNames;
 	TObjectPtr<ADeck> Deck;
 
+	// Gameplay
 	void DeleteCardWithSameScore(uint8 Line, uint8 Col);
 	void DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col);
-	
+	void MoveCards(uint8 Line, uint8 Col);
+
+	// Sync
 	void SyncBoardWithGameState();
+
+	// Check
 	bool IsLineFull(uint8 Line, uint8 Col);
 	bool IsFamily(uint8 Line, uint8 Col);
-	void MoveCards(uint8 Line, uint8 Col);
 	bool HasHoles(uint8 Line, uint8 Col);
+
+	// Score
 	void ComputeScores();
 	int32 ComputeLineScoreLeft(uint8 Line);
 	int32 ComputeLineScoreRight(uint8 Line);
