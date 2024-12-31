@@ -26,6 +26,15 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FShowCopyCardInHandSignature, uint8
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FActiveCopySignature,
 											EPosition, Card1Pos, uint8, Card1Line, uint8, Card1Col,
 											EPosition, Card2Pos, uint8, Card2Line, uint8, Card2Col);
+
+// for blueprint
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayer1IsActiveSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayer1IsInactiveSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayer2IsActiveSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayer2IsInactiveSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPlayer1NameSignature, FName, PlayerName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPlayer2NameSignature, FName, PlayerName);
+
 /**
  * 
  */
@@ -34,13 +43,10 @@ class NUMBERSANDFAMILY_API UGameWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(meta=(BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UCardWidget> WBP_Card_Deck;
 	
 	// PLAYER LEFT
-
-	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<UTextBlock> Text_P1_Name;
 	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UCardWidget> WBP_Card_00;
@@ -76,9 +82,6 @@ public:
 	TObjectPtr<UScoreWidget> WBP_ScoreP1_Total;
 
 	// PLAYER RIGHT
-
-	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<UTextBlock> Text_P2_Name;
 	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UCardWidget> WBP_Card_03;
@@ -161,6 +164,19 @@ public:
 	FShowCopyCardInHandSignature OnShowCopyCardInHand;
 	UPROPERTY()
 	FActiveCopySignature OnActiveCopy;
+
+	UPROPERTY(BlueprintAssignable, Category="Player")
+	FPlayer1IsActiveSignature Player1IsActive;
+	UPROPERTY(BlueprintAssignable, Category="Player")
+	FPlayer2IsActiveSignature Player2IsActive;
+	UPROPERTY(BlueprintAssignable, Category="Player")
+	FPlayer1IsInactiveSignature Player1IsInactive;
+	UPROPERTY(BlueprintAssignable, Category="Player")
+	FPlayer2IsInactiveSignature Player2IsInactive;
+	UPROPERTY(BlueprintAssignable, Category="Player")
+	FSetPlayer1NameSignature SetPlayer1Name;
+	UPROPERTY(BlueprintAssignable, Category="Player")
+	FSetPlayer2NameSignature SetPlayer2Name;
 
 protected:
 	virtual void NativeConstruct() override;

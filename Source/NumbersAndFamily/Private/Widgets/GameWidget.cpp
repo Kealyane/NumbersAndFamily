@@ -6,7 +6,6 @@
 #include "NumbersAndFamily/NumbersAndFamily.h"
 #include "Widgets/CardWidget.h"
 #include "Widgets/ScoreWidget.h"
-#include "Components/TextBlock.h"
 #include "Player/NAFPlayerController.h"
 #include "Player/NAFPlayerState.h"
 
@@ -16,13 +15,13 @@ void UGameWidget::ShowActivePlayer(EPosition ActivePlayer)
 
 	if (ActivePlayer == EPosition::LEFT)
 	{
-		Text_P1_Name->SetColorAndOpacity(EnableColor);
-		Text_P2_Name->SetColorAndOpacity(DisableColor);
+		Player1IsActive.Broadcast();
+		Player2IsInactive.Broadcast();
 	}
 	else
 	{
-		Text_P1_Name->SetColorAndOpacity(DisableColor);
-		Text_P2_Name->SetColorAndOpacity(EnableColor);
+		Player1IsInactive.Broadcast();
+		Player2IsActive.Broadcast();
 	}
 	
 }
@@ -353,7 +352,7 @@ void UGameWidget::BindCardWidget()
 		{
 			if (BoardSlots[i][j])
 			{
-				BoardSlots[i][j]->OnClick.AddDynamic(this, &UGameWidget::OnBoardCardSelected);
+				BoardSlots[i][j]->OnClickSlot.AddDynamic(this, &UGameWidget::OnBoardCardSelected);
 			}
 		}
 	}
@@ -365,7 +364,7 @@ void UGameWidget::BindCardWidget()
 		{
 			if (PocketCard)
 			{
-				PocketCard->OnClick.AddDynamic(this, &UGameWidget::OnHandCardSelected);
+				PocketCard->OnClickSlot.AddDynamic(this, &UGameWidget::OnHandCardSelected);
 			}
 		}
 	}
