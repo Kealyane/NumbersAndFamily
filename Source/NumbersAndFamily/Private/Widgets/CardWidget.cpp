@@ -2,8 +2,6 @@
 
 
 #include "Widgets/CardWidget.h"
-#include "Components/Button.h"
-#include "Components/Image.h"
 
 void UCardWidget::SetSlotParams(bool IsPlayer1, uint8 LineParam, uint8 ColParam)
 {
@@ -24,7 +22,7 @@ void UCardWidget::CardClicked()
 {
 	if (bCanBeClicked)
 	{
-		OnClick.Broadcast(OwningPlayer, Line, Col);
+		OnClickSlot.Broadcast(OwningPlayer, Line, Col);
 	}
 }
 
@@ -34,58 +32,54 @@ void UCardWidget::SelectCard(bool bIsSelected)
 	
 	if (bIsSelected)
 	{
-		ButtonSlot->SetBackgroundColor(FLinearColor::Green);
-		OnCardSelected.Broadcast();
+		OnCardSelected.Broadcast(); // green
 	}
 	else
 	{
-		ButtonSlot->SetBackgroundColor(FLinearColor::White);
-		OnCardUnselected.Broadcast();
+		OnCardUnselected.Broadcast(); // white
 	}
 }
 
-void UCardWidget::ShowCard(UTexture2D* CardImage)
+void UCardWidget::ShowCard(UTexture2D* InCardImage)
 {
 	bIsCardOccupied = true;
-	ImageCard->SetBrushFromTexture(CardImage);
-	ImageCard->SetOpacity(1.f);
-	OnCardPlace.Broadcast();
+	OnCardPlace.Broadcast(InCardImage); // alpha  1
 }
 
 void UCardWidget::HideCard()
 {
 	bIsCardOccupied = false;
-	ImageCard->SetOpacity(0.f);
+	OnCardHidden.Broadcast(); // alpha 0
 }
 
 void UCardWidget::EnableHighlight()
 {
 	bCanBeClicked = true;
-	ButtonSlot->SetBackgroundColor(FLinearColor::Yellow);
+	OnEnableHighlight.Broadcast(); // yellow
 }
 
 void UCardWidget::DisableHighlight()
 {
 	if (bIsHandSelectionOnGoing)
 	{
-		ButtonSlot->SetBackgroundColor(FLinearColor::Yellow);
+		OnEnableHighlight.Broadcast(); // yellow
 	}
 	else
 	{
 		bCanBeClicked = false;
-		ButtonSlot->SetBackgroundColor(FLinearColor::White);
+		OnDisableHighlight.Broadcast(); // white
 	}
 }
 
 void UCardWidget::SpecialCardFirstChoiceSelected()
 {
 	bCanBeClicked = true;
-	ButtonSlot->SetBackgroundColor(FLinearColor::Blue);
+	OnSpecialCardEnableSelection.Broadcast(); // blue
 }
 
 void UCardWidget::SwitchTexture(UTexture2D* CardImage)
 {
-	ImageCard->SetBrushFromTexture(CardImage);
+	OnSetImage.Broadcast(CardImage);
 }
 
 
