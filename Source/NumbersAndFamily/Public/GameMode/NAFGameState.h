@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SoundNames.h"
 #include "GameFramework/GameState.h"
 #include "NAFGameState.generated.h"
 
@@ -57,7 +58,7 @@ public:
 	void SetBoardName(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow);
 	
 	UFUNCTION(NetMulticast, Unreliable)
-	void MultiRPC_PlaySoundStartGame();
+	void MultiRPC_PlaySoundForBoth(ESoundRow SoundRow);
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_UpdateActiveTurnUI(); // Show for both clients which one is active
 	UFUNCTION(NetMulticast, Reliable)
@@ -81,6 +82,5 @@ public:
 
 protected:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	void PlaySound(USoundBase* Sound);
 	
 };

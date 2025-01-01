@@ -3,7 +3,8 @@
 
 #include "GameMode/NAFGameState.h"
 
-#include "Kismet/GameplayStatics.h"
+#include "SoundNames.h"
+#include "GameElements/AudioContainer.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/NAFPlayerController.h"
 #include "Player/NAFPlayerState.h"
@@ -40,10 +41,13 @@ void ANAFGameState::SetBoardName(bool bAfterPlayerAction, const TArray<FName>& I
 	}
 }
 
-void ANAFGameState::MultiRPC_PlaySoundStartGame_Implementation()
+void ANAFGameState::MultiRPC_PlaySoundForBoth_Implementation(ESoundRow SoundRow)
 {
-	// TODO : replace nullptr by sound
-	PlaySound(nullptr);
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->GetAudioManager()->PlayAudio(SoundRow);
+	}
 }
 
 void ANAFGameState::MultiRPC_UpdateActiveTurnUI_Implementation()
@@ -147,12 +151,4 @@ void ANAFGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ANAFGameState, ActiveId);
 	DOREPLIFETIME(ANAFGameState, BoardTableRow);
-}
-
-void ANAFGameState::PlaySound(USoundBase* Sound)
-{
-	if (Sound)
-	{
-		UGameplayStatics::PlaySound2D(this, Sound);
-	}
 }

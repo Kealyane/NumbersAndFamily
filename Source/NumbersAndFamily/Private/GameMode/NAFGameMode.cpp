@@ -78,32 +78,27 @@ void ANAFGameMode::LaunchGame()
 		Board->InitBoard();
 		Board->InitParamDeck(Deck);
 		NafGameState->InitBoardRow();
-	}
+	
 
-	NafGameState->MultiRPC_PlaySoundStartGame();
+		NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::StartGame);
 
-	// Give one card to both player 
-	for (APlayerState* PlayerState : NafGameState->PlayerArray)
-	{
-		if (PlayerState)
-		{
-			if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
+
+		DelayCounter += 1.5f;
+		World->GetTimerManager().SetTimer(ShuffleHandle,
+			[this,World]()
 			{
-				FCardDataServer Card = Deck->DrawCard();
-				NafPS->StoreCardInHand(Card);
-				TArray<bool> HandCurrent = NafPS->HandStatus();
-				ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
-				OpponentPS->UpdateHandUI(NafPS->Id,HandCurrent);
-			}
-		}
+				NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::Shuffle);
+			},
+			DelayCounter,
+			false);
+		
+		DelayCounter += 3.f;
+		World->GetTimerManager().SetTimer(InitCardHandle,this,&ANAFGameMode::GiveOneCardToBothPlayer, DelayCounter, false);
+		
+		DelayCounter += 1.f;
+		World->GetTimerManager().SetTimer(SwitchPlayerHandle,this,&ANAFGameMode::InitializeCurrentPlayer, DelayCounter, false);
 	}
 	
-	// Initialize Active Player
-	const bool bIsPlayerLeft = FMath::RandBool();
-	const EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
-	
-	NafGameState->SetActivePlayer(ActivePosition);
-
 }
 
 void ANAFGameMode::EndGame()
@@ -192,6 +187,36 @@ void ANAFGameMode::SetGameOverInfos(EPosition WinnerId)
 {
 	bIsGameOver = true;
 	Winner = WinnerId;
+}
+
+
+void ANAFGameMode::GiveOneCardToBothPlayer()
+{
+	// Give one card to both player
+	float GiveCardDelay = 1.f;
+	for (APlayerState* PlayerState : NafGameState->PlayerArray)
+	{
+		if (PlayerState)
+		{
+			if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
+			{
+				FCardDataServer Card = Deck->DrawCard();
+				NafPS->StoreCardInHand(Card);
+				TArray<bool> HandCurrent = NafPS->HandStatus();
+				ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
+				OpponentPS->UpdateHandUI(NafPS->Id,HandCurrent);
+			}
+		}
+	}
+}
+
+void ANAFGameMode::InitializeCurrentPlayer()
+{
+	// Initialize Active Player
+	const bool bIsPlayerLeft = FMath::RandBool();
+	const EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
+	
+	NafGameState->SetActivePlayer(ActivePosition);
 }
 
 

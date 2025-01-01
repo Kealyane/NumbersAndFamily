@@ -22,6 +22,7 @@ enum class ESoundRow : uint8
 	StartGame,
 	UINegative,
 	UIPositive,
+	Shuffle,
 };
 
 inline FName ToFName(ESoundRow Row)
@@ -56,6 +57,8 @@ inline FName ToFName(ESoundRow Row)
 		return FName("UINegative");
 	case ESoundRow::UIPositive:
 		return FName("UIPositive");
+	case ESoundRow::Shuffle:
+		return FName("Shuffle");
 	default: return FName("NONE");
 	}
 }

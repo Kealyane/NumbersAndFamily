@@ -3,15 +3,31 @@
 
 #include "Player/NAFPlayerController.h"
 
+#include "SoundNames.h"
 #include "Blueprint/UserWidget.h"
+#include "GameElements/AudioContainer.h"
 #include "GameElements/Deck.h"
 #include "GameMode/NAFGameMode.h"
 #include "GameMode/NAFGameState.h"
-#include "Kismet/GameplayStatics.h"
 #include "Player/NAFPlayerState.h"
 #include "Widgets/CardWidget.h"
 #include "Widgets/EndGameWidget.h"
 #include "Widgets/GameWidget.h"
+
+
+void ANAFPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	if (IsLocalController())
+	{
+		if (UWorld* World = GetWorld())
+		{
+			AudioManager = World->SpawnActor<AAudioContainer>(AudioContainerClass);
+		}
+	}
+}
+
 
 void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 {
@@ -46,9 +62,8 @@ void ANAFPlayerController::ClientRPC_PlaceCardInPocketUI_Implementation(EPositio
 	{
 	 	GameWidget->GetCardWidget(PlayerPosition, Pos)->ShowCard(Data->ImageRecto);
 	}
-
-	// TODO : Sound Draw Card
-	PlaySound(nullptr);
+	
+	AudioManager->PlayAudio(ESoundRow::CardDraw);
 }
 
 void ANAFPlayerController::ClientRPC_ShowPocketCardVerso_Implementation(EPosition PlayerPosition, uint8 Pos)
@@ -68,14 +83,6 @@ void ANAFPlayerController::ClientRPC_PocketCardEmpty_Implementation(EPosition Pl
 	if (GameWidget)
 	{
 		GameWidget->GetCardWidget(PlayerPosition, Pos)->HideCard();
-	}
-}
-
-void ANAFPlayerController::PlaySound(USoundBase* Sound)
-{
-	if (Sound)
-	{
-		UGameplayStatics::PlaySound2D(this, Sound);
 	}
 }
 
@@ -254,6 +261,7 @@ bool ANAFPlayerController::ServerRPC_ActiveCopy_Validate(FCardDataServer Card, u
 	GameMode->IsCoordOccupiedInBoard(Card1Line, Card1Col) &&
 	!GameMode->IsCoordOccupiedInBoard(Card2Line, Card2Col);
 }
+
 
 void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
 {
