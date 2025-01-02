@@ -409,7 +409,8 @@ void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray
 
 	if (bAfterPlayerAction)
 	{
-		EndTurn();
+		GetWorld()->GetTimerManager().SetTimer(EndTurnHandle, this, &ANAFPlayerController::EndTurn, 3.f, false);
+		//EndTurn();
 	}
 }
 

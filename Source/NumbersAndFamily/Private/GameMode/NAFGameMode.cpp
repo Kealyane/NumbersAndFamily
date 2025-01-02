@@ -117,18 +117,28 @@ void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 		return;
 	}
 
+	NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::Shuffle);
 	FCardDataServer Card = Deck->DrawCard();
 	if (Card.RowName.IsNone())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("GameMode : Can't draw card, empty"));
 		return;
 	}
+	
+	GetWorld()->GetTimerManager().SetTimer(ShuffleHandle,
+	[this, ActivePlayerState, Card]()
+	{
+		NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::CardDraw);
+		ActivePlayerState->StoreCardInHand(Card);
+		ActivePlayerState->ActiveHandChoice(ActivePlayerState->Id);
+		TArray<bool> HandCurrent = ActivePlayerState->HandStatus();
+		ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(ActivePlayerState->Id);
+		OpponentPS->UpdateHandUI(ActivePlayerState->Id,HandCurrent);
+	},
+	3.f,
+	false);
 
-	ActivePlayerState->StoreCardInHand(Card);
-	ActivePlayerState->ActiveHandChoice(ActivePlayerState->Id);
-	TArray<bool> HandCurrent = ActivePlayerState->HandStatus();
-	ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(ActivePlayerState->Id);
-	OpponentPS->UpdateHandUI(ActivePlayerState->Id,HandCurrent);
+
 }
 
 void ANAFGameMode::RemoveCardFromHand(ANAFPlayerState* ActivePlayerState)

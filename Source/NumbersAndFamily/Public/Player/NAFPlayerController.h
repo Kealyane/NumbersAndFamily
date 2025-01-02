@@ -124,4 +124,5 @@ private:
 	uint8 NbCardInBoard = 0;
 	uint8 NBCardInOpponentBoard = 0;
 	TObjectPtr<AAudioContainer> AudioManager;
+	FTimerHandle EndTurnHandle;
 };
