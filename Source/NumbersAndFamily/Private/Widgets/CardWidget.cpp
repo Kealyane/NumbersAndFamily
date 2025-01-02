@@ -82,4 +82,14 @@ void UCardWidget::SwitchTexture(UTexture2D* CardImage)
 	OnSetImage.Broadcast(CardImage);
 }
 
+void UCardWidget::CardDestroyedByNumEffect()
+{
+	OnCardDestroyBySameNumber.Broadcast();
+}
+
+void UCardWidget::CardDestroyByFamEffect()
+{
+	OnCardDestroyedByFamily.Broadcast();
+}
+
 

@@ -49,11 +49,20 @@ public:
 	
 private:
 	FTimerHandle WaitHandle;
+	FTimerHandle ShuffleHandle;
+	FTimerHandle GiveCardHandle;
+	FTimerHandle InitCardHandle;
+	FTimerHandle SwitchPlayerHandle;
+	FTimerHandle DrawCardHandle;
 	TObjectPtr<ADeck> Deck;
 	TObjectPtr<ABoard> Board;
 	TObjectPtr<ANAFGameState> NafGameState;
 
 	uint8 IndexHandCardPlayed;
 	bool bIsGameOver;
-	EPosition Winner; 
+	EPosition Winner;
+	float  DelayCounter = 0.f;
+	
+	void GiveOneCardToBothPlayer();
+	void InitializeCurrentPlayer();
 };

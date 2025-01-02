@@ -15,6 +15,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetImageSignature, UTexture2D*, Car
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEnableHighlightSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDisableHighlightSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpecialCardEnableSelectionSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCardDestroyedBySameNumberSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCardDestroyedByFamilyEffectSignature);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FClickSignature, EPosition, Player, uint8, LineSelect, uint8, ColSelect);
 
@@ -52,7 +54,11 @@ public:
 	FDisableHighlightSignature OnDisableHighlight;
 	UPROPERTY(BlueprintAssignable)
 	FSpecialCardEnableSelectionSignature OnSpecialCardEnableSelection;
-
+	UPROPERTY(BlueprintAssignable)
+	FCardDestroyedBySameNumberSignature OnCardDestroyBySameNumber;
+	UPROPERTY(BlueprintAssignable)
+	FCardDestroyedByFamilyEffectSignature OnCardDestroyedByFamily;
+	
 	UPROPERTY()
 	FClickSignature OnClickSlot;
 
@@ -68,6 +74,9 @@ public:
 	void DisableHighlight(); // background button to white, can be clicked (false)
 	void SpecialCardFirstChoiceSelected();
 	void SwitchTexture(UTexture2D* CardImage);
+
+	void CardDestroyedByNumEffect();
+	void CardDestroyByFamEffect();
 	
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsCardSlotSelected = false;

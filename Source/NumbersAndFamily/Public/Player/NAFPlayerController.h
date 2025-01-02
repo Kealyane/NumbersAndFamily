@@ -7,6 +7,7 @@
 #include "NumbersAndFamily/NumbersAndFamily.h"
 #include "NAFPlayerController.generated.h"
 
+class AAudioContainer;
 class UEndGameWidget;
 struct FCardDataServer;
 enum class ECardType : uint8;
@@ -36,8 +37,10 @@ protected:
 	TObjectPtr<UTexture2D> CardVerso;
 	UPROPERTY(EditAnywhere, Category="MyPropperties|Card")
 	TObjectPtr<UTexture2D> CopyCardTexture;
-
-	void PlaySound(USoundBase* Sound);
+	UPROPERTY(EditDefaultsOnly, Category="Sounds")
+	TSubclassOf<AAudioContainer> AudioContainerClass;
+	
+	virtual void BeginPlay() override;
 	
 public:
 	UFUNCTION(Client, Reliable)
@@ -71,7 +74,7 @@ public:
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_EndTurn(ANAFPlayerState* ActivePlayerState);
-
+	
 	UFUNCTION()
 	void UpdateActiveTurnUI(EPosition ActivePosition);
 	UFUNCTION()
@@ -106,11 +109,18 @@ public:
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col); // Card2 is empty slot
 
 	UFUNCTION()
+	void FamilyEffect(uint8 PlayerId, uint8 Line);
+	UFUNCTION()
+	void NumEffect(TArray<FIntPoint> CoordCardsDeleted);
+
+	UFUNCTION()
 	uint8 GetNbCardInBoard() const { return NbCardInBoard; }
 	UFUNCTION()
 	uint8 GetNbCardInOpponentBoard() const { return NBCardInOpponentBoard; }
 	UFUNCTION()
 	UTexture2D* GetCopyTexture() const { return CopyCardTexture; }
+	UFUNCTION()
+	AAudioContainer* GetAudioManager() const { return AudioManager; }
 	
 private:
 	bool IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col);
@@ -118,5 +128,6 @@ private:
 	EPosition GetPlayerId() const;
 	uint8 NbCardInBoard = 0;
 	uint8 NBCardInOpponentBoard = 0;
-
+	TObjectPtr<AAudioContainer> AudioManager;
+	FTimerHandle EndTurnHandle;
 };
