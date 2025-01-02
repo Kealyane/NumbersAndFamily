@@ -117,7 +117,7 @@ void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 		return;
 	}
 
-	NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::Shuffle);
+	//NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::Shuffle);
 	FCardDataServer Card = Deck->DrawCard();
 	if (Card.RowName.IsNone())
 	{
@@ -135,7 +135,7 @@ void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 		ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(ActivePlayerState->Id);
 		OpponentPS->UpdateHandUI(ActivePlayerState->Id,HandCurrent);
 	},
-	3.f,
+	0.5f,
 	false);
 
 

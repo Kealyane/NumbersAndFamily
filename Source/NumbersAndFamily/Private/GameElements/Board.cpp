@@ -113,7 +113,7 @@ void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Ca
 void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 {
 	const int32 CardScore = BoardGame[Line][Col].Score;
-	TArray<TTuple<uint8,uint8>> CoordCardsDeleted;
+	TArray<FIntPoint> CoordCardsDeleted;
 	uint8 Counter = 0;
 	if (Col < 3)
 	{
@@ -129,7 +129,7 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 						Deck->BackToDeck(BoardGame[Line][i]);
 					}
 					BoardGame[Line][i].ResetCard();
-					CoordCardsDeleted.Add(TTuple<uint8,uint8>(Line, i));
+					CoordCardsDeleted.Add(FIntPoint(Line, i));
 					Counter++;
 				}
 				else
@@ -154,7 +154,7 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 						Deck->BackToDeck(BoardGame[Line][i]);
 					}
 					BoardGame[Line][i].ResetCard();
-					CoordCardsDeleted.Add(TTuple<uint8,uint8>(Line, i));
+					CoordCardsDeleted.Add(FIntPoint(Line, i));
 					Counter++;
 				}
 				else
@@ -164,6 +164,10 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 				}
 			}
 		}
+	}
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_NumEffect(CoordCardsDeleted);
 	}
 }
 

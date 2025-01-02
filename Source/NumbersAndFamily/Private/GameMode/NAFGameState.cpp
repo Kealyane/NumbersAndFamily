@@ -97,6 +97,15 @@ void ANAFGameState::MultiRPC_FamilyEffect_Implementation(uint8 PlayerID, uint8 L
 	}
 }
 
+void ANAFGameState::MultiRPC_NumEffect_Implementation(const TArray<FIntPoint>& CoordCardsDeleted)
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->NumEffect(CoordCardsDeleted);
+	}
+}
+
 void ANAFGameState::SwitchPlayerTurn()
 {
 	if (HasAuthority())

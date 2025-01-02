@@ -70,6 +70,8 @@ public:
 	void MultiRPC_EndGame(EPosition InWinner);
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_FamilyEffect(uint8 PlayerID, uint8 Line);
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_NumEffect(const TArray<FIntPoint>& CoordCardsDeleted);
 
 	UFUNCTION()
 	void SwitchPlayerTurn();

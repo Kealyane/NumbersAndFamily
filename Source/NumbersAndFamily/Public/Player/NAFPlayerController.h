@@ -110,6 +110,8 @@ public:
 
 	UFUNCTION()
 	void FamilyEffect(uint8 PlayerId, uint8 Line);
+	UFUNCTION()
+	void NumEffect(TArray<FIntPoint> CoordCardsDeleted);
 
 	UFUNCTION()
 	uint8 GetNbCardInBoard() const { return NbCardInBoard; }

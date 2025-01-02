@@ -373,6 +373,14 @@ void ANAFPlayerController::FamilyEffect(uint8 PlayerId, uint8 Line)
 	}
 }
 
+void ANAFPlayerController::NumEffect(TArray<FIntPoint> CoordCardsDeleted)
+{
+	if (GameWidget)
+	{
+		GameWidget->NumEffect(CoordCardsDeleted);
+	}
+}
+
 void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow)
 {
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
