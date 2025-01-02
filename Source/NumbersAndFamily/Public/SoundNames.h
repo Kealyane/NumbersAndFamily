@@ -23,6 +23,8 @@ enum class ESoundRow : uint8
 	UINegative,
 	UIPositive,
 	Shuffle,
+	Steal,
+	Switch,
 };
 
 inline FName ToFName(ESoundRow Row)
