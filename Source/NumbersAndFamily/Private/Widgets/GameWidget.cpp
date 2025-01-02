@@ -279,6 +279,31 @@ void UGameWidget::UpdateScores(int32 PLeftScore0, int32 PLeftScore1, int32 PLeft
 	WBP_ScoreP2_Total->UpdateScoreText(PRightTotalScore);
 }
 
+void UGameWidget::FamilyEffect(uint8 PlayerId, uint8 Line)
+{
+	if (PlayerId == 1)
+	{
+		BoardSlots[Line][0]->CardDestroyByFamEffect();
+		BoardSlots[Line][1]->CardDestroyByFamEffect();
+		BoardSlots[Line][2]->CardDestroyByFamEffect();
+	}
+	else
+	{
+		BoardSlots[Line][3]->CardDestroyByFamEffect();
+		BoardSlots[Line][4]->CardDestroyByFamEffect();
+		BoardSlots[Line][5]->CardDestroyByFamEffect();
+	}
+	LineDestroyed.Broadcast(PlayerId, Line);
+}
+
+void UGameWidget::NumEffect(TArray<FIntPoint> CoordCardsDeleted)
+{
+	for (FIntPoint Coord : CoordCardsDeleted)
+	{
+		BoardSlots[Coord.X][Coord.Y]->CardDestroyedByNumEffect();
+	}
+}
+
 
 void UGameWidget::NativeConstruct()
 {

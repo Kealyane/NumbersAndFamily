@@ -33,6 +33,7 @@ private:
 	TArray<TArray<FCardDataServer>> BoardGame;
 	TArray<FName> BoardRowNames;
 	TObjectPtr<ADeck> Deck;
+	FTimerHandle ComputeScoreHandle;
 
 	// Gameplay
 	void DeleteCardWithSameScore(uint8 Line, uint8 Col);

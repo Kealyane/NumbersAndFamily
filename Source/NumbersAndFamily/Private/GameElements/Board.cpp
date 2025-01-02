@@ -38,6 +38,11 @@ void ABoard::PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col)
 	else DeleteCardWithSameScore(Line, Col);
 	
 	SyncBoardWithGameState();
+	
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::PutCard);
+	}
 }
 
 bool ABoard::IsCoordOccupied(uint8 Line, uint8 Col)
@@ -58,6 +63,11 @@ void ABoard::SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 
 	else DeleteCardWithSameScore(Card2Line, Card2Col);
 	
 	SyncBoardWithGameState();
+
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Switch);
+	}
 }
 
 void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
@@ -71,6 +81,11 @@ void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 C
 	if (HasHoles(Card1Line, Card1Col)) MoveCards(Card1Line, Card1Col);
 	
 	SyncBoardWithGameState();
+
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Steal);
+	}
 }
 
 FName ABoard::GetCardDataRowName(uint8 Line, uint8 Col)
@@ -88,11 +103,17 @@ void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Ca
 	else DeleteCardWithSameScore(Card2Line, Card2Col);
 	
 	SyncBoardWithGameState();
+
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::PutCard);
+	}
 }
 
 void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 {
 	const int32 CardScore = BoardGame[Line][Col].Score;
+	TArray<FIntPoint> CoordCardsDeleted;
 	uint8 Counter = 0;
 	if (Col < 3)
 	{
@@ -108,6 +129,7 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 						Deck->BackToDeck(BoardGame[Line][i]);
 					}
 					BoardGame[Line][i].ResetCard();
+					CoordCardsDeleted.Add(FIntPoint(Line, i));
 					Counter++;
 				}
 				else
@@ -132,6 +154,7 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 						Deck->BackToDeck(BoardGame[Line][i]);
 					}
 					BoardGame[Line][i].ResetCard();
+					CoordCardsDeleted.Add(FIntPoint(Line, i));
 					Counter++;
 				}
 				else
@@ -142,10 +165,15 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 			}
 		}
 	}
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_NumEffect(CoordCardsDeleted);
+	}
 }
 
 void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 {
+	ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>();
 	if (Col < 3)
 	{
 		// Remove line in Player 2 side
@@ -158,6 +186,7 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 				Deck->BackToDeck(BoardGame[Line][i]);
 			}
 			BoardGame[Line][i].ResetCard();
+			if (NafGS) NafGS->MultiRPC_FamilyEffect(2, Line);
 		}
 	}
 	else
@@ -172,6 +201,7 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 				Deck->BackToDeck(BoardGame[Line][i]);
 			}
 			BoardGame[Line][i].ResetCard();
+			if (NafGS) NafGS->MultiRPC_FamilyEffect(1, Line);
 		}
 	}
 }
@@ -179,7 +209,8 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 
 void ABoard::SyncBoardWithGameState()
 {
-	ComputeScores();
+	GetWorld()->GetTimerManager().SetTimer(ComputeScoreHandle, this, &ABoard::ComputeScores, 1.f, false);
+	//ComputeScores();
 
 	uint8 NbCardsLeft = 0;
 	uint8 NbCardsRight = 0;
@@ -253,6 +284,11 @@ bool ABoard::IsFamily(uint8 Line, uint8 Col)
 void ABoard::MoveCards(uint8 Line, uint8 Col)
 {
 	TArray<FCardDataServer> NewLine;
+
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::MoveCardAppear);
+	}
 	
 	if (Col < 3)
 	{
@@ -322,19 +358,39 @@ int32 ABoard::ComputeLineScoreLeft(uint8 Line)
 {
 	if (BoardGame[Line][0].Score == BoardGame[Line][1].Score && BoardGame[Line][1].Score == BoardGame[Line][2].Score)
 	{
-		return BoardGame[Line][0].Score * 3;
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult3);
+		}
+		return (BoardGame[Line][0].Score * 3) * 3;
 	}
 	if (BoardGame[Line][0].Score == BoardGame[Line][1].Score)
 	{
-		return BoardGame[Line][0].Score * 2 + BoardGame[Line][2].Score;
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+		}
+		return (BoardGame[Line][0].Score * 2) * 2 + BoardGame[Line][2].Score;
 	}
 	if (BoardGame[Line][1].Score == BoardGame[Line][2].Score)
 	{
-		return BoardGame[Line][1].Score * 2 + BoardGame[Line][0].Score;
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+		}
+		return (BoardGame[Line][1].Score * 2) * 2 + BoardGame[Line][0].Score;
 	}
 	if (BoardGame[Line][0].Score == BoardGame[Line][2].Score)
 	{
-		return BoardGame[Line][0].Score * 2 + BoardGame[Line][1].Score;
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+		}
+		return (BoardGame[Line][0].Score * 2) * 2 + BoardGame[Line][1].Score;
+	}
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterUp);
 	}
 	return BoardGame[Line][0].Score + BoardGame[Line][1].Score + BoardGame[Line][2].Score;
 }
@@ -343,19 +399,39 @@ int32 ABoard::ComputeLineScoreRight(uint8 Line)
 {
 	if (BoardGame[Line][3].Score == BoardGame[Line][4].Score && BoardGame[Line][4].Score == BoardGame[Line][5].Score)
 	{
-		return BoardGame[Line][3].Score * 3;
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult3);
+		}
+		return (BoardGame[Line][3].Score * 3) * 3;
 	}
 	if (BoardGame[Line][3].Score == BoardGame[Line][4].Score)
 	{
-		return BoardGame[Line][3].Score * 2 + BoardGame[Line][5].Score;
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+		}
+		return (BoardGame[Line][3].Score * 2) * 2 + BoardGame[Line][5].Score;
 	}
 	if (BoardGame[Line][4].Score == BoardGame[Line][5].Score)
 	{
-		return BoardGame[Line][4].Score * 2 + BoardGame[Line][3].Score;
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+		}
+		return (BoardGame[Line][4].Score * 2) * 2 + BoardGame[Line][3].Score;
 	}
 	if (BoardGame[Line][3].Score == BoardGame[Line][5].Score)
 	{
-		return BoardGame[Line][3].Score * 2 + BoardGame[Line][4].Score;
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+		}
+		return (BoardGame[Line][3].Score * 2) * 2 + BoardGame[Line][4].Score;
+	}
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterUp);
 	}
 	return BoardGame[Line][3].Score + BoardGame[Line][4].Score + BoardGame[Line][5].Score;
 }
