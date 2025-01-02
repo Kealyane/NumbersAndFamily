@@ -279,6 +279,11 @@ void UGameWidget::UpdateScores(int32 PLeftScore0, int32 PLeftScore1, int32 PLeft
 	WBP_ScoreP2_Total->UpdateScoreText(PRightTotalScore);
 }
 
+void UGameWidget::FamilyEffect(uint8 PlayerId, uint8 Line)
+{
+	LineDestroyed.Broadcast(PlayerId, Line);
+}
+
 
 void UGameWidget::NativeConstruct()
 {

@@ -68,6 +68,8 @@ public:
 		int32 PRightScore0,int32 PRightScore1,int32 PRightScore2,int32 PRightTotalScore);
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_EndGame(EPosition InWinner);
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_FamilyEffect(uint8 PlayerID, uint8 Line);
 
 	UFUNCTION()
 	void SwitchPlayerTurn();

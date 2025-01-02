@@ -88,6 +88,15 @@ void ANAFGameState::MultiRPC_EndGame_Implementation(EPosition InWinner)
 	}
 }
 
+void ANAFGameState::MultiRPC_FamilyEffect_Implementation(uint8 PlayerID, uint8 Line)
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->FamilyEffect(PlayerID, Line);
+	}
+}
+
 void ANAFGameState::SwitchPlayerTurn()
 {
 	if (HasAuthority())

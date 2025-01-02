@@ -113,6 +113,7 @@ void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Ca
 void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 {
 	const int32 CardScore = BoardGame[Line][Col].Score;
+	TArray<TTuple<uint8,uint8>> CoordCardsDeleted;
 	uint8 Counter = 0;
 	if (Col < 3)
 	{
@@ -128,6 +129,7 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 						Deck->BackToDeck(BoardGame[Line][i]);
 					}
 					BoardGame[Line][i].ResetCard();
+					CoordCardsDeleted.Add(TTuple<uint8,uint8>(Line, i));
 					Counter++;
 				}
 				else
@@ -152,6 +154,7 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 						Deck->BackToDeck(BoardGame[Line][i]);
 					}
 					BoardGame[Line][i].ResetCard();
+					CoordCardsDeleted.Add(TTuple<uint8,uint8>(Line, i));
 					Counter++;
 				}
 				else
@@ -166,6 +169,7 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 
 void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 {
+	ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>();
 	if (Col < 3)
 	{
 		// Remove line in Player 2 side
@@ -178,6 +182,7 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 				Deck->BackToDeck(BoardGame[Line][i]);
 			}
 			BoardGame[Line][i].ResetCard();
+			if (NafGS) NafGS->MultiRPC_FamilyEffect(2, Line);
 		}
 	}
 	else
@@ -192,6 +197,7 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 				Deck->BackToDeck(BoardGame[Line][i]);
 			}
 			BoardGame[Line][i].ResetCard();
+			if (NafGS) NafGS->MultiRPC_FamilyEffect(1, Line);
 		}
 	}
 }

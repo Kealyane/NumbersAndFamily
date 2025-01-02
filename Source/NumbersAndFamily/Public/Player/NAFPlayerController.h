@@ -109,6 +109,9 @@ public:
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col); // Card2 is empty slot
 
 	UFUNCTION()
+	void FamilyEffect(uint8 PlayerId, uint8 Line);
+
+	UFUNCTION()
 	uint8 GetNbCardInBoard() const { return NbCardInBoard; }
 	UFUNCTION()
 	uint8 GetNbCardInOpponentBoard() const { return NBCardInOpponentBoard; }

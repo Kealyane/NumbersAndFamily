@@ -365,6 +365,14 @@ void ANAFPlayerController::HandleCopy(EPosition Card1Pos, uint8 Card1Line, uint8
 		Card2Pos, Card2Line, Card2Col);
 }
 
+void ANAFPlayerController::FamilyEffect(uint8 PlayerId, uint8 Line)
+{
+	if (GameWidget)
+	{
+		GameWidget->FamilyEffect(PlayerId, Line);
+	}
+}
+
 void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow)
 {
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();

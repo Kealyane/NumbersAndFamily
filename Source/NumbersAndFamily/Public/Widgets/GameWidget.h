@@ -34,6 +34,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayer2IsActiveSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayer2IsInactiveSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPlayer1NameSignature, FName, PlayerName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPlayer2NameSignature, FName, PlayerName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FLineDestroyedSignature, uint8, PlayerId, uint8, Line);
 
 /**
  * 
@@ -124,7 +125,7 @@ public:
 	TMap<EPosition, TArray<TObjectPtr<UCardWidget>>> PlayerPockets;
 	
 
-	TTuple<ECardZone,TObjectPtr<UCardWidget>> SelectedCard;
+	//TTuple<ECardZone,TObjectPtr<UCardWidget>> SelectedCard;
 	
 	UFUNCTION()
 	void ShowActivePlayer(EPosition ActivePlayer);
@@ -150,6 +151,8 @@ public:
 	void UpdateScores(int32 PLeftScore0,int32 PLeftScore1,int32 PLeftScore2,int32 PLeftTotalScore,
 		int32 PRightScore0,int32 PRightScore1,int32 PRightScore2,int32 PRightTotalScore);
 
+	UFUNCTION()
+	void FamilyEffect(uint8 PlayerId, uint8 Line);
 	// EVENTS
 
 	UPROPERTY()
@@ -177,6 +180,8 @@ public:
 	FSetPlayer1NameSignature SetPlayer1Name;
 	UPROPERTY(BlueprintAssignable, Category="Player")
 	FSetPlayer2NameSignature SetPlayer2Name;
+	UPROPERTY(BlueprintAssignable, Category="Game Logic")
+	FLineDestroyedSignature LineDestroyed;
 
 protected:
 	virtual void NativeConstruct() override;
