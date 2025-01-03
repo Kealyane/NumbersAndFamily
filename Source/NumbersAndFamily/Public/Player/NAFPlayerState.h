@@ -93,5 +93,8 @@ protected:
 	void OnRep_TotalScore();
 	
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
+
+	FTimerHandle PSPlaceCardHandle;
+	FTimerHandle PSPlaceCardVersoHandle;
 	
 };

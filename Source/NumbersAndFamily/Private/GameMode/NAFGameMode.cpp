@@ -85,7 +85,7 @@ void ANAFGameMode::LaunchGame()
 
 		DelayCounter += 1.5f;
 		World->GetTimerManager().SetTimer(ShuffleHandle,
-			[this,World]()
+			[this]()
 			{
 				NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::Shuffle);
 			},
@@ -95,7 +95,7 @@ void ANAFGameMode::LaunchGame()
 		DelayCounter += 3.f;
 		World->GetTimerManager().SetTimer(InitCardHandle,this,&ANAFGameMode::GiveOneCardToBothPlayer, DelayCounter, false);
 		
-		DelayCounter += 1.f;
+		DelayCounter += 5.f;
 		World->GetTimerManager().SetTimer(SwitchPlayerHandle,this,&ANAFGameMode::InitializeCurrentPlayer, DelayCounter, false);
 	}
 	
@@ -203,18 +203,42 @@ void ANAFGameMode::SetGameOverInfos(EPosition WinnerId)
 void ANAFGameMode::GiveOneCardToBothPlayer()
 {
 	// Give one card to both player
-	float GiveCardDelay = 1.f;
+	int i = 0;
 	for (APlayerState* PlayerState : NafGameState->PlayerArray)
 	{
-		if (PlayerState)
+		if (i == 0)
 		{
-			if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
+			if (PlayerState)
 			{
-				FCardDataServer Card = Deck->DrawCard();
-				NafPS->StoreCardInHand(Card);
-				TArray<bool> HandCurrent = NafPS->HandStatus();
-				ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
-				OpponentPS->UpdateHandUI(NafPS->Id,HandCurrent);
+				if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
+				{
+					FCardDataServer Card = Deck->DrawCard();
+					NafPS->StoreCardInHand(Card);
+					TArray<bool> HandCurrent = NafPS->HandStatus();
+					ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
+					OpponentPS->UpdateHandUI(NafPS->Id,HandCurrent);
+				}
+			}
+		}
+		else
+		{
+			if (PlayerState)
+			{
+				if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
+				{
+					FCardDataServer Card = Deck->DrawCard();
+					FTimerHandle DrawCard2Handle;
+					TArray<bool> HandCurrent = NafPS->HandStatus();
+					ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
+					GetWorld()->GetTimerManager().SetTimer(DrawCard2Handle,
+						[this, OpponentPS, NafPS, HandCurrent, Card]()
+						{
+							NafPS->StoreCardInHand(Card);
+							OpponentPS->UpdateHandUI(NafPS->Id,HandCurrent);
+						},
+						3.f,
+						false);
+				}
 			}
 		}
 	}
@@ -223,8 +247,8 @@ void ANAFGameMode::GiveOneCardToBothPlayer()
 void ANAFGameMode::InitializeCurrentPlayer()
 {
 	// Initialize Active Player
-	const bool bIsPlayerLeft = FMath::RandBool();
-	const EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
+	bool bIsPlayerLeft = FMath::RandBool();
+	EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
 	
 	NafGameState->SetActivePlayer(ActivePosition);
 }

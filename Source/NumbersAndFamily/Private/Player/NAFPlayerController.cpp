@@ -60,21 +60,41 @@ void ANAFPlayerController::ClientRPC_PlaceCardInPocketUI_Implementation(EPositio
 	
 	if (GameWidget && Data)
 	{
-	 	GameWidget->GetCardWidget(PlayerPosition, Pos)->ShowCard(Data->ImageRecto);
+		AudioManager->PlayAudio(ESoundRow::CardDraw);
+		GameWidget->AnimPlaceCardInHand(PlayerPosition, Pos);
+		GetWorld()->GetTimerManager().SetTimer(PlaceCardHandle,
+			[this, PlayerPosition, Pos, Data]()
+			{
+				UCardWidget* CardSlot = GameWidget->GetCardWidget(PlayerPosition, Pos);
+				if (CardSlot)
+				{
+					CardSlot->ShowCardAnim();
+	 				CardSlot->ShowCard(Data->ImageRecto);
+				}
+			},
+			TimeAnimCardInHand+TimeAnimCardFlipInHand,
+			false);
 	}
 	
-	AudioManager->PlayAudio(ESoundRow::CardDraw);
 }
 
 void ANAFPlayerController::ClientRPC_ShowPocketCardVerso_Implementation(EPosition PlayerPosition, uint8 Pos)
 {
 	if (GameWidget)
 	{
+		//GameWidget->AnimPlaceCardInHand(PlayerPosition, Pos);
+		//FTimerHandle PlaceCardVersoHandle;
 		UCardWidget* CardUW = GameWidget->GetCardWidget(PlayerPosition, Pos);
 		if (CardUW)
 		{
 			CardUW->ShowCard(CardVerso);
 		}
+		// GetWorld()->GetTimerManager().SetTimer(PlaceCardVersoHandle,
+		// 	[this, PlayerPosition, Pos]()
+		// 	{
+		// 	},
+		// 	TimeAnimCardInHand,
+		// 	false);
 	}
 }
 
@@ -274,7 +294,10 @@ void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
 void ANAFPlayerController::NotifyTurnStart(bool bInIsMyTurn)
 {
 	bIsMyTurn = bInIsMyTurn;
-	if (bIsMyTurn) ServerRPC_DrawCard();
+	if (bIsMyTurn)
+	{
+		ServerRPC_DrawCard();
+	}
 }
 
 void ANAFPlayerController::EndTurn()
@@ -318,6 +341,11 @@ void ANAFPlayerController::GetSelectedHandCard(uint8 Line, uint8 Col)
 {
 	if (!IsActivePlayer()) return;
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
+
+	if (GameWidget)
+	{
+		GameWidget->GetCardWidget(NafPlayerState->Id, NafPlayerState->GetIndexSelected())->HideCard();
+	}
 
 	if (NafPlayerState)
 	{

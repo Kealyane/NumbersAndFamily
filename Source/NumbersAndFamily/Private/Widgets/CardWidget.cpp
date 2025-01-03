@@ -92,4 +92,9 @@ void UCardWidget::CardDestroyByFamEffect()
 	OnCardDestroyedByFamily.Broadcast();
 }
 
+void UCardWidget::ShowCardAnim()
+{
+	OnShowCardAnim.Broadcast();
+}
+
 

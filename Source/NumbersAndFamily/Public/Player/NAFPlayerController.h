@@ -121,6 +121,9 @@ public:
 	UTexture2D* GetCopyTexture() const { return CopyCardTexture; }
 	UFUNCTION()
 	AAudioContainer* GetAudioManager() const { return AudioManager; }
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsMyTurn() const { return bIsMyTurn; }
 	
 private:
 	bool IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col);
@@ -130,4 +133,8 @@ private:
 	uint8 NBCardInOpponentBoard = 0;
 	TObjectPtr<AAudioContainer> AudioManager;
 	FTimerHandle EndTurnHandle;
+	FTimerHandle PlaceCardHandle;
+
+	float TimeAnimCardInHand = 1.5f;
+	float TimeAnimCardFlipInHand = 0.6f;
 };

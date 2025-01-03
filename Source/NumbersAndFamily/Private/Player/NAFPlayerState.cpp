@@ -35,6 +35,12 @@ void ANAFPlayerState::StoreCardInHand(FCardDataServer Card)
 	if (ANAFPlayerController* NafPC = GetNafPC())
 	{
 		NafPC->ClientRPC_PlaceCardInPocketUI(Id, CardPos, Card.RowName);
+		// GetWorld()->GetTimerManager().SetTimer(PSPlaceCardHandle,
+		// 	[this,NafPC,CardPos, Card]
+		// {
+		// },
+		// 3.f,
+		// false);
 	}
 }
 
@@ -60,7 +66,13 @@ void ANAFPlayerState::UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus)
 	{
 		if (HandStatus[0])
 		{
-			NafPC->ClientRPC_ShowPocketCardVerso(TargetId, 1);
+			GetWorld()->GetTimerManager().SetTimer(PSPlaceCardVersoHandle,
+				[this, NafPC, TargetId]()
+				{
+					NafPC->ClientRPC_ShowPocketCardVerso(TargetId, 1);
+				},
+				3.3f,
+				false);
 		}
 		else
 		{
@@ -68,7 +80,14 @@ void ANAFPlayerState::UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus)
 		}
 		if (HandStatus[1])
 		{
-			NafPC->ClientRPC_ShowPocketCardVerso(TargetId, 2);
+			GetWorld()->GetTimerManager().SetTimer(PSPlaceCardVersoHandle,
+				[this, NafPC, TargetId]()
+				{
+					NafPC->ClientRPC_ShowPocketCardVerso(TargetId, 2);
+				},
+				3.3f,
+				false);
+
 		}
 		else
 		{

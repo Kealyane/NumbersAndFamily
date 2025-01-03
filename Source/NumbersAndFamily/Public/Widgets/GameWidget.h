@@ -35,6 +35,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayer2IsInactiveSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPlayer1NameSignature, FName, PlayerName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPlayer2NameSignature, FName, PlayerName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FLineDestroyedSignature, uint8, PlayerId, uint8, Line);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSendCardToHandSignature, EPosition, PlayerId, uint8, HandPos);
 
 /**
  * 
@@ -145,6 +146,7 @@ public:
 	void DeactivateHandHighlight(EPosition PlayerId);
 	
 	UCardWidget* GetCardWidget(EPosition PlayerPos, uint8 CardPos) const;
+	UCardWidget* GetCardInBoard(uint8 Line, uint8 Col) const {return BoardSlots[Line][Col]; }
 	UFUNCTION()
 	void SwitchTexture(EPosition PlayerId, uint8 HandSlotIndex, UTexture2D* CardTexture);
 	UFUNCTION()
@@ -155,6 +157,9 @@ public:
 	void FamilyEffect(uint8 PlayerId, uint8 Line);
 	UFUNCTION()
 	void NumEffect(TArray<FIntPoint> CoordCardsDeleted);
+
+	UFUNCTION()
+	void AnimPlaceCardInHand(EPosition PlayerId, uint8 CardPos);
 	
 	// EVENTS
 
@@ -185,6 +190,8 @@ public:
 	FSetPlayer2NameSignature SetPlayer2Name;
 	UPROPERTY(BlueprintAssignable, Category="Game Logic")
 	FLineDestroyedSignature LineDestroyed;
+	UPROPERTY(BlueprintAssignable, Category="Game Logic")
+	FSendCardToHandSignature SendCardToHand;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -208,5 +215,5 @@ private:
 	TObjectPtr<UCardWidget> SecondCardSelected = nullptr;
 	EPosition FirstCardPosition = EPosition::SERVER;
 	ECardType HandCardTypeSelected = ECardType::NONE;
-	
+
 };
