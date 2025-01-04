@@ -25,6 +25,7 @@ enum class ESoundRow : uint8
 	Shuffle,
 	Steal,
 	Switch,
+	DestructionCard,
 };
 
 inline FName ToFName(ESoundRow Row)
