@@ -33,6 +33,7 @@ bool ADeck::InitDeck()
 			Data->Score,
 			Data->ArcaneType));
 	}
+	bIsStartGame = true;
 	return true;
 }
 
@@ -42,8 +43,23 @@ FCardDataServer ADeck::DrawCard()
 	{
 		return FCardDataServer();
 	}
-	Algo::RandomShuffle(Deck);
-	FCardDataServer CardDrawn = Deck[0];
+	FCardDataServer CardDrawn;
+
+	if (bIsStartGame)
+	{
+		do
+		{
+			Algo::RandomShuffle(Deck);
+			CardDrawn = Deck[0];
+		}
+		while (CardDrawn.ArcaneType != EArcaneType::NONE);
+		bIsStartGame = false;
+	}
+	else
+	{
+		Algo::RandomShuffle(Deck);
+		CardDrawn = Deck[0];
+	}
 
 	// Do not remove special cards
 	if (CardDrawn.ArcaneType == EArcaneType::NONE)

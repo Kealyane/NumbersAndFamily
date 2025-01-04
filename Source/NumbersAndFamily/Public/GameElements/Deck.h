@@ -143,6 +143,7 @@ protected:
 	TObjectPtr<UDataTable> DeckDataTable;
 
 	TArray<FCardDataServer> Deck;
+	bool bIsStartGame = true;
 
 public:	
 	bool InitDeck();
