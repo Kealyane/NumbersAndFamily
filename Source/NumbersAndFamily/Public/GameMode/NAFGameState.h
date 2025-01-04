@@ -60,7 +60,7 @@ public:
 	UFUNCTION(NetMulticast, Unreliable)
 	void MultiRPC_PlaySoundForBoth(ESoundRow SoundRow);
 	UFUNCTION(NetMulticast, Reliable)
-	void MultiRPC_UpdateActiveTurnUI(); // Show for both clients which one is active
+	void MultiRPC_UpdateActiveTurnUI(EPosition NewActivePlayer); // Show for both clients which one is active
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_UpdateBoardUI(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow);
 	UFUNCTION(NetMulticast, Reliable)

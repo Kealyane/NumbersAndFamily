@@ -11,25 +11,12 @@
 
 void ANAFGameState::OnRep_ActiveId()
 {
-	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
-	if (PlayerController)
-	{
-		if (ANAFPlayerState* PlayerState = PlayerController->GetPlayerState<ANAFPlayerState>())
-		{
-			PlayerController->NotifyTurnStart(PlayerState->Id == ActiveId);
-		}
-	}
-	MultiRPC_UpdateActiveTurnUI();
 }
 
 void ANAFGameState::SetActivePlayer(EPosition InActiveId)
 {
-	if (HasAuthority())
-	{
-		ActiveId = InActiveId;
-		if (IsNetMode(NM_ListenServer))
-			OnRep_ActiveId();
-	}
+	ActiveId = InActiveId;
+	MultiRPC_UpdateActiveTurnUI(InActiveId);
 }
 
 void ANAFGameState::SetBoardName(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow)
@@ -50,12 +37,16 @@ void ANAFGameState::MultiRPC_PlaySoundForBoth_Implementation(ESoundRow SoundRow)
 	}
 }
 
-void ANAFGameState::MultiRPC_UpdateActiveTurnUI_Implementation()
+void ANAFGameState::MultiRPC_UpdateActiveTurnUI_Implementation(EPosition NewActivePlayer)
 {
 	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
 	if (PlayerController)
 	{
-		PlayerController->UpdateActiveTurnUI(ActiveId);
+		if (ANAFPlayerState* PlayerState = PlayerController->GetPlayerState<ANAFPlayerState>())
+		{
+			PlayerController->NotifyTurnStart(PlayerState->Id == NewActivePlayer);
+		}
+		PlayerController->UpdateActiveTurnUI(NewActivePlayer);
 	}
 }
 
@@ -111,7 +102,7 @@ void ANAFGameState::SwitchPlayerTurn()
 	if (HasAuthority())
 	{
 		ActiveId = ActiveId == EPosition::LEFT ? EPosition::RIGHT : EPosition::LEFT;
-		OnRep_ActiveId();
+		MultiRPC_UpdateActiveTurnUI(ActiveId);
 	}
 }
 
