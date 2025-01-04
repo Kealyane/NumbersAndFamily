@@ -22,6 +22,8 @@ void ABoard::InitBoard()
 	BoardGame[2].Init(FCardDataServer(),NB_COLUMN);
 	
 	BoardRowNames.Init(FName("NONE"),NB_LINE * NB_COLUMN);
+
+	bCardDestruction = false;
 }
 
 void ABoard::InitParamDeck(ADeck* InDeck)
@@ -36,13 +38,18 @@ void ABoard::PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col)
 	
 	if (IsLineFull(Line, Col) && IsFamily(Line, Col)) DeleteCardsBecauseOfFamily(Line, Col);
 	else DeleteCardWithSameScore(Line, Col);
-	
-	SyncBoardWithGameState();
-	
-	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+
+	FTimerHandle SynHandle;
+	GetWorld()->GetTimerManager().SetTimer(SynHandle, [this]()
 	{
-		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::PutCard);
-	}
+		SyncBoardWithGameState();
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::PutCard);
+		}
+	},
+	bCardDestruction ? 1.2f : 0.1f, false);
+	
 }
 
 bool ABoard::IsCoordOccupied(uint8 Line, uint8 Col)
@@ -61,13 +68,18 @@ void ABoard::SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 
 	
 	if (IsLineFull(Card2Line, Card2Col) && IsFamily(Card2Line, Card2Col)) DeleteCardsBecauseOfFamily(Card2Line, Card2Col);
 	else DeleteCardWithSameScore(Card2Line, Card2Col);
-	
-	SyncBoardWithGameState();
 
-	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	FTimerHandle SynHandle;
+	GetWorld()->GetTimerManager().SetTimer(SynHandle, [this]()
 	{
-		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Switch);
-	}
+		SyncBoardWithGameState();
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Switch);
+		}
+	},
+	bCardDestruction ? 1.2f : 0.1f, false);
+	
 }
 
 void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Card2Col)
@@ -80,12 +92,16 @@ void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 C
 	
 	if (HasHoles(Card1Line, Card1Col)) MoveCards(Card1Line, Card1Col);
 	
-	SyncBoardWithGameState();
-
-	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	FTimerHandle SynHandle;
+	GetWorld()->GetTimerManager().SetTimer(SynHandle, [this]()
 	{
-		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Steal);
-	}
+		SyncBoardWithGameState();
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Steal);
+		}
+	},
+	bCardDestruction ? 1.2f : 0.1f, false);
 }
 
 FName ABoard::GetCardDataRowName(uint8 Line, uint8 Col)
@@ -102,12 +118,16 @@ void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Ca
 	if (IsLineFull(Card2Line, Card2Col) && IsFamily(Card2Line, Card2Col)) DeleteCardsBecauseOfFamily(Card2Line, Card2Col);
 	else DeleteCardWithSameScore(Card2Line, Card2Col);
 	
-	SyncBoardWithGameState();
-
-	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	FTimerHandle SynHandle;
+	GetWorld()->GetTimerManager().SetTimer(SynHandle, [this]()
 	{
-		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::PutCard);
-	}
+		SyncBoardWithGameState();
+		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		{
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::PutCard);
+		}
+	},
+	bCardDestruction ? 1.2f : 0.1f, false);
 }
 
 void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
@@ -167,7 +187,12 @@ void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
 	}
 	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
 	{
-		NafGS->MultiRPC_NumEffect(CoordCardsDeleted);
+		if (CoordCardsDeleted.Num() > 0)
+		{
+			bCardDestruction = true;
+			NafGS->MultiRPC_NumEffect(CoordCardsDeleted);
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::DestructionCard);
+		}
 	}
 }
 
@@ -186,7 +211,12 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 				Deck->BackToDeck(BoardGame[Line][i]);
 			}
 			BoardGame[Line][i].ResetCard();
-			if (NafGS) NafGS->MultiRPC_FamilyEffect(2, Line);
+			if (NafGS)
+			{
+				NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::DestructionCard);
+				NafGS->MultiRPC_FamilyEffect(2, Line);
+			}
+			bCardDestruction = true;
 		}
 	}
 	else
@@ -201,7 +231,12 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 				Deck->BackToDeck(BoardGame[Line][i]);
 			}
 			BoardGame[Line][i].ResetCard();
-			if (NafGS) NafGS->MultiRPC_FamilyEffect(1, Line);
+			if (NafGS)
+			{
+				NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::DestructionCard);
+				NafGS->MultiRPC_FamilyEffect(1, Line);
+			}
+			bCardDestruction = true;
 		}
 	}
 }
@@ -209,8 +244,10 @@ void ABoard::DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col)
 
 void ABoard::SyncBoardWithGameState()
 {
+
 	GetWorld()->GetTimerManager().SetTimer(ComputeScoreHandle, this, &ABoard::ComputeScores, 1.f, false);
-	//ComputeScores();
+
+	bCardDestruction = false;
 
 	uint8 NbCardsLeft = 0;
 	uint8 NbCardsRight = 0;

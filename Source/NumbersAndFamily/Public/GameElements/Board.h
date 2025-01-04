@@ -35,6 +35,8 @@ private:
 	TObjectPtr<ADeck> Deck;
 	FTimerHandle ComputeScoreHandle;
 
+	bool bCardDestruction;
+
 	// Gameplay
 	void DeleteCardWithSameScore(uint8 Line, uint8 Col);
 	void DeleteCardsBecauseOfFamily(uint8 Line, uint8 Col);
