@@ -170,7 +170,13 @@ void ANAFPlayerController::ServerRPC_EndTurn_Implementation(ANAFPlayerState* Act
 	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		GameMode->RemoveCardFromHand(ActivePlayerState);
-		GameMode->EndTurn();
+		FTimerHandle ClearHandHandle;
+		GetWorld()->GetTimerManager().SetTimer(ClearHandHandle,
+			[this, GameMode]()
+			{
+				GameMode->EndTurn();
+			},
+			1.f, false);
 	}
 }
 
@@ -364,7 +370,13 @@ void ANAFPlayerController::EndTurn()
 		GameWidget->EndHandSelection(NafPlayerState->Id);
 		GameWidget->DeactivateHandHighlight(NafPlayerState->Id);
 		GameWidget->DeactivateHighlight();
-		ServerRPC_EndTurn(NafPlayerState);
+		
+		GetWorld()->GetTimerManager().SetTimer(EndTurnHandle,
+			[this, NafPlayerState]()
+			{
+				ServerRPC_EndTurn(NafPlayerState);
+			}
+			, 3.f, false);
 	}
 }
 
@@ -498,6 +510,11 @@ void ANAFPlayerController::NumEffect(TArray<FIntPoint> CoordCardsDeleted)
 
 void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow)
 {
+	if (bAfterPlayerAction)
+	{
+		EndTurn();
+	}
+	
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
 	if (!NafPlayerState) return;
 
@@ -538,11 +555,7 @@ void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray
 		}
 	}
 
-	if (bAfterPlayerAction)
-	{
-		GetWorld()->GetTimerManager().SetTimer(EndTurnHandle, this, &ANAFPlayerController::EndTurn, 3.f, false);
-		//EndTurn();
-	}
+
 }
 
 void ANAFPlayerController::UpdateScores(int32 PLeftScore0, int32 PLeftScore1, int32 PLeftScore2, int32 PLeftTotalScore,

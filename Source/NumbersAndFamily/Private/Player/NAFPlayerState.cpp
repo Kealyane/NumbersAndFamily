@@ -35,12 +35,6 @@ void ANAFPlayerState::StoreCardInHand(FCardDataServer Card)
 	if (ANAFPlayerController* NafPC = GetNafPC())
 	{
 		NafPC->ClientRPC_PlaceCardInPocketUI(Id, CardPos, Card.RowName);
-		// GetWorld()->GetTimerManager().SetTimer(PSPlaceCardHandle,
-		// 	[this,NafPC,CardPos, Card]
-		// {
-		// },
-		// 3.f,
-		// false);
 	}
 }
 
