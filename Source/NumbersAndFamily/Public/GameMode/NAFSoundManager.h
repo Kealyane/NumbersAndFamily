@@ -6,13 +6,15 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "NAFSoundManager.generated.h"
 
+class USoundCue;
+
 USTRUCT(BlueprintType)
 struct FSoundData : public FTableRowBase
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSoftObjectPtr<USoundCue> SoundCue;
+	USoundCue* SoundCue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DelayTime;
@@ -28,17 +30,17 @@ class NUMBERSANDFAMILY_API UNAFSoundManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
-public:
-	UFUNCTION(BlueprintCallable)
-	void PlaySoundByRowName(FName RowName);
-
-	UFUNCTION(BlueprintCallable)
-	void PlaySoundAndWait(FName RowName, FLatentActionInfo LatentInfo);
-
-protected:
-	UPROPERTY(EditDefaultsOnly, Category="Sounds")
-	UDataTable* DTSound;
-	bool GetSoundDataByRowName(FName RowName, FSoundData& OutSoundData);
-
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+// public:
+// 	UFUNCTION(BlueprintCallable)
+// 	void PlaySoundByRowName(FName RowName);
+//
+// 	UFUNCTION(BlueprintCallable)
+// 	void PlaySoundAndWait(FName RowName, FLatentActionInfo LatentInfo);
+//
+// protected:
+// 	UPROPERTY(EditDefaultsOnly, Category="Sounds")
+// 	UDataTable* DTSound;
+// 	bool GetSoundDataByRowName(FName RowName, FSoundData& OutSoundData);
+//
+// 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 };
