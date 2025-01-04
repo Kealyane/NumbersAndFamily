@@ -32,6 +32,7 @@ void UGameWidget::StartHandSelection(EPosition ActivePlayer)
 	for (const auto& CardWidgets : CurrentPlayerHand)
 	{
 		CardWidgets->bIsHandSelectionOnGoing = true;
+		CardWidgets->DisableHighlight();
 	}
 }
 
