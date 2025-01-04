@@ -283,6 +283,60 @@ bool ANAFPlayerController::ServerRPC_ActiveCopy_Validate(FCardDataServer Card, u
 }
 
 
+void ANAFPlayerController::ServerRPC_RowNameForCopy_Implementation(uint8 Line, uint8 Col)
+{
+	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		FName Row = GameMode->GetCardDataRowName(Line, Col);
+		ClientRPC_RowNameForCopy(Row);
+	}
+}
+
+void ANAFPlayerController::ClientRPC_RowNameForCopy_Implementation(const FName& RowName)
+{
+	const FString ContextString(TEXT("Card Data Context"));
+	const FCardData* Data = DeckDataTable->FindRow<FCardData>(RowName,ContextString);
+	UTexture2D* ImageCard = Data->ImageRecto;
+	if (GameWidget) GameWidget->ActiveCopyAnim.Broadcast(ImageCard);
+}
+
+void ANAFPlayerController::ServerRPC_RowNameForSteal_Implementation(uint8 Line, uint8 Col)
+{
+	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		FName Row = GameMode->GetCardDataRowName(Line, Col);
+		ClientRPC_RowNameForSteal(Row);
+	}
+}
+
+void ANAFPlayerController::ClientRPC_RowNameForSteal_Implementation(const FName& RowName)
+{
+	const FString ContextString(TEXT("Card Data Context"));
+	const FCardData* Data = DeckDataTable->FindRow<FCardData>(RowName,ContextString);
+	UTexture2D* ImageCard = Data->ImageRecto;
+	if (GameWidget) GameWidget->ActiveStealAnim.Broadcast(ImageCard);
+}
+
+void ANAFPlayerController::ServerRPC_RowNameForSwitch_Implementation(uint8 Line1, uint8 Col1, uint8 Line2, uint8 Col2)
+{
+	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		FName Row1 = GameMode->GetCardDataRowName(Line1, Col1);
+		FName Row2 = GameMode->GetCardDataRowName(Line2, Col2);
+		ClientRPC_RowNameForSwitch(Row1, Row2);
+	}
+}
+
+void ANAFPlayerController::ClientRPC_RowNameForSwitch_Implementation(const FName& RowName1, const FName& RowName2)
+{
+	const FString ContextString(TEXT("Card Data Context"));
+	const FCardData* Data1 = DeckDataTable->FindRow<FCardData>(RowName1,ContextString);
+	UTexture2D* ImageCard1 = Data1->ImageRecto;
+	const FCardData* Data2 = DeckDataTable->FindRow<FCardData>(RowName2,ContextString);
+	UTexture2D* ImageCard2 = Data2->ImageRecto;
+	if (GameWidget) GameWidget->ActiveSwitchAnim.Broadcast(ImageCard1, ImageCard2);
+}
+
 void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
 {
 	if (GameWidget)
@@ -358,7 +412,18 @@ void ANAFPlayerController::HandleSwitch(EPosition Card1Pos, uint8 Card1Line, uin
 {
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
 	if (!NafPlayerState) return;
-	ServerRPC_ActiveSwitch(NafPlayerState->GetIndexSelected(), Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
+
+	ServerRPC_RowNameForSwitch(Card1Line, Card1Col, Card2Line, Card2Col);
+	
+	FTimerHandle SpecialCardHandle;
+	float AnimTime = 2.2f;
+	GetWorld()->GetTimerManager().SetTimer(SpecialCardHandle,
+	[this, NafPlayerState, Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col]()
+	{
+		ServerRPC_ActiveSwitch(NafPlayerState->GetIndexSelected(), Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
+	},
+	AnimTime,
+	false);
 }
 
 void ANAFPlayerController::HandleSteal(EPosition Card1Pos, uint8 Card1Line, uint8 Card1Col, EPosition Card2Pos,
@@ -366,7 +431,18 @@ void ANAFPlayerController::HandleSteal(EPosition Card1Pos, uint8 Card1Line, uint
 {
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
 	if (!NafPlayerState) return;
-	ServerRPC_ActiveSteal(NafPlayerState->GetIndexSelected(), Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
+
+	ServerRPC_RowNameForSteal(Card1Line, Card1Col);
+	
+	FTimerHandle SpecialCardHandle;
+	float AnimTime = 2.2f;
+	GetWorld()->GetTimerManager().SetTimer(SpecialCardHandle,
+	[this, NafPlayerState, Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col]()
+	{
+		ServerRPC_ActiveSteal(NafPlayerState->GetIndexSelected(), Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col);
+	},
+	AnimTime,
+	false);
 }
 
 void ANAFPlayerController::ShowCopyCardInHand(uint8 Line, uint8 Col)
@@ -388,9 +464,20 @@ void ANAFPlayerController::HandleCopy(EPosition Card1Pos, uint8 Card1Line, uint8
 	uint8 Card2Line, uint8 Card2Col)
 {
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
-	ServerRPC_ActiveCopy(NafPlayerState->GetSelectedCard(),NafPlayerState->GetIndexSelected(),
-		Card1Pos, Card1Line, Card1Col,
-		Card2Pos, Card2Line, Card2Col);
+
+	ServerRPC_RowNameForCopy(Card1Line,Card1Col);
+
+	FTimerHandle SpecialCardHandle;
+	float AnimTime = 2.2f;
+	GetWorld()->GetTimerManager().SetTimer(SpecialCardHandle,
+	[this, NafPlayerState, Card1Pos, Card1Line, Card1Col, Card2Pos, Card2Line, Card2Col]()
+	{
+		ServerRPC_ActiveCopy(NafPlayerState->GetSelectedCard(),NafPlayerState->GetIndexSelected(),
+			Card1Pos, Card1Line, Card1Col,
+			Card2Pos, Card2Line, Card2Col);
+	},
+	AnimTime,
+	false);
 }
 
 void ANAFPlayerController::FamilyEffect(uint8 PlayerId, uint8 Line)

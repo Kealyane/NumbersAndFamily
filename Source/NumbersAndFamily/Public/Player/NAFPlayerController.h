@@ -74,6 +74,22 @@ public:
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_EndTurn(ANAFPlayerState* ActivePlayerState);
+
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_RowNameForCopy(uint8 Line, uint8 Col);
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_RowNameForCopy(const FName& RowName);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_RowNameForSteal(uint8 Line, uint8 Col);
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_RowNameForSteal(const FName& RowName);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_RowNameForSwitch(uint8 Line1, uint8 Col1, uint8 Line2, uint8 Col2);
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_RowNameForSwitch(const FName& RowName1, const FName& RowName2);
 	
 	UFUNCTION()
 	void UpdateActiveTurnUI(EPosition ActivePosition);

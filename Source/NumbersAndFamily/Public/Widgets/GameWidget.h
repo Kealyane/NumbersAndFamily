@@ -37,6 +37,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPlayer2NameSignature, FName, Pla
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FLineDestroyedSignature, uint8, PlayerId, uint8, Line);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSendCardToHandSignature, EPosition, PlayerId, uint8, HandPos);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActiveSwitchAnimSignature, UTexture2D*, FirstCardImage, UTexture2D*, SecondCardImage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FActiveStealAnimSignature, UTexture2D*, StolenCardImage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FActiveCopyAnimSignature, UTexture2D*, CopyCardImage);
+
+
 /**
  * 
  */
@@ -192,6 +197,12 @@ public:
 	FLineDestroyedSignature LineDestroyed;
 	UPROPERTY(BlueprintAssignable, Category="Game Logic")
 	FSendCardToHandSignature SendCardToHand;
+	UPROPERTY(BlueprintAssignable)
+	FActiveSwitchAnimSignature ActiveSwitchAnim;
+	UPROPERTY(BlueprintAssignable)
+	FActiveStealAnimSignature ActiveStealAnim;
+	UPROPERTY(BlueprintAssignable)
+	FActiveCopyAnimSignature ActiveCopyAnim;
 
 protected:
 	virtual void NativeConstruct() override;
