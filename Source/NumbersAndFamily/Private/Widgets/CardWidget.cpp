@@ -66,8 +66,11 @@ void UCardWidget::DisableHighlight()
 	}
 	else
 	{
-		bCanBeClicked = false;
-		OnDisableHighlight.Broadcast(); // white
+		if (bCanBeClicked)
+		{
+			bCanBeClicked = false;
+			OnDisableHighlight.Broadcast(); // white
+		}
 	}
 }
 
