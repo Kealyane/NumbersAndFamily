@@ -218,6 +218,7 @@ void ANAFGameMode::GiveOneCardToBothPlayer()
 					ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
 					OpponentPS->UpdateHandUI(NafPS->Id,HandCurrent);
 				}
+				i++;
 			}
 		}
 		else
@@ -239,6 +240,7 @@ void ANAFGameMode::GiveOneCardToBothPlayer()
 						3.f,
 						false);
 				}
+				i++;
 			}
 		}
 	}
