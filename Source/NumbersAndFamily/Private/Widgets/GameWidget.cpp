@@ -316,6 +316,21 @@ void UGameWidget::LaunchAnimPutCard(uint8 Line, uint8 Col)
 	BoardSlots[Line][Col]->OnPutCardAnim.Broadcast();
 }
 
+void UGameWidget::LaunchAnimCombo2(const TArray<FIntPoint> CoordCardsCombo)
+{
+	for (FIntPoint Coord : CoordCardsCombo)
+	{
+		BoardSlots[Coord.X][Coord.Y]->OnCombox2Anim.Broadcast();
+	}
+}
+
+void UGameWidget::LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo)
+{
+	for (FIntPoint Coord : CoordCardsCombo)
+	{
+		BoardSlots[Coord.X][Coord.Y]->OnCombox3Anim.Broadcast();
+	}
+}
 
 void UGameWidget::NativeConstruct()
 {

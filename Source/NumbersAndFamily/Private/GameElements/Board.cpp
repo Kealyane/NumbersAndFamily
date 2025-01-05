@@ -38,7 +38,7 @@ void ABoard::PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col)
 	
 	if (IsLineFull(Line, Col) && IsFamily(Line, Col)) DeleteCardsBecauseOfFamily(Line, Col);
 	else DeleteCardWithSameScore(Line, Col);
-
+	
 	FTimerHandle SynHandle;
 	GetWorld()->GetTimerManager().SetTimer(SynHandle, [this, Line, Col]()
 	{
@@ -54,7 +54,6 @@ void ABoard::PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col)
 		}, 0.5f, false);
 	},
 	bCardDestruction ? 1.4f : 0.1f, false);
-	
 }
 
 bool ABoard::IsCoordOccupied(uint8 Line, uint8 Col)
@@ -83,7 +82,7 @@ void ABoard::SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Switch);
 		}
 	},
-	bCardDestruction ? 1.2f : 0.1f, false);
+	bCardDestruction ? 1.4f : 0.1f, false);
 	
 }
 
@@ -106,7 +105,7 @@ void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 C
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Steal);
 		}
 	},
-	bCardDestruction ? 1.2f : 0.1f, false);
+	bCardDestruction ? 1.4f : 0.1f, false);
 }
 
 FName ABoard::GetCardDataRowName(uint8 Line, uint8 Col)
@@ -132,7 +131,7 @@ void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Ca
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::PutCard);
 		}
 	},
-	bCardDestruction ? 1.2f : 0.1f, false);
+	bCardDestruction ? 1.4f : 0.1f, false);
 }
 
 void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
@@ -292,7 +291,6 @@ void ABoard::SyncBoardWithGameState()
 	{
 		NafGS->SetBoardName(true, BoardRowNames);
 	}
-	
 }
 
 bool ABoard::IsLineFull(uint8 Line, uint8 Col)
@@ -393,88 +391,143 @@ void ABoard::ComputeScores()
 		// Update Datas (Server/Client)
 		GameState->UpdateScores(LeftScore0, LeftScore1, LeftScore2, LeftTotalScore,
 								RightScore0, RightScore1, RightScore2, RightTotalScore);
+		GameState->SetScoresServer(LeftScore0, LeftScore1, LeftScore2,
+						RightScore0, RightScore1, RightScore2);
 	}
 }
 
 int32 ABoard::ComputeLineScoreLeft(uint8 Line)
 {
-	if (BoardGame[Line][0].Score == BoardGame[Line][1].Score && BoardGame[Line][1].Score == BoardGame[Line][2].Score)
+	TArray<FIntPoint> CoordCardsMult;
+	int total = 0;
+	
+	ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>();
+	if (NafGS == nullptr) return total;
+	
+	int PreviousScore = 0;
+	if (Line == 0) PreviousScore = NafGS->P1Score0;
+	if (Line == 1) PreviousScore = NafGS->P1Score1;
+	if (Line == 2) PreviousScore = NafGS->P1Score2;
+	
+	if (BoardGame[Line][0].Score != 0 && BoardGame[Line][0].Score == BoardGame[Line][1].Score && BoardGame[Line][1].Score == BoardGame[Line][2].Score)
 	{
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		total = (BoardGame[Line][0].Score * 3) * 3;
+		
+		if (total != PreviousScore)
 		{
+			CoordCardsMult.Add(FIntPoint(Line,0));
+			CoordCardsMult.Add(FIntPoint(Line,1));
+			CoordCardsMult.Add(FIntPoint(Line,2));
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult3);
+			NafGS->MultiRPC_Combo3(CoordCardsMult);
 		}
-		return (BoardGame[Line][0].Score * 3) * 3;
+		return total;
 	}
-	if (BoardGame[Line][0].Score == BoardGame[Line][1].Score)
+	if (BoardGame[Line][0].Score != 0 && BoardGame[Line][0].Score == BoardGame[Line][1].Score)
 	{
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		total = (BoardGame[Line][0].Score * 2) * 2 + BoardGame[Line][2].Score;
+		if (total != PreviousScore)
 		{
+			CoordCardsMult.Add(FIntPoint(Line,0));
+			CoordCardsMult.Add(FIntPoint(Line,1));
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+			NafGS->MultiRPC_Combo2(CoordCardsMult);
 		}
-		return (BoardGame[Line][0].Score * 2) * 2 + BoardGame[Line][2].Score;
+		return total;
 	}
-	if (BoardGame[Line][1].Score == BoardGame[Line][2].Score)
+	if (BoardGame[Line][1].Score != 0 && BoardGame[Line][1].Score == BoardGame[Line][2].Score)
 	{
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		total = (BoardGame[Line][1].Score * 2) * 2 + BoardGame[Line][0].Score;
+		if (total != PreviousScore)
 		{
+			CoordCardsMult.Add(FIntPoint(Line,1));
+			CoordCardsMult.Add(FIntPoint(Line,2));
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+			NafGS->MultiRPC_Combo2(CoordCardsMult);
 		}
-		return (BoardGame[Line][1].Score * 2) * 2 + BoardGame[Line][0].Score;
+		return total;
 	}
-	if (BoardGame[Line][0].Score == BoardGame[Line][2].Score)
+	if (BoardGame[Line][0].Score != 0 && BoardGame[Line][0].Score == BoardGame[Line][2].Score)
 	{
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		total = (BoardGame[Line][0].Score * 2) * 2 + BoardGame[Line][1].Score;
+		if (total != PreviousScore)
 		{
+			CoordCardsMult.Add(FIntPoint(Line,0));
+			CoordCardsMult.Add(FIntPoint(Line,2));
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+			NafGS->MultiRPC_Combo2(CoordCardsMult);
 		}
-		return (BoardGame[Line][0].Score * 2) * 2 + BoardGame[Line][1].Score;
+		return total;
 	}
-	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
-	{
-		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterUp);
-	}
+
+	NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterUp);
 	return BoardGame[Line][0].Score + BoardGame[Line][1].Score + BoardGame[Line][2].Score;
 }
 
 int32 ABoard::ComputeLineScoreRight(uint8 Line)
 {
-	if (BoardGame[Line][3].Score == BoardGame[Line][4].Score && BoardGame[Line][4].Score == BoardGame[Line][5].Score)
+	TArray<FIntPoint> CoordCardsMult;
+	int total = 0;
+	
+	ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>();
+	if (NafGS == nullptr) return total;
+	
+	int PreviousScore = 0;
+	if (Line == 0) PreviousScore = NafGS->P2Score0;
+	if (Line == 1) PreviousScore = NafGS->P2Score1;
+	if (Line == 2) PreviousScore = NafGS->P2Score2;
+	
+	if (BoardGame[Line][3].Score != 0 && BoardGame[Line][3].Score == BoardGame[Line][4].Score && BoardGame[Line][4].Score == BoardGame[Line][5].Score)
 	{
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		total = (BoardGame[Line][3].Score * 3) * 3;
+		if (total != PreviousScore)
 		{
+			CoordCardsMult.Add(FIntPoint(Line,3));
+			CoordCardsMult.Add(FIntPoint(Line,4));
+			CoordCardsMult.Add(FIntPoint(Line,5));
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult3);
+			NafGS->MultiRPC_Combo3(CoordCardsMult);
 		}
-		return (BoardGame[Line][3].Score * 3) * 3;
+		return total;
 	}
-	if (BoardGame[Line][3].Score == BoardGame[Line][4].Score)
+	if (BoardGame[Line][3].Score != 0 && BoardGame[Line][3].Score == BoardGame[Line][4].Score)
 	{
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		total = (BoardGame[Line][3].Score * 2) * 2 + BoardGame[Line][5].Score;
+		if (total != PreviousScore)
 		{
+			CoordCardsMult.Add(FIntPoint(Line,3));
+			CoordCardsMult.Add(FIntPoint(Line,4));
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+			NafGS->MultiRPC_Combo2(CoordCardsMult);
 		}
-		return (BoardGame[Line][3].Score * 2) * 2 + BoardGame[Line][5].Score;
+		return total;
 	}
-	if (BoardGame[Line][4].Score == BoardGame[Line][5].Score)
+	if (BoardGame[Line][4].Score != 0 && BoardGame[Line][4].Score == BoardGame[Line][5].Score)
 	{
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		total = (BoardGame[Line][4].Score * 2) * 2 + BoardGame[Line][3].Score;
+		if (total != PreviousScore)
 		{
+			CoordCardsMult.Add(FIntPoint(Line,4));
+			CoordCardsMult.Add(FIntPoint(Line,5));
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+			NafGS->MultiRPC_Combo2(CoordCardsMult);
 		}
-		return (BoardGame[Line][4].Score * 2) * 2 + BoardGame[Line][3].Score;
+		return total;
 	}
-	if (BoardGame[Line][3].Score == BoardGame[Line][5].Score)
+	if (BoardGame[Line][3].Score != 0 && BoardGame[Line][3].Score == BoardGame[Line][5].Score)
 	{
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+		total = (BoardGame[Line][3].Score * 2) * 2 + BoardGame[Line][4].Score;
+		if (total != PreviousScore)
 		{
+			CoordCardsMult.Add(FIntPoint(Line,3));
+			CoordCardsMult.Add(FIntPoint(Line,5));
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterMult2);
+			NafGS->MultiRPC_Combo2(CoordCardsMult);
 		}
-		return (BoardGame[Line][3].Score * 2) * 2 + BoardGame[Line][4].Score;
+		return total;
 	}
-	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
-	{
-		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterUp);
-	}
+
+	NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::CounterUp);
 	return BoardGame[Line][3].Score + BoardGame[Line][4].Score + BoardGame[Line][5].Score;
 }
 

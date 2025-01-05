@@ -19,6 +19,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCardDestroyedBySameNumberSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCardDestroyedByFamilyEffectSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShowCardHandAnimSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPutCardAnimSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCombox2AnimSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCombox3AnimSignature);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FClickSignature, EPosition, Player, uint8, LineSelect, uint8, ColSelect);
 
@@ -64,6 +66,10 @@ public:
 	FShowCardHandAnimSignature OnShowCardAnim;
 	UPROPERTY(BlueprintAssignable)
 	FPutCardAnimSignature OnPutCardAnim;
+	UPROPERTY(BlueprintAssignable)
+	FCombox2AnimSignature OnCombox2Anim;
+	UPROPERTY(BlueprintAssignable)
+	FCombox3AnimSignature OnCombox3Anim;
 	
 	UPROPERTY()
 	FClickSignature OnClickSlot;
@@ -94,4 +100,5 @@ public:
 	bool bIsHandSelectionOnGoing = false;
 
 	void SelectCard(bool bIsSelected);
+
 };

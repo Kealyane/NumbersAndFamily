@@ -143,6 +143,10 @@ public:
 
 	UFUNCTION()
 	void LaunchAnimPutCard(uint8 Line, uint8 Col);
+	UFUNCTION()
+	void LaunchAnimCombo2(const TArray<FIntPoint> CoordCardsCombo);
+	UFUNCTION()
+	void LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo);
 
 private:
 	bool IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col);
