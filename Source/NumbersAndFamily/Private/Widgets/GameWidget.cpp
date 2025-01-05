@@ -348,9 +348,13 @@ void UGameWidget::NativeConstruct()
 	};
 
 	WBP_Card_P1_Pocket->SetSlotParams(true, 3, 1);
+	WBP_Card_P1_Pocket->HideCard();
 	WBP_Card_P1_Pocket_1->SetSlotParams(true, 3, 2);
+	WBP_Card_P1_Pocket_1->HideCard();
 	WBP_Card_P2_Pocket->SetSlotParams(false, 3, 3);
+	WBP_Card_P2_Pocket->HideCard();
 	WBP_Card_P2_Pocket_1->SetSlotParams(false, 3, 4);
+	WBP_Card_P2_Pocket_1->HideCard();
 	
 	PlayerPockets =
 	{
