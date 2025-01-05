@@ -202,45 +202,33 @@ void ANAFGameMode::SetGameOverInfos(EPosition WinnerId)
 
 void ANAFGameMode::GiveOneCardToBothPlayer()
 {
-	// Give one card to both player
-	int i = 0;
-	for (APlayerState* PlayerState : NafGameState->PlayerArray)
+	if (NafGameState && NafGameState->PlayerArray.Num() == 2)
 	{
-		if (i == 0)
+		APlayerState* PlayerState1 = NafGameState->PlayerArray[0];
+		APlayerState* PlayerState2 = NafGameState->PlayerArray[1];
+		if (PlayerState1 && PlayerState2)
 		{
-			if (PlayerState)
+			ANAFPlayerState* NafPS1 = Cast<ANAFPlayerState>(PlayerState1);
+			ANAFPlayerState* NafPS2 = Cast<ANAFPlayerState>(PlayerState2);
+			if (NafPS1 && NafPS2)
 			{
-				if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
-				{
-					FCardDataServer Card = Deck->DrawCard();
-					NafPS->StoreCardInHand(Card);
-					TArray<bool> HandCurrent = NafPS->HandStatus();
-					ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
-					OpponentPS->UpdateHandUI(NafPS->Id,HandCurrent);
-				}
-				i++;
-			}
-		}
-		else
-		{
-			if (PlayerState)
-			{
-				if (ANAFPlayerState* NafPS = Cast<ANAFPlayerState>(PlayerState))
-				{
-					FCardDataServer Card = Deck->DrawCard();
-					FTimerHandle DrawCard2Handle;
-					TArray<bool> HandCurrent = NafPS->HandStatus();
-					ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(NafPS->Id);
-					GetWorld()->GetTimerManager().SetTimer(DrawCard2Handle,
-						[this, OpponentPS, NafPS, HandCurrent, Card]()
-						{
-							NafPS->StoreCardInHand(Card);
-							OpponentPS->UpdateHandUI(NafPS->Id,HandCurrent);
-						},
-						3.f,
-						false);
-				}
-				i++;
+				FCardDataServer Card = Deck->DrawCard();
+				NafPS1->StoreCardInHand(Card);
+				
+				FTimerHandle GiveCard1AnimHandle;
+
+				GetWorld()->GetTimerManager().SetTimer(GiveCard1AnimHandle,
+					[this, NafPS1, NafPS2]()
+					{
+						TArray<bool> HandCurrent = NafPS1->HandStatus();
+						NafPS2->UpdateHandUI(NafPS1->Id,HandCurrent);
+
+						FCardDataServer Card = Deck->DrawCard();
+						NafPS2->StoreCardInHand(Card);
+						HandCurrent = NafPS2->HandStatus();
+						NafPS1->UpdateHandUI(NafPS2->Id,HandCurrent);
+						
+					}, 2.1f, false);
 			}
 		}
 	}

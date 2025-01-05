@@ -60,13 +60,7 @@ void ANAFPlayerState::UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus)
 	{
 		if (HandStatus[0])
 		{
-			GetWorld()->GetTimerManager().SetTimer(PSPlaceCardVersoHandle,
-				[this, NafPC, TargetId]()
-				{
-					NafPC->ClientRPC_ShowPocketCardVerso(TargetId, 1);
-				},
-				3.3f,
-				false);
+			NafPC->ClientRPC_ShowPocketCardVerso(TargetId, 1);
 		}
 		else
 		{
@@ -74,14 +68,7 @@ void ANAFPlayerState::UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus)
 		}
 		if (HandStatus[1])
 		{
-			GetWorld()->GetTimerManager().SetTimer(PSPlaceCardVersoHandle,
-				[this, NafPC, TargetId]()
-				{
-					NafPC->ClientRPC_ShowPocketCardVerso(TargetId, 2);
-				},
-				3.3f,
-				false);
-
+			NafPC->ClientRPC_ShowPocketCardVerso(TargetId, 2);
 		}
 		else
 		{
