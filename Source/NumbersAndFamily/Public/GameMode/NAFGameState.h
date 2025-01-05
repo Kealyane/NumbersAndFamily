@@ -72,6 +72,8 @@ public:
 	void MultiRPC_FamilyEffect(uint8 PlayerID, uint8 Line);
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_NumEffect(const TArray<FIntPoint>& CoordCardsDeleted);
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_PutCard(uint8 Line, uint8 Col);
 
 	UFUNCTION()
 	void SwitchPlayerTurn();

@@ -97,6 +97,15 @@ void ANAFGameState::MultiRPC_NumEffect_Implementation(const TArray<FIntPoint>& C
 	}
 }
 
+void ANAFGameState::MultiRPC_PutCard_Implementation(uint8 Line, uint8 Col)
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->LaunchAnimPutCard(Line, Col);
+	}
+}
+
 void ANAFGameState::SwitchPlayerTurn()
 {
 	if (HasAuthority())

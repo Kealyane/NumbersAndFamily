@@ -554,8 +554,6 @@ void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray
 			}
 		}
 	}
-
-
 }
 
 void ANAFPlayerController::UpdateScores(int32 PLeftScore0, int32 PLeftScore1, int32 PLeftScore2, int32 PLeftTotalScore,
@@ -565,6 +563,14 @@ void ANAFPlayerController::UpdateScores(int32 PLeftScore0, int32 PLeftScore1, in
 	{
 		GameWidget->UpdateScores(PLeftScore0, PLeftScore1, PLeftScore2, PLeftTotalScore,
 			PRightScore0, PRightScore1, PRightScore2, PRightTotalScore);
+	}
+}
+
+void ANAFPlayerController::LaunchAnimPutCard(uint8 Line, uint8 Col)
+{
+	if (GameWidget)
+	{
+		GameWidget->LaunchAnimPutCard(Line, Col);
 	}
 }
 

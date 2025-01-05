@@ -311,6 +311,11 @@ void UGameWidget::AnimPlaceCardInHand(EPosition PlayerId, uint8 CardPos)
 	SendCardToHand.Broadcast(PlayerId, CardPos);
 }
 
+void UGameWidget::LaunchAnimPutCard(uint8 Line, uint8 Col)
+{
+	BoardSlots[Line][Col]->OnPutCardAnim.Broadcast();
+}
+
 
 void UGameWidget::NativeConstruct()
 {

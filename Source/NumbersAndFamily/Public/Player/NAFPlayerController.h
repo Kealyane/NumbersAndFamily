@@ -140,7 +140,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool GetIsMyTurn() const { return bIsMyTurn; }
-	
+
+	UFUNCTION()
+	void LaunchAnimPutCard(uint8 Line, uint8 Col);
+
 private:
 	bool IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col);
 	bool IsActivePlayer() const;

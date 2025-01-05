@@ -18,6 +18,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpecialCardEnableSelectionSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCardDestroyedBySameNumberSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCardDestroyedByFamilyEffectSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShowCardHandAnimSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPutCardAnimSignature);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FClickSignature, EPosition, Player, uint8, LineSelect, uint8, ColSelect);
 
@@ -61,6 +62,8 @@ public:
 	FCardDestroyedByFamilyEffectSignature OnCardDestroyedByFamily;
 	UPROPERTY(BlueprintAssignable)
 	FShowCardHandAnimSignature OnShowCardAnim;
+	UPROPERTY(BlueprintAssignable)
+	FPutCardAnimSignature OnPutCardAnim;
 	
 	UPROPERTY()
 	FClickSignature OnClickSlot;

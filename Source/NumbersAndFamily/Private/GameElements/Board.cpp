@@ -40,15 +40,20 @@ void ABoard::PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col)
 	else DeleteCardWithSameScore(Line, Col);
 
 	FTimerHandle SynHandle;
-	GetWorld()->GetTimerManager().SetTimer(SynHandle, [this]()
+	GetWorld()->GetTimerManager().SetTimer(SynHandle, [this, Line, Col]()
 	{
-		SyncBoardWithGameState();
+		FTimerHandle PlayAnimPutCardHandle;
 		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
 		{
 			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::PutCard);
+			NafGS->MultiRPC_PutCard(Line,Col);
 		}
+		GetWorld()->GetTimerManager().SetTimer(PlayAnimPutCardHandle, [this]()
+		{
+			SyncBoardWithGameState();
+		}, 0.5f, false);
 	},
-	bCardDestruction ? 1.2f : 0.1f, false);
+	bCardDestruction ? 1.4f : 0.1f, false);
 	
 }
 
