@@ -106,6 +106,24 @@ void ANAFGameState::MultiRPC_PutCard_Implementation(uint8 Line, uint8 Col)
 	}
 }
 
+void ANAFGameState::MultiRPC_Combo2_Implementation(const TArray<FIntPoint>& CoordCardsCombo)
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->LaunchAnimCombo2(CoordCardsCombo);
+	}
+}
+
+void ANAFGameState::MultiRPC_Combo3_Implementation(const TArray<FIntPoint>& CoordCardsCombo)
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->LaunchAnimCombo3(CoordCardsCombo);
+	}
+}
+
 void ANAFGameState::SwitchPlayerTurn()
 {
 	if (HasAuthority())
@@ -120,6 +138,12 @@ void ANAFGameState::InitBoardRow()
 	if (HasAuthority())
 	{
 		BoardTableRow.Init(FName("NONE"), 18);
+		P1Score0 = 0;
+		P1Score1 = 0;
+		P1Score2 = 0;
+		P2Score0 = 0;
+		P2Score1 = 0;
+		P2Score2 = 0;
 		MultiRPC_UpdateBoardUI(false, BoardTableRow);
 	}
 }
@@ -131,6 +155,17 @@ void ANAFGameState::UpdateScores(int32 PLeftScore0, int32 PLeftScore1, int32 PLe
 	if (PlayerLeft) PlayerLeft->UpdateScores(PLeftScore0, PLeftScore1, PLeftScore2, PLeftTotalScore);
 	ANAFPlayerState* PlayerRight = GetNafPlayerState(EPosition::RIGHT);
 	if (PlayerRight) PlayerRight->UpdateScores(PRightScore0, PRightScore1, PRightScore2, PRightTotalScore);
+}
+
+void ANAFGameState::SetScoresServer(int32 PLeftScore0, int32 PLeftScore1, int32 PLeftScore2,
+	int32 PRightScore0, int32 PRightScore1, int32 PRightScore2)
+{
+	P1Score0 = PLeftScore0;
+	P1Score1 = PLeftScore1;
+	P1Score2 = PLeftScore2;
+	P2Score0 = PRightScore0;
+	P2Score1 = PRightScore1;
+	P2Score2 = PRightScore2;
 }
 
 ANAFPlayerState* ANAFGameState::GetOpponentPlayerState(EPosition CurrentId)

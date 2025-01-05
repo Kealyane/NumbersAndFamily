@@ -376,7 +376,7 @@ void ANAFPlayerController::EndTurn()
 			{
 				ServerRPC_EndTurn(NafPlayerState);
 			}
-			, 3.f, false);
+			, 2.f, false);
 	}
 }
 
@@ -510,10 +510,7 @@ void ANAFPlayerController::NumEffect(TArray<FIntPoint> CoordCardsDeleted)
 
 void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray<FName>& InBoardTableRow)
 {
-	if (bAfterPlayerAction)
-	{
-		EndTurn();
-	}
+
 	
 	ANAFPlayerState* NafPlayerState = GetPlayerState<ANAFPlayerState>();
 	if (!NafPlayerState) return;
@@ -554,6 +551,10 @@ void ANAFPlayerController::UpdateBoardCard(bool bAfterPlayerAction, const TArray
 			}
 		}
 	}
+	if (bAfterPlayerAction)
+	{
+		EndTurn();
+	}
 }
 
 void ANAFPlayerController::UpdateScores(int32 PLeftScore0, int32 PLeftScore1, int32 PLeftScore2, int32 PLeftTotalScore,
@@ -571,6 +572,22 @@ void ANAFPlayerController::LaunchAnimPutCard(uint8 Line, uint8 Col)
 	if (GameWidget)
 	{
 		GameWidget->LaunchAnimPutCard(Line, Col);
+	}
+}
+
+void ANAFPlayerController::LaunchAnimCombo2(const TArray<FIntPoint> CoordCardsCombo)
+{
+	if (GameWidget)
+	{
+		GameWidget->LaunchAnimCombo2(CoordCardsCombo);
+	}
+}
+
+void ANAFPlayerController::LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo)
+{
+	if (GameWidget)
+	{
+		GameWidget->LaunchAnimCombo3(CoordCardsCombo);
 	}
 }
 

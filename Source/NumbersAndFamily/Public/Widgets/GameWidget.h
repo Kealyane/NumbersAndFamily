@@ -167,6 +167,10 @@ public:
 	void AnimPlaceCardInHand(EPosition PlayerId, uint8 CardPos);
 	UFUNCTION()
 	void LaunchAnimPutCard(uint8 Line, uint8 Col);
+	UFUNCTION()
+	void LaunchAnimCombo2(const TArray<FIntPoint> CoordCardsCombo);
+	UFUNCTION()
+	void LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo);
 
 	// EVENTS
 

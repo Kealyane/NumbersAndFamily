@@ -74,6 +74,10 @@ public:
 	void MultiRPC_NumEffect(const TArray<FIntPoint>& CoordCardsDeleted);
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_PutCard(uint8 Line, uint8 Col);
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_Combo2(const TArray<FIntPoint>& CoordCardsCombo);
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_Combo3(const TArray<FIntPoint>& CoordCardsCombo);
 
 	UFUNCTION()
 	void SwitchPlayerTurn();
@@ -82,11 +86,20 @@ public:
 	UFUNCTION()
 	void UpdateScores(int32 PLeftScore0,int32 PLeftScore1,int32 PLeftScore2,int32 PLeftTotalScore,
 		int32 PRightScore0,int32 PRightScore1,int32 PRightScore2,int32 PRightTotalScore);
+	UFUNCTION()
+	void SetScoresServer(int32 PLeftScore0,int32 PLeftScore1,int32 PLeftScore2,
+		int32 PRightScore0,int32 PRightScore1,int32 PRightScore2);
 
 	ANAFPlayerState* GetOpponentPlayerState(EPosition CurrentId);
 	ANAFPlayerState* GetNafPlayerState(EPosition Id);
 
+	int32 P1Score0;
+	int32 P1Score1;
+	int32 P1Score2;
+	int32 P2Score0;
+	int32 P2Score1;
+	int32 P2Score2;
 protected:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
 };
