@@ -10,10 +10,10 @@ UENUM(BlueprintType)
 enum class EFamilyType : uint8
 {
 	NONE,
-	CROW,
-	DEER,
-	CAT,
-	WOLF,
+	CrescentMoon,
+	FullMoon,
+	Eclipse,
+	HalfMoon,
 };
 
 UENUM(BlueprintType)
@@ -31,10 +31,10 @@ namespace EnumCardHelper
 	{
 		switch (EnumValue)
 		{
-		case EFamilyType::CROW: return TEXT("CROW");
-		case EFamilyType::CAT: return TEXT("CAT");
-		case EFamilyType::WOLF: return TEXT("WOLF");
-		case EFamilyType::DEER: return TEXT("DEER");
+		case EFamilyType::CrescentMoon: return TEXT("CrescentMoon");
+		case EFamilyType::Eclipse: return TEXT("Eclipse");
+		case EFamilyType::HalfMoon: return TEXT("HalfMoon");
+		case EFamilyType::FullMoon: return TEXT("FullMoon");
 		default: return TEXT("NONE");
 		}
 	}
