@@ -81,7 +81,7 @@ void ANAFGameMode::LaunchGame()
 	
 
 		NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::StartGame);
-
+		NafGameState->MultiRPC_PlayMusicForBoth();
 
 		DelayCounter += 1.5f;
 		World->GetTimerManager().SetTimer(ShuffleHandle,
@@ -95,7 +95,7 @@ void ANAFGameMode::LaunchGame()
 		DelayCounter += 3.f;
 		World->GetTimerManager().SetTimer(InitCardHandle,this,&ANAFGameMode::GiveOneCardToBothPlayer, DelayCounter, false);
 		
-		DelayCounter += 5.f;
+		DelayCounter += 4.5f;
 		World->GetTimerManager().SetTimer(SwitchPlayerHandle,this,&ANAFGameMode::InitializeCurrentPlayer, DelayCounter, false);
 	}
 	

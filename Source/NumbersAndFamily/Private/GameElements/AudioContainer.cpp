@@ -3,6 +3,7 @@
 
 #include "GameElements/AudioContainer.h"
 
+#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -10,6 +11,10 @@ AAudioContainer::AAudioContainer()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioMusic"));
+	AudioComponent->bAutoActivate = false; 
+	AudioComponent->bIsUISound = true;   
+	AudioComponent->bAllowSpatialization = false; 
 }
 
 void AAudioContainer::PlayAudio(ESoundRow SoundToPlay)
@@ -21,6 +26,11 @@ void AAudioContainer::PlayAudio(ESoundRow SoundToPlay)
 			UGameplayStatics::PlaySound2D(GetWorld(), SoundCue);
 		}
 	}
+}
+
+void AAudioContainer::PlayMusic()
+{
+	OnPlayMusic.Broadcast();
 }
 
 

@@ -28,6 +28,15 @@ void ANAFGameState::SetBoardName(bool bAfterPlayerAction, const TArray<FName>& I
 	}
 }
 
+void ANAFGameState::MultiRPC_PlayMusicForBoth_Implementation()
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->GetAudioManager()->PlayMusic();
+	}
+}
+
 void ANAFGameState::MultiRPC_PlaySoundForBoth_Implementation(ESoundRow SoundRow)
 {
 	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();

@@ -59,6 +59,8 @@ public:
 	
 	UFUNCTION(NetMulticast, Unreliable)
 	void MultiRPC_PlaySoundForBoth(ESoundRow SoundRow);
+	UFUNCTION(NetMulticast, Unreliable)
+	void MultiRPC_PlayMusicForBoth();
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_UpdateActiveTurnUI(EPosition NewActivePlayer); // Show for both clients which one is active
 	UFUNCTION(NetMulticast, Reliable)
@@ -78,6 +80,7 @@ public:
 	void MultiRPC_Combo2(const TArray<FIntPoint>& CoordCardsCombo);
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_Combo3(const TArray<FIntPoint>& CoordCardsCombo);
+
 
 	UFUNCTION()
 	void SwitchPlayerTurn();
