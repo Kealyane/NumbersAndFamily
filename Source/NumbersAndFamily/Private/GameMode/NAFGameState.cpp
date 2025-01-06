@@ -133,6 +133,15 @@ void ANAFGameState::MultiRPC_Combo3_Implementation(const TArray<FIntPoint>& Coor
 	}
 }
 
+void ANAFGameState::MultiRPC_ShowCard_Implementation(FCardDataServer Card, uint8 Line, uint8 Col)
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->ShowCard(Card, Line, Col);
+	}
+}
+
 void ANAFGameState::SwitchPlayerTurn()
 {
 	if (HasAuthority())

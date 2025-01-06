@@ -152,7 +152,15 @@ void ANAFGameMode::RemoveCardFromHand(ANAFPlayerState* ActivePlayerState)
 void ANAFGameMode::PlaceNormalCard(FCardDataServer Card, uint8 IndexHandCard, uint8 Line, uint8 Col)
 {
 	IndexHandCardPlayed = IndexHandCard;
-	Board->PlaceNormalCard(Card, Line, Col);
+	FTimerHandle PlayAnimPutCardHandle;
+	GetWorld()->GetTimerManager().SetTimer(PlayAnimPutCardHandle, [this, Card, Line, Col]()
+	{
+		Board->PlaceNormalCard(Card, Line, Col);
+	}, 0.5f, false);
+	
+	NafGameState->MultiRPC_ShowCard(Card, Line, Col);
+	NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::PutCard);
+	NafGameState->MultiRPC_PutCard(Line,Col);
 }
 
 void ANAFGameMode::EndTurn()

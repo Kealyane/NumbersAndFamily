@@ -104,6 +104,8 @@ public:
 		int32 PRightScore0,int32 PRightScore1,int32 PRightScore2,int32 PRightTotalScore);
 	UFUNCTION()
 	void ShowEndGamePanel(EPosition WinningPlayerId);
+	UFUNCTION()
+	void ShowCard(FCardDataServer Card, uint8 Line, uint8 col);
 
 	UFUNCTION()
 	void EnableCardSelectionUI(EPosition PlayerId, ECardType CardType);
@@ -147,6 +149,7 @@ public:
 	void LaunchAnimCombo2(const TArray<FIntPoint> CoordCardsCombo);
 	UFUNCTION()
 	void LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo);
+
 
 private:
 	bool IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col);

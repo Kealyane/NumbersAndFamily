@@ -7,6 +7,7 @@
 #include "GameFramework/GameState.h"
 #include "NAFGameState.generated.h"
 
+struct FCardDataServer;
 enum class EPosition : uint8;
 class ANAFPlayerState;
 
@@ -76,6 +77,8 @@ public:
 	void MultiRPC_NumEffect(const TArray<FIntPoint>& CoordCardsDeleted);
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_PutCard(uint8 Line, uint8 Col);
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_ShowCard(FCardDataServer Card, uint8 Line, uint8 Col);
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_Combo2(const TArray<FIntPoint>& CoordCardsCombo);
 	UFUNCTION(NetMulticast, Reliable)

@@ -42,16 +42,7 @@ void ABoard::PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col)
 	FTimerHandle SynHandle;
 	GetWorld()->GetTimerManager().SetTimer(SynHandle, [this, Line, Col]()
 	{
-		FTimerHandle PlayAnimPutCardHandle;
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
-		{
-			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::PutCard);
-			NafGS->MultiRPC_PutCard(Line,Col);
-		}
-		GetWorld()->GetTimerManager().SetTimer(PlayAnimPutCardHandle, [this]()
-		{
-			SyncBoardWithGameState();
-		}, 0.5f, false);
+		SyncBoardWithGameState();
 	},
 	bCardDestruction ? 1.4f : 0.1f, false);
 }
@@ -128,7 +119,7 @@ void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Ca
 		SyncBoardWithGameState();
 		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
 		{
-			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::PutCard);
+			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Steal);
 		}
 	},
 	bCardDestruction ? 1.4f : 0.1f, false);

@@ -28,7 +28,6 @@ void ANAFPlayerController::BeginPlay()
 	}
 }
 
-
 void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 {
 	GameWidget = CreateWidget<UGameWidget>(this, GameWidgetType);
@@ -50,6 +49,7 @@ void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 	SetInputMode(InputMode);
+	
 }
 
 void ANAFPlayerController::ClientRPC_PlaceCardInPocketUI_Implementation(EPosition PlayerPosition, uint8 Pos,
@@ -125,6 +125,16 @@ void ANAFPlayerController::ShowEndGamePanel(EPosition WinningPlayerId)
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 	SetInputMode(InputMode);
+}
+
+void ANAFPlayerController::ShowCard(FCardDataServer Card, uint8 Line, uint8 col)
+{
+	const FString ContextString(TEXT("Card Data Context"));
+	const FCardData* Data = DeckDataTable->FindRow<FCardData>(Card.RowName,ContextString);
+	if (Data && GameWidget)
+	{
+		GameWidget->BoardSlots[Line][col]->ShowCard(Data->ImageRecto);
+	}
 }
 
 void ANAFPlayerController::ServerRPC_DrawCard_Implementation()
@@ -590,6 +600,7 @@ void ANAFPlayerController::LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCo
 		GameWidget->LaunchAnimCombo3(CoordCardsCombo);
 	}
 }
+
 
 bool ANAFPlayerController::IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col)
 {
