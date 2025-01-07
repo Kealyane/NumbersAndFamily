@@ -39,9 +39,6 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	uint8 Col = 0;
 
-	UPROPERTY(meta=(BindWidget))
-	class UButton* ButtonSlot;
-
 	UPROPERTY(BlueprintAssignable)
 	FCardPlacedSignature OnCardPlace;
 	UPROPERTY(BlueprintAssignable)
