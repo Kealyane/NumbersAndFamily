@@ -9,6 +9,7 @@
 #include "Player/NAFPlayerController.h"
 #include "Player/NAFPlayerState.h"
 #include "GameElements/Deck.h"
+#include "MultiplayerSessionsSubsystem.h"
 
 void ANAFGameMode::PostLogin(APlayerController* NewPlayer)
 {
@@ -20,16 +21,47 @@ void ANAFGameMode::PostLogin(APlayerController* NewPlayer)
 	{
 		if (ANAFPlayerState* PS = Cast<ANAFPlayerState>(TPC->PlayerState))
 		{
+			
+			FString CurrentPlayerName;
+			if (!IS_EDITOR)
+			{
+				if (UGameInstance* GameInstance =  GetGameInstance())
+				{
+					if (UMultiplayerSessionsSubsystem* MultiplayerSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>())
+					{
+						CurrentPlayerName = MultiplayerSubsystem->GetSteamNickname(NewPlayer);
+					}
+				}
+			}
 			if (NumberOfPlayers == 1)
 			{
 				PS->Id = EPosition::LEFT;
+				if (CurrentPlayerName.IsEmpty() || CurrentPlayerName == TEXT("Unknown"))
+				{
+					PS->PlayerAlias = FName("Host");
+				}
+				else
+				{
+					P1Name = FName(*CurrentPlayerName);
+					PS->PlayerAlias = FName(*CurrentPlayerName);
+				}
 			}
 			else if (NumberOfPlayers == 2)
 			{
 				PS->Id = EPosition::RIGHT;
+				if (CurrentPlayerName.IsEmpty() || CurrentPlayerName == TEXT("Unknown"))
+				{
+					PS->PlayerAlias = FName("Guest");
+				}
+				else
+				{
+					P2Name = FName(*CurrentPlayerName);
+					PS->PlayerAlias = FName(*CurrentPlayerName);
+				}
 			}
 		}
 	}
+	
 	
 	if (NumberOfPlayers == 2)
 	{
@@ -66,6 +98,7 @@ void ANAFGameMode::LaunchGame()
 		if (ANAFPlayerController* NafPlayerController = Cast<ANAFPlayerController>(*PCIterator))
 		{
 			NafPlayerController->ClientRPC_ShowGameBoard();
+			NafGameState->SetPlayerNames();
 		}
 	}
 

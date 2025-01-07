@@ -150,11 +150,14 @@ public:
 	UFUNCTION()
 	void LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo);
 
+	UFUNCTION()
+	void SetPlayerNames(FName Player1, FName Player2);
+
+	EPosition GetPlayerId() const;
 
 private:
 	bool IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col);
 	bool IsActivePlayer() const;
-	EPosition GetPlayerId() const;
 	uint8 NbCardInBoard = 0;
 	uint8 NBCardInOpponentBoard = 0;
 	TObjectPtr<AAudioContainer> AudioManager;

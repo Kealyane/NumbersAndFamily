@@ -601,6 +601,15 @@ void ANAFPlayerController::LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCo
 	}
 }
 
+void ANAFPlayerController::SetPlayerNames(FName Player1, FName Player2)
+{
+	if (GameWidget)
+	{
+		GameWidget->SetPlayer1Name.Broadcast(Player1);
+		GameWidget->SetPlayer2Name.Broadcast(Player2);
+	}
+}
+
 
 bool ANAFPlayerController::IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col)
 {

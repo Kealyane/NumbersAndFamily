@@ -142,6 +142,38 @@ void ANAFGameState::MultiRPC_ShowCard_Implementation(FCardDataServer Card, uint8
 	}
 }
 
+void ANAFGameState::MultiRPC_SetPlayerNames_Implementation(FName Player1, FName Player2)
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		if (PlayerController->GetPlayerId() == EPosition::LEFT)
+		{
+			FString StringName1 = Player1.ToString();
+			FString NewString1 = TEXT("x ") + StringName1 + TEXT(" x");
+			FName NewName1 = FName(*NewString1);
+			PlayerController->SetPlayerNames(NewName1, Player2);
+		}
+		else
+		{
+			FString StringName2 = Player2.ToString();
+			FString NewString2 = TEXT("X ") + StringName2 + TEXT(" X");
+			FName NewName2 = FName(*NewString2);
+			PlayerController->SetPlayerNames(Player1, NewName2);
+		}
+	}
+}
+
+void ANAFGameState::SetPlayerNames()
+{
+	ANAFPlayerState* Player1 = GetNafPlayerState(EPosition::LEFT);
+	ANAFPlayerState* Player2 = GetNafPlayerState(EPosition::RIGHT);
+	if (Player1 && Player2)
+	{
+		MultiRPC_SetPlayerNames(Player1->PlayerAlias, Player2->PlayerAlias);
+	}
+}
+
 void ANAFGameState::SwitchPlayerTurn()
 {
 	if (HasAuthority())

@@ -5,6 +5,8 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "Online/OnlineSessionNames.h"
+#include "Interfaces/OnlineIdentityInterface.h"
+#include "OnlineSubsystemTypes.h"
 
 UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem() :
 	CreateSessionCompleteDelegate(FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionComplete)),
@@ -148,6 +150,32 @@ bool UMultiplayerSessionsSubsystem::IsValidSessionInterface()
 		}
 	}
 	return SessionInterface.IsValid();
+}
+
+FString UMultiplayerSessionsSubsystem::GetSteamNickname(APlayerController* PlayerController)
+{
+	if (!PlayerController)
+	{
+		return TEXT("Unknown");
+	}
+	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+	if (LocalPlayer)
+	{
+		IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get(STEAM_SUBSYSTEM);
+		if (OnlineSubsystem)
+		{
+			IOnlineIdentityPtr IdentityInterface = OnlineSubsystem->GetIdentityInterface();
+			if (IdentityInterface.IsValid())
+			{
+				TSharedPtr<const FUniqueNetId> UserId = IdentityInterface->GetUniquePlayerId(LocalPlayer->GetLocalPlayerIndex());
+				if (UserId.IsValid())
+				{
+					return IdentityInterface->GetPlayerNickname(*UserId);
+				}
+			}
+		}
+	}
+	return TEXT("Unknown");
 }
 
 // Callbacks

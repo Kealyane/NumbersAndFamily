@@ -19,6 +19,10 @@ void ANAFPlayerState::OnRep_Id()
 {
 }
 
+void ANAFPlayerState::OnRep_PlayerAlias()
+{
+}
+
 void ANAFPlayerState::StoreCardInHand(FCardDataServer Card)
 {
 	uint8 CardPos = 0;
@@ -165,6 +169,7 @@ void ANAFPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(ANAFPlayerState, TotalScore);
 	DOREPLIFETIME(ANAFPlayerState, Card1);
 	DOREPLIFETIME(ANAFPlayerState, Card2);
+	DOREPLIFETIME(ANAFPlayerState, PlayerAlias);
 }
 
 

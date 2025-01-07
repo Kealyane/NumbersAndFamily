@@ -62,7 +62,12 @@ private:
 	bool bIsGameOver;
 	EPosition Winner;
 	float  DelayCounter = 0.f;
+
+	FName P1Name;
+	FName P2Name;
 	
 	void GiveOneCardToBothPlayer();
 	void InitializeCurrentPlayer();
+
+	bool const IS_EDITOR = true;
 };

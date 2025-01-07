@@ -83,8 +83,12 @@ public:
 	void MultiRPC_Combo2(const TArray<FIntPoint>& CoordCardsCombo);
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_Combo3(const TArray<FIntPoint>& CoordCardsCombo);
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_SetPlayerNames(FName Player1, FName Player2);
 
-
+	UFUNCTION()
+	void SetPlayerNames();
 	UFUNCTION()
 	void SwitchPlayerTurn();
 	UFUNCTION()

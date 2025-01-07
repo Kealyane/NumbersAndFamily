@@ -16,10 +16,12 @@ public class NumbersAndFamily : ModuleRules
 			"InputCore", 
 			"EnhancedInput", 
 			"OnlineSubsystem",
+			"OnlineSubsystemUtils",
 			"OnlineSubsystemSteam",
 			"UMG", 
 			"Slate", 
-			"SlateCore"
+			"SlateCore", 
+			"MultiplayerSessions"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

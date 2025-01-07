@@ -39,6 +39,8 @@ public:
 
 	bool IsValidSessionInterface();
 
+	FString GetSteamNickname(APlayerController* PlayerController);
+
 	FMultiplayerOnCreateSessionComplete MultiplayerOnCreateSessionComplete;
 	FMultiplayerOnFindSessionsComplete MultiplayerOnFindSessionsComplete;
 	FMultiplayerOnJoinSessionComplete MultiplayerOnJoinSessionComplete;

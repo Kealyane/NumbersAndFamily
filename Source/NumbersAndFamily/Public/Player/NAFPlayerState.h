@@ -46,8 +46,12 @@ class NUMBERSANDFAMILY_API ANAFPlayerState : public APlayerState
 public:
 	UPROPERTY(ReplicatedUsing=OnRep_Id)
 	EPosition Id = EPosition::SERVER;
+	UPROPERTY(ReplicatedUsing=OnRep_PlayerAlias)
+	FName PlayerAlias;
 	UFUNCTION()
 	void OnRep_Id();
+	UFUNCTION()
+	void OnRep_PlayerAlias();
 
 	void StoreCardInHand(FCardDataServer Card);
 	void RemoveCardInHand(uint8 IndexCard);
