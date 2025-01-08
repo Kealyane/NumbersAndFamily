@@ -72,14 +72,15 @@ void ABoard::SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 
 	if (IsLineFull(Card2Line, Card2Col) && IsFamily(Card2Line, Card2Col)) DeleteCardsBecauseOfFamily(Card2Line, Card2Col);
 	else DeleteCardWithSameScore(Card2Line, Card2Col);
 
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Switch);
+	}
+	
 	FTimerHandle SynHandle;
 	GetWorld()->GetTimerManager().SetTimer(SynHandle, [this]()
 	{
 		SyncBoardWithGameState();
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
-		{
-			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Switch);
-		}
 	},
 	bCardDestruction ? 1.4f : 0.1f, false);
 	
@@ -95,14 +96,15 @@ void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 C
 	
 	if (HasHoles(Card1Line, Card1Col)) MoveCards(Card1Line, Card1Col);
 	
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Steal);
+	}
+	
 	FTimerHandle SynHandle;
 	GetWorld()->GetTimerManager().SetTimer(SynHandle, [this]()
 	{
 		SyncBoardWithGameState();
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
-		{
-			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Steal);
-		}
 	},
 	bCardDestruction ? 1.4f : 0.1f, false);
 }
@@ -121,14 +123,15 @@ void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Ca
 	if (IsLineFull(Card2Line, Card2Col) && IsFamily(Card2Line, Card2Col)) DeleteCardsBecauseOfFamily(Card2Line, Card2Col);
 	else DeleteCardWithSameScore(Card2Line, Card2Col);
 	
+	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
+	{
+		NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Steal);
+	}
+	
 	FTimerHandle SynHandle;
 	GetWorld()->GetTimerManager().SetTimer(SynHandle, [this]()
 	{
 		SyncBoardWithGameState();
-		if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
-		{
-			NafGS->MultiRPC_PlaySoundForBoth(ESoundRow::Steal);
-		}
 	},
 	bCardDestruction ? 1.4f : 0.1f, false);
 }
