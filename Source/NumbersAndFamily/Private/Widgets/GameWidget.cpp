@@ -32,7 +32,7 @@ void UGameWidget::StartHandSelection(EPosition ActivePlayer)
 	for (const auto& CardWidgets : CurrentPlayerHand)
 	{
 		CardWidgets->bIsHandSelectionOnGoing = true;
-		CardWidgets->DisableHighlight();
+		CardWidgets->OnDisableHighlight.Broadcast();
 	}
 }
 
@@ -42,7 +42,10 @@ void UGameWidget::EndHandSelection(EPosition ActivePlayer)
 	for (const auto& CardWidgets : CurrentPlayerHand)
 	{
 		CardWidgets->bIsHandSelectionOnGoing = false;
+		CardWidgets->OnDisableHighlight.Broadcast();
+		CardWidgets->OnCardUnselected.Broadcast();
 	}
+	SelectedHandCard = nullptr;
 }
 
 
