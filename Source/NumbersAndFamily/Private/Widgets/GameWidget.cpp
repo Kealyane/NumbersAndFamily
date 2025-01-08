@@ -310,7 +310,6 @@ void UGameWidget::NumEffect(TArray<FIntPoint> CoordCardsDeleted)
 
 void UGameWidget::AnimPlaceCardInHand(EPosition PlayerId, uint8 CardPos)
 {
-	UE_LOG(LogTemp, Warning, TEXT("GetCard call %s %d"), *EnumHelper::ToString(PlayerId), CardPos);
 	SendCardToHand.Broadcast(PlayerId, CardPos);
 }
 
