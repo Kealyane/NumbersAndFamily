@@ -254,6 +254,49 @@ void ANAFGameMode::InitializeCurrentPlayer()
 	NafGameState->SetActivePlayer(ActivePosition);
 }
 
+void ANAFGameMode::NewGame()
+{
+	bIsGameOver = false;
+	Winner = EPosition::SERVER;
+	
+	// Initialize Deck
+	if (UWorld* World = GetWorld())
+	{
+		Deck->ResetDeck();
+		Board->InitBoard();
+		Board->InitParamDeck(Deck);
+		NafGameState->InitBoardRow();
+		NafGameState->MultiRPC_UpdateScores(0,0,0,0,
+			0,0,0,0);
+		
+		// Show UI
+		for (FConstPlayerControllerIterator PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; ++PCIterator)
+		{
+			if (ANAFPlayerController* NafPlayerController = Cast<ANAFPlayerController>(*PCIterator))
+			{
+				// REMOVE ENDGAME WIDGET
+				NafPlayerController->ClientRPC_ResetShowGameBoard();
+			}
+		}
+		NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::StartGame);
+
+		DelayCounter += 1.5f;
+		World->GetTimerManager().SetTimer(ShuffleHandle,
+			[this]()
+			{
+				NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::Shuffle);
+			},
+			DelayCounter,
+			false);
+		
+		DelayCounter += 3.f;
+		World->GetTimerManager().SetTimer(InitCardHandle,this,&ANAFGameMode::GiveOneCardToBothPlayer, DelayCounter, false);
+		
+		DelayCounter += 4.5f;
+		World->GetTimerManager().SetTimer(SwitchPlayerHandle,this,&ANAFGameMode::InitializeCurrentPlayer, DelayCounter, false);
+	}
+}
+
 
 
 

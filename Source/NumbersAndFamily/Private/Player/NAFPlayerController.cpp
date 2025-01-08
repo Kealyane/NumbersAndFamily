@@ -28,6 +28,15 @@ void ANAFPlayerController::BeginPlay()
 	}
 }
 
+void ANAFPlayerController::ClientRPC_ResetShowGameBoard_Implementation()
+{
+	if (EndGameWidget)
+	{
+		EndGameWidget->RemoveFromParent();
+		EndGameWidget = nullptr;
+	}
+}
+
 void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 {
 	GameWidget = CreateWidget<UGameWidget>(this, GameWidgetType);
@@ -117,6 +126,18 @@ void ANAFPlayerController::ShowEndGamePanel(EPosition WinningPlayerId)
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 	SetInputMode(InputMode);
+
+	FTimerHandle EndGameUIHandle;
+	GetWorld()->GetTimerManager().SetTimer(EndGameUIHandle,
+		[this]()
+		{
+			GameWidget->ResetWidget();
+			bIsMyTurn = false;
+			if (ANAFPlayerState* PS = GetPlayerState<ANAFPlayerState>())
+			{
+				PS->ResetPlayerState();
+			}
+		}, 0.5f, false);
 }
 
 void ANAFPlayerController::ShowCard(FCardDataServer Card, uint8 Line, uint8 col)

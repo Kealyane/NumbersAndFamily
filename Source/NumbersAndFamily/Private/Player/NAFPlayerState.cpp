@@ -131,6 +131,12 @@ void ANAFPlayerState::UpdateScores(int32 InScoreLine0, int32 InScoreLine1, int32
 	}
 }
 
+void ANAFPlayerState::ResetPlayerState()
+{
+	SelectedCard = FCardDataServer();
+	IndexSelected = 0;
+}
+
 TArray<bool> ANAFPlayerState::HandStatus()
 {
 	TArray<bool> Status;

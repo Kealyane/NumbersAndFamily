@@ -17,6 +17,7 @@ public:
 	ABoard();
 
 	void InitBoard();
+	void ResetBoard();
 	void InitParamDeck(ADeck* InDeck);
 	void PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col);
 	bool IsCoordOccupied(uint8 Line, uint8 Col);

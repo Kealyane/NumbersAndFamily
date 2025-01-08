@@ -26,6 +26,14 @@ void ABoard::InitBoard()
 	bCardDestruction = false;
 }
 
+void ABoard::ResetBoard()
+{
+	BoardGame.Empty();
+	BoardRowNames.Empty();
+	bCardDestruction = false;
+	InitBoard();
+}
+
 void ABoard::InitParamDeck(ADeck* InDeck)
 {
 	Deck = InDeck;

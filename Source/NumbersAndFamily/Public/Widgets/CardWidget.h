@@ -21,6 +21,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShowCardHandAnimSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPutCardAnimSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCombox2AnimSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCombox3AnimSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FResetGameSignature);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FClickSignature, EPosition, Player, uint8, LineSelect, uint8, ColSelect);
 
@@ -67,6 +68,8 @@ public:
 	FCombox2AnimSignature OnCombox2Anim;
 	UPROPERTY(BlueprintAssignable)
 	FCombox3AnimSignature OnCombox3Anim;
+	UPROPERTY(BlueprintAssignable)
+	FResetGameSignature OnResetGame;
 	
 	UPROPERTY()
 	FClickSignature OnClickSlot;
@@ -88,6 +91,7 @@ public:
 	void CardDestroyByFamEffect();
 
 	void ShowCardAnim();
+	void ResetCard();
 	
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsCardSlotSelected = false;

@@ -147,6 +147,7 @@ protected:
 
 public:	
 	bool InitDeck();
+	void ResetDeck();
 	FCardDataServer DrawCard();
 	void BackToDeck(FCardDataServer Card);	
 	FName GetRowNameFromDataServer(FCardDataServer Card);

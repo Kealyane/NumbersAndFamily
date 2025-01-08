@@ -55,6 +55,7 @@ public:
 	void ActiveHandChoice(EPosition ActiveId);
 	
 	void UpdateScores(int32 InScoreLine0, int32 InScoreLine1, int32 InScoreLine2, int32 InTotalScore);
+	void ResetPlayerState();
 	
 	ECardType GetCardType(uint8 PosCard);
 	FCardDataServer GetSelectedCard();

@@ -47,6 +47,7 @@ public:
 	FName GetRowNameFromDataServer(FCardDataServer Card);
 	void SetGameOverInfos(EPosition WinnerId);
 	
+	void NewGame();
 private:
 	FTimerHandle WaitHandle;
 	FTimerHandle ShuffleHandle;
@@ -65,4 +66,5 @@ private:
 	
 	void GiveOneCardToBothPlayer();
 	void InitializeCurrentPlayer();
+
 };

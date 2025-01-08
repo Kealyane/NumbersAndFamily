@@ -172,6 +172,9 @@ public:
 	UFUNCTION()
 	void LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo);
 
+	UFUNCTION()
+	void ResetWidget();
+
 	// EVENTS
 
 	UPROPERTY()

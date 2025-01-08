@@ -46,6 +46,8 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_ShowGameBoard();
 	UFUNCTION(Client, Reliable)
+	void ClientRPC_ResetShowGameBoard();
+	UFUNCTION(Client, Reliable)
 	void ClientRPC_PlaceCardInPocketUI(EPosition PlayerPosition, uint8 Pos, FName CardRowName);
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_ShowPocketCardVerso(EPosition PlayerPosition, uint8 Pos);

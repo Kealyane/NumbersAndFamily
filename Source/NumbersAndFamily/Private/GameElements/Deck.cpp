@@ -37,6 +37,13 @@ bool ADeck::InitDeck()
 	return true;
 }
 
+void ADeck::ResetDeck()
+{
+	Deck.Empty();
+	InitDeck();
+	Algo::RandomShuffle(Deck);
+}
+
 FCardDataServer ADeck::DrawCard()
 {
 	if (Deck.Num() == 0)
