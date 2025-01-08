@@ -72,7 +72,7 @@ void ANAFPlayerController::ClientRPC_PlaceCardInPocketUI_Implementation(EPositio
 	 				CardSlot->ShowCard(Data->ImageRecto);
 				}
 			},
-			TimeAnimCardInHand+TimeAnimCardFlipInHand,
+			1.5f,
 			false);
 	}
 	
@@ -82,19 +82,11 @@ void ANAFPlayerController::ClientRPC_ShowPocketCardVerso_Implementation(EPositio
 {
 	if (GameWidget)
 	{
-		//GameWidget->AnimPlaceCardInHand(PlayerPosition, Pos);
-		//FTimerHandle PlaceCardVersoHandle;
 		UCardWidget* CardUW = GameWidget->GetCardWidget(PlayerPosition, Pos);
 		if (CardUW)
 		{
 			CardUW->ShowCard(CardVerso);
 		}
-		// GetWorld()->GetTimerManager().SetTimer(PlaceCardVersoHandle,
-		// 	[this, PlayerPosition, Pos]()
-		// 	{
-		// 	},
-		// 	TimeAnimCardInHand,
-		// 	false);
 	}
 }
 

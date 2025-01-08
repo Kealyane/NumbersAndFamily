@@ -32,7 +32,7 @@ void UGameWidget::StartHandSelection(EPosition ActivePlayer)
 	for (const auto& CardWidgets : CurrentPlayerHand)
 	{
 		CardWidgets->bIsHandSelectionOnGoing = true;
-		CardWidgets->DisableHighlight();
+		CardWidgets->OnDisableHighlight.Broadcast();
 	}
 }
 
@@ -42,7 +42,10 @@ void UGameWidget::EndHandSelection(EPosition ActivePlayer)
 	for (const auto& CardWidgets : CurrentPlayerHand)
 	{
 		CardWidgets->bIsHandSelectionOnGoing = false;
+		CardWidgets->OnDisableHighlight.Broadcast();
+		if (CardWidgets->bIsCardSlotSelected) CardWidgets->OnCardUnselected.Broadcast();
 	}
+	SelectedHandCard = nullptr;
 }
 
 
@@ -307,7 +310,6 @@ void UGameWidget::NumEffect(TArray<FIntPoint> CoordCardsDeleted)
 
 void UGameWidget::AnimPlaceCardInHand(EPosition PlayerId, uint8 CardPos)
 {
-	UE_LOG(LogTemp, Warning, TEXT("GetCard call %s %d"), *EnumHelper::ToString(PlayerId), CardPos);
 	SendCardToHand.Broadcast(PlayerId, CardPos);
 }
 
@@ -369,12 +371,16 @@ void UGameWidget::NativeConstruct()
 
 	WBP_Card_P1_Pocket->SetSlotParams(true, 3, 1);
 	WBP_Card_P1_Pocket->HideCard();
+	WBP_Card_P1_Pocket->bIsHandSlot = true;
 	WBP_Card_P1_Pocket_1->SetSlotParams(true, 3, 2);
 	WBP_Card_P1_Pocket_1->HideCard();
+	WBP_Card_P1_Pocket_1->bIsHandSlot = true;
 	WBP_Card_P2_Pocket->SetSlotParams(false, 3, 3);
 	WBP_Card_P2_Pocket->HideCard();
+	WBP_Card_P2_Pocket->bIsHandSlot = true;
 	WBP_Card_P2_Pocket_1->SetSlotParams(false, 3, 4);
 	WBP_Card_P2_Pocket_1->HideCard();
+	WBP_Card_P2_Pocket_1->bIsHandSlot = true;
 	
 	PlayerPockets =
 	{
@@ -536,6 +542,7 @@ void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 
 		{
 			OnActiveCopy.Broadcast(FirstCardSelected->OwningPlayer, FirstCardSelected->Line, FirstCardSelected->Col,
 									SecondCardSelected->OwningPlayer, SecondCardSelected->Line, SecondCardSelected->Col);
+			UnselectCardArcaneAfterDelay(FirstCardSelected, SecondCardSelected);
 			FirstCardSelected = nullptr;
 			SecondCardSelected = nullptr;
 			HandCardTypeSelected = ECardType::NONE;
@@ -553,6 +560,7 @@ void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 
 		{
 			OnActiveSwitch.Broadcast(FirstCardSelected->OwningPlayer, FirstCardSelected->Line, FirstCardSelected->Col,
 									SecondCardSelected->OwningPlayer, SecondCardSelected->Line, SecondCardSelected->Col);
+			UnselectCardArcaneAfterDelay(FirstCardSelected, SecondCardSelected);
 			FirstCardSelected = nullptr;
 			SecondCardSelected = nullptr;
 			return;
@@ -569,11 +577,22 @@ void UGameWidget::OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 
 		{
 			OnActiveSteal.Broadcast(FirstCardSelected->OwningPlayer, FirstCardSelected->Line, FirstCardSelected->Col,
 									SecondCardSelected->OwningPlayer, SecondCardSelected->Line, SecondCardSelected->Col);
+			UnselectCardArcaneAfterDelay(FirstCardSelected, SecondCardSelected);
 			FirstCardSelected = nullptr;
 			SecondCardSelected = nullptr;
 			return;
 		}
 	}
+}
+
+void UGameWidget::UnselectCardArcaneAfterDelay(UCardWidget* First, UCardWidget* Second)
+{
+	FTimerHandle WaitEndArcane;
+	GetWorld()->GetTimerManager().SetTimer(WaitEndArcane, [this, First, Second]()
+	{
+		First->SelectCard(false);
+		Second->SelectCard(false);
+	},2.3f, false);
 }
 
 EPosition UGameWidget::GetPlayerId()

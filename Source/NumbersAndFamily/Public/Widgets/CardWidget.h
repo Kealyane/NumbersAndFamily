@@ -91,8 +91,11 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsCardSlotSelected = false;
-	
+	UPROPERTY(BlueprintReadOnly)
 	bool bIsCardOccupied = false;
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsHandSlot = false;
+	
 	bool bCanBeClicked = false;
 	bool bIsHandSelectionOnGoing = false;
 
