@@ -51,7 +51,7 @@ FCardDataServer ADeck::DrawCard()
 		return FCardDataServer();
 	}
 	FCardDataServer CardDrawn;
-
+	
 	if (bIsStartGame)
 	{
 		do
@@ -60,7 +60,6 @@ FCardDataServer ADeck::DrawCard()
 			CardDrawn = Deck[0];
 		}
 		while (CardDrawn.ArcaneType != EArcaneType::NONE);
-		bIsStartGame = false;
 	}
 	else
 	{

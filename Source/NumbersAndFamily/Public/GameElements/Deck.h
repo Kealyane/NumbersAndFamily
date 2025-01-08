@@ -138,12 +138,13 @@ class NUMBERSANDFAMILY_API ADeck : public AActor
 public:	
 	ADeck();
 
+	bool bIsStartGame = true;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Deck")
 	TObjectPtr<UDataTable> DeckDataTable;
 
 	TArray<FCardDataServer> Deck;
-	bool bIsStartGame = true;
 
 public:	
 	bool InitDeck();

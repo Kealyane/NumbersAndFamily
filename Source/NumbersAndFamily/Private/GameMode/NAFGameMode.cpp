@@ -234,8 +234,9 @@ void ANAFGameMode::GiveOneCardToBothPlayer()
 						TArray<bool> HandCurrent = NafPS1->HandStatus();
 						NafPS2->UpdateHandUI(NafPS1->Id,HandCurrent);
 
-						FCardDataServer Card = Deck->DrawCard();
-						NafPS2->StoreCardInHand(Card);
+						FCardDataServer Card2 = Deck->DrawCard();
+						Deck->bIsStartGame = false;
+						NafPS2->StoreCardInHand(Card2);
 						HandCurrent = NafPS2->HandStatus();
 						NafPS1->UpdateHandUI(NafPS2->Id,HandCurrent);
 						
