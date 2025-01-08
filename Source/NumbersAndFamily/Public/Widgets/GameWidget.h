@@ -224,6 +224,8 @@ private:
 	void OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 ColSelect);
 	UFUNCTION()
 	void OnBoardCardSelected(EPosition Player, uint8 LineSelect, uint8 ColSelect);
+	UFUNCTION()
+	void UnselectCardArcaneAfterDelay(UCardWidget* First, UCardWidget* Second);
 
 	EPosition GetPlayerId();
 	bool bIsHandChoiceDone = false;
