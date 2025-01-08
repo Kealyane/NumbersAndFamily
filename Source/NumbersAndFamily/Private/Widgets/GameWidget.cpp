@@ -43,7 +43,7 @@ void UGameWidget::EndHandSelection(EPosition ActivePlayer)
 	{
 		CardWidgets->bIsHandSelectionOnGoing = false;
 		CardWidgets->OnDisableHighlight.Broadcast();
-		CardWidgets->OnCardUnselected.Broadcast();
+		if (CardWidgets->bIsCardSlotSelected) CardWidgets->OnCardUnselected.Broadcast();
 	}
 	SelectedHandCard = nullptr;
 }
