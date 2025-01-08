@@ -130,15 +130,18 @@ void ANAFGameMode::DrawCard(ANAFPlayerState* ActivePlayerState)
 	{
 		NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::CardDraw);
 		ActivePlayerState->StoreCardInHand(Card);
-		ActivePlayerState->ActiveHandChoice(ActivePlayerState->Id);
 		TArray<bool> HandCurrent = ActivePlayerState->HandStatus();
 		ANAFPlayerState* OpponentPS = NafGameState->GetOpponentPlayerState(ActivePlayerState->Id);
 		OpponentPS->UpdateHandUI(ActivePlayerState->Id,HandCurrent);
+		FTimerHandle WaitHandle;
+		GetWorld()->GetTimerManager().SetTimer(WaitHandle,
+			[this, ActivePlayerState]()
+			{
+				ActivePlayerState->ActiveHandChoice(ActivePlayerState->Id);
+			}, 1.5f, false);
 	},
 	0.5f,
 	false);
-
-
 }
 
 void ANAFGameMode::RemoveCardFromHand(ANAFPlayerState* ActivePlayerState)
