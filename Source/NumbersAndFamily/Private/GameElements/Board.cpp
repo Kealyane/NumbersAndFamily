@@ -31,6 +31,8 @@ void ABoard::ResetBoard()
 	BoardGame.Empty();
 	BoardRowNames.Empty();
 	bCardDestruction = false;
+	TotalScoreP1 = 0;
+	ToTalScoreP2 = 0;
 	InitBoard();
 }
 
@@ -285,8 +287,12 @@ void ABoard::SyncBoardWithGameState()
 	}
 	
 	// Check GameOver
-	if (NbCardsLeft == 9) GameMode->SetGameOverInfos(EPosition::LEFT);
-	if (NbCardsRight == 9)GameMode->SetGameOverInfos(EPosition::RIGHT);
+	bool bIsGameOver = NbCardsLeft == 9 || NbCardsRight == 9;
+	if (bIsGameOver)
+	{
+		EPosition WinnerPos = TotalScoreP1 > ToTalScoreP2 ? EPosition::LEFT : EPosition::RIGHT;
+		GameMode->SetGameOverInfos(WinnerPos);
+	}
 
 	// Set the board
 	if (ANAFGameState* NafGS = GetWorld()->GetGameState<ANAFGameState>())
@@ -384,6 +390,9 @@ void ABoard::ComputeScores()
 	int32 RightScore1 = ComputeLineScoreRight(1);
 	int32 RightScore2 = ComputeLineScoreRight(2);
 	int32 RightTotalScore = RightScore0 + RightScore1 + RightScore2;
+
+	TotalScoreP1 = LeftTotalScore;
+	ToTalScoreP2 = RightTotalScore;
 
 	if (ANAFGameState* GameState = GetWorld()->GetGameState<ANAFGameState>())
 	{
