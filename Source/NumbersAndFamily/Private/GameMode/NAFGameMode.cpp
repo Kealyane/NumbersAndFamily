@@ -258,6 +258,17 @@ void ANAFGameMode::NewGame()
 {
 	bIsGameOver = false;
 	Winner = EPosition::SERVER;
+
+	if (ANAFPlayerState* P1 = NafGameState->GetNafPlayerState(EPosition::LEFT))
+	{
+		P1->Card1 = FCardDataServer();
+		P1->Card2 = FCardDataServer();
+	}
+	if (ANAFPlayerState* P2 = NafGameState->GetNafPlayerState(EPosition::LEFT))
+	{
+		P2->Card1 = FCardDataServer();
+		P2->Card2 = FCardDataServer();
+	}
 	
 	// Initialize Deck
 	if (UWorld* World = GetWorld())
@@ -280,7 +291,7 @@ void ANAFGameMode::NewGame()
 		}
 		NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::StartGame);
 
-		DelayCounter += 1.5f;
+		DelayCounter += 0.5f;
 		World->GetTimerManager().SetTimer(ShuffleHandle,
 			[this]()
 			{

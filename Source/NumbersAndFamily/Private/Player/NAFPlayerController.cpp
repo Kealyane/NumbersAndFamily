@@ -366,6 +366,14 @@ void ANAFPlayerController::ClientRPC_RowNameForSwitch_Implementation(const FName
 	if (GameWidget) GameWidget->ActiveSwitchAnim.Broadcast(ImageCard1, ImageCard2);
 }
 
+void ANAFPlayerController::ServerRPC_Replay_Implementation()
+{
+	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->NewGame();
+	}
+}
+
 void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
 {
 	if (GameWidget)
@@ -612,6 +620,11 @@ void ANAFPlayerController::LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCo
 	{
 		GameWidget->LaunchAnimCombo3(CoordCardsCombo);
 	}
+}
+
+void ANAFPlayerController::Replay()
+{
+	ServerRPC_Replay();
 }
 
 

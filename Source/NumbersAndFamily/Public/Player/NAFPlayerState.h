@@ -49,6 +49,11 @@ public:
 	UFUNCTION()
 	void OnRep_Id();
 
+	UPROPERTY(Replicated)
+	FCardDataServer Card1;
+	UPROPERTY(Replicated)
+	FCardDataServer Card2;
+
 	void StoreCardInHand(FCardDataServer Card);
 	void RemoveCardInHand(uint8 IndexCard);
 	void UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus);
@@ -67,10 +72,6 @@ public:
 	ANAFPlayerController* GetNafPC() const;
 
 protected:
-	UPROPERTY(Replicated)
-	FCardDataServer Card1;
-	UPROPERTY(Replicated)
-	FCardDataServer Card2;
 
 	FCardDataServer SelectedCard;
 	uint8 IndexSelected;

@@ -76,6 +76,8 @@ public:
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_EndTurn(ANAFPlayerState* ActivePlayerState);
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Replay();
 
 
 	UFUNCTION(Server, Reliable)
@@ -151,6 +153,9 @@ public:
 	void LaunchAnimCombo2(const TArray<FIntPoint> CoordCardsCombo);
 	UFUNCTION()
 	void LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo);
+
+	UFUNCTION()
+	void Replay();
 
 
 private:
