@@ -54,7 +54,7 @@ void ABoard::PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col)
 	{
 		SyncBoardWithGameState();
 	},
-	bCardDestruction ? 1.4f : 0.1f, false);
+	bCardDestruction ? 1.25f : 0.1f, false);
 }
 
 bool ABoard::IsCoordOccupied(uint8 Line, uint8 Col)
@@ -84,7 +84,7 @@ void ABoard::SwitchCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 
 	{
 		SyncBoardWithGameState();
 	},
-	bCardDestruction ? 1.4f : 0.1f, false);
+	bCardDestruction ? 1.25f : 0.1f, false);
 	
 }
 
@@ -108,7 +108,7 @@ void ABoard::StealCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 C
 	{
 		SyncBoardWithGameState();
 	},
-	bCardDestruction ? 1.4f : 0.1f, false);
+	bCardDestruction ? 1.25f : 0.1f, false);
 }
 
 FName ABoard::GetCardDataRowName(uint8 Line, uint8 Col)
@@ -135,7 +135,7 @@ void ABoard::CopyCard(uint8 Card1Line, uint8 Card1Col, uint8 Card2Line, uint8 Ca
 	{
 		SyncBoardWithGameState();
 	},
-	bCardDestruction ? 1.4f : 0.1f, false);
+	bCardDestruction ? 1.25f : 0.1f, false);
 }
 
 void ABoard::DeleteCardWithSameScore(uint8 Line, uint8 Col)
