@@ -153,10 +153,11 @@ public:
 	void LaunchAnimCombo2(const TArray<FIntPoint> CoordCardsCombo);
 	UFUNCTION()
 	void LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo);
+	UFUNCTION()
+	void RemoveAnimCombo(const TArray<FIntPoint> CoordCardsNotCombo);
 
 	UFUNCTION()
 	void Replay();
-
 
 private:
 	bool IsCoordInPlayerIdSide(EPosition PlayerId, uint8 Line, uint8 Col);

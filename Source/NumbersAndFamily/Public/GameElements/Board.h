@@ -37,7 +37,7 @@ private:
 	FTimerHandle ComputeScoreHandle;
 	int32 TotalScoreP1 = 0;
 	int32 ToTalScoreP2 = 0;
-
+	
 	bool bCardDestruction;
 
 	// Gameplay

@@ -334,6 +334,14 @@ void UGameWidget::LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo)
 	}
 }
 
+void UGameWidget::RemoveAnimNotCombo(const TArray<FIntPoint> CoordCardsNotCombo)
+{
+	for (FIntPoint Coord : CoordCardsNotCombo)
+	{
+		BoardSlots[Coord.X][Coord.Y]->OnNotACombo.Broadcast();
+	}
+}
+
 void UGameWidget::ResetWidget()
 {
 	FirstCardSelected = nullptr;
@@ -475,8 +483,14 @@ void UGameWidget::OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 C
 			DeactivateHighlight();
 			if (HandCardTypeSelected == ECardType::COPY) OnShowCopyCardInHand.Broadcast(9,9);
 			
+			if (FirstCardSelected)
+			{
+				FirstCardSelected->SelectCard(false);
+			}
+			
 			if (SelectedHandCard != NewCard)
 			{
+				
 				SelectedHandCard->SelectCard(false);
 				SelectedHandCard->DisableHighlight();
 				

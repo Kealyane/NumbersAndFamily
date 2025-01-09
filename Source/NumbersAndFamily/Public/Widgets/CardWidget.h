@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -21,6 +20,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShowCardHandAnimSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPutCardAnimSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCombox2AnimSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCombox3AnimSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNotAComboSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FResetGameSignature);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FClickSignature, EPosition, Player, uint8, LineSelect, uint8, ColSelect);
@@ -70,6 +70,8 @@ public:
 	FCombox3AnimSignature OnCombox3Anim;
 	UPROPERTY(BlueprintAssignable)
 	FResetGameSignature OnResetGame;
+	UPROPERTY(BlueprintAssignable)
+	FNotAComboSignature OnNotACombo;
 	
 	UPROPERTY()
 	FClickSignature OnClickSlot;

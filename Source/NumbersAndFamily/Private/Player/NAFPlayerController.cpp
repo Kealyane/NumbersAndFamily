@@ -622,6 +622,14 @@ void ANAFPlayerController::LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCo
 	}
 }
 
+void ANAFPlayerController::RemoveAnimCombo(const TArray<FIntPoint> CoordCardsNotCombo)
+{
+	if (GameWidget)
+	{
+		GameWidget->RemoveAnimNotCombo(CoordCardsNotCombo);
+	}
+}
+
 void ANAFPlayerController::Replay()
 {
 	ServerRPC_Replay();

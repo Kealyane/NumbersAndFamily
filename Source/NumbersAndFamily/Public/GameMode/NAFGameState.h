@@ -83,6 +83,8 @@ public:
 	void MultiRPC_Combo2(const TArray<FIntPoint>& CoordCardsCombo);
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_Combo3(const TArray<FIntPoint>& CoordCardsCombo);
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_CardsNotCombo(const TArray<FIntPoint>& CoordCardsNotCombo);
 
 
 	UFUNCTION()
