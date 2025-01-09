@@ -53,12 +53,18 @@ public:
 	UFUNCTION()
 	void OnRep_PlayerAlias();
 
+	UPROPERTY(Replicated)
+	FCardDataServer Card1;
+	UPROPERTY(Replicated)
+	FCardDataServer Card2;
+
 	void StoreCardInHand(FCardDataServer Card);
 	void RemoveCardInHand(uint8 IndexCard);
 	void UpdateHandUI(EPosition TargetId, TArray<bool> HandStatus);
 	void ActiveHandChoice(EPosition ActiveId);
 	
 	void UpdateScores(int32 InScoreLine0, int32 InScoreLine1, int32 InScoreLine2, int32 InTotalScore);
+	void ResetPlayerState();
 	
 	ECardType GetCardType(uint8 PosCard);
 	FCardDataServer GetSelectedCard();
@@ -70,10 +76,6 @@ public:
 	ANAFPlayerController* GetNafPC() const;
 
 protected:
-	UPROPERTY(Replicated)
-	FCardDataServer Card1;
-	UPROPERTY(Replicated)
-	FCardDataServer Card2;
 
 	FCardDataServer SelectedCard;
 	uint8 IndexSelected;

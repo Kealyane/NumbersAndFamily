@@ -18,5 +18,8 @@ public:
 	UPROPERTY(meta=(BindWidget))
 	class UTextBlock* EndGameText;
 
+	UFUNCTION(BlueprintCallable)
+	void LaunchReplay();
+
 	void SetEndGameText(bool bHasWon, int32 Score);
 };

@@ -46,6 +46,8 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_ShowGameBoard();
 	UFUNCTION(Client, Reliable)
+	void ClientRPC_ResetShowGameBoard();
+	UFUNCTION(Client, Reliable)
 	void ClientRPC_PlaceCardInPocketUI(EPosition PlayerPosition, uint8 Pos, FName CardRowName);
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_ShowPocketCardVerso(EPosition PlayerPosition, uint8 Pos);
@@ -74,6 +76,8 @@ public:
 					EPosition Card2Pos, uint8 Card2Line, uint8 Card2Col);
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_EndTurn(ANAFPlayerState* ActivePlayerState);
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Replay();
 
 
 	UFUNCTION(Server, Reliable)
@@ -149,6 +153,11 @@ public:
 	void LaunchAnimCombo2(const TArray<FIntPoint> CoordCardsCombo);
 	UFUNCTION()
 	void LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo);
+	UFUNCTION()
+	void RemoveAnimCombo(const TArray<FIntPoint> CoordCardsNotCombo);
+	
+	UFUNCTION()
+	void Replay();
 
 	UFUNCTION()
 	void SetPlayerNames(FName Player1, FName Player2);

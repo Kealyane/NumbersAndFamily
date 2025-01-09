@@ -100,4 +100,13 @@ void UCardWidget::ShowCardAnim()
 	OnShowCardAnim.Broadcast();
 }
 
+void UCardWidget::ResetCard()
+{
+	bIsCardSlotSelected = false;
+	bIsCardOccupied = false;
+	bCanBeClicked = false;
+	bIsHandSelectionOnGoing = false;
+	OnResetGame.Broadcast();
+}
+
 

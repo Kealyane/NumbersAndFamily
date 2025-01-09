@@ -171,6 +171,11 @@ public:
 	void LaunchAnimCombo2(const TArray<FIntPoint> CoordCardsCombo);
 	UFUNCTION()
 	void LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo);
+	UFUNCTION()
+	void RemoveAnimNotCombo(const TArray<FIntPoint> CoordCardsNotCombo);
+
+	UFUNCTION()
+	void ResetWidget();
 
 	// EVENTS
 

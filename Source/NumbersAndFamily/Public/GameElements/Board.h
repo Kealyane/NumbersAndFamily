@@ -17,6 +17,7 @@ public:
 	ABoard();
 
 	void InitBoard();
+	void ResetBoard();
 	void InitParamDeck(ADeck* InDeck);
 	void PlaceNormalCard(FCardDataServer Card, uint8 Line, uint8 Col);
 	bool IsCoordOccupied(uint8 Line, uint8 Col);
@@ -34,7 +35,9 @@ private:
 	TArray<FName> BoardRowNames;
 	TObjectPtr<ADeck> Deck;
 	FTimerHandle ComputeScoreHandle;
-
+	int32 TotalScoreP1 = 0;
+	int32 ToTalScoreP2 = 0;
+	
 	bool bCardDestruction;
 
 	// Gameplay

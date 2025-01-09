@@ -141,6 +141,14 @@ void ANAFGameState::MultiRPC_ShowCard_Implementation(FCardDataServer Card, uint8
 		PlayerController->ShowCard(Card, Line, Col);
 	}
 }
+void ANAFGameState::MultiRPC_CardsNotCombo_Implementation(const TArray<FIntPoint>& CoordCardsNotCombo)
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->RemoveAnimCombo(CoordCardsNotCombo);
+	}
+}
 
 void ANAFGameState::MultiRPC_SetPlayerNames_Implementation(FName Player1, FName Player2)
 {

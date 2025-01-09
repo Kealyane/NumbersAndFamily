@@ -334,6 +334,37 @@ void UGameWidget::LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCombo)
 	}
 }
 
+void UGameWidget::RemoveAnimNotCombo(const TArray<FIntPoint> CoordCardsNotCombo)
+{
+	for (FIntPoint Coord : CoordCardsNotCombo)
+	{
+		BoardSlots[Coord.X][Coord.Y]->OnNotACombo.Broadcast();
+	}
+}
+
+void UGameWidget::ResetWidget()
+{
+	FirstCardSelected = nullptr;
+	SecondCardSelected = nullptr;
+	FirstCardPosition = EPosition::SERVER;
+	HandCardTypeSelected = ECardType::NONE;
+	bIsHandChoiceDone = false;
+	SelectedHandCard = nullptr;
+	bCanInteractWithBoard = false;
+	
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 6; j++)
+		{
+			BoardSlots[i][j]->ResetCard();
+		}
+	}
+	WBP_Card_P1_Pocket->ResetCard();
+	WBP_Card_P1_Pocket_1->ResetCard();
+	WBP_Card_P2_Pocket->ResetCard();
+	WBP_Card_P2_Pocket_1->ResetCard();
+}
+
 void UGameWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -452,8 +483,14 @@ void UGameWidget::OnHandCardSelected(EPosition Player, uint8 LineSelect, uint8 C
 			DeactivateHighlight();
 			if (HandCardTypeSelected == ECardType::COPY) OnShowCopyCardInHand.Broadcast(9,9);
 			
+			if (FirstCardSelected)
+			{
+				FirstCardSelected->SelectCard(false);
+			}
+			
 			if (SelectedHandCard != NewCard)
 			{
+				
 				SelectedHandCard->SelectCard(false);
 				SelectedHandCard->DisableHighlight();
 				

@@ -4,6 +4,16 @@
 #include "Widgets/EndGameWidget.h"
 
 #include "Components/TextBlock.h"
+#include "Player/NAFPlayerController.h"
+
+void UEndGameWidget::LaunchReplay()
+{
+	ANAFPlayerController* PlayerController = GetWorld()->GetFirstPlayerController<ANAFPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->Replay();
+	}
+}
 
 void UEndGameWidget::SetEndGameText(bool bHasWon, int32 Score)
 {

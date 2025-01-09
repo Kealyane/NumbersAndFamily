@@ -28,6 +28,15 @@ void ANAFPlayerController::BeginPlay()
 	}
 }
 
+void ANAFPlayerController::ClientRPC_ResetShowGameBoard_Implementation()
+{
+	if (EndGameWidget)
+	{
+		EndGameWidget->RemoveFromParent();
+		EndGameWidget = nullptr;
+	}
+}
+
 void ANAFPlayerController::ClientRPC_ShowGameBoard_Implementation()
 {
 	GameWidget = CreateWidget<UGameWidget>(this, GameWidgetType);
@@ -117,6 +126,18 @@ void ANAFPlayerController::ShowEndGamePanel(EPosition WinningPlayerId)
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 	SetInputMode(InputMode);
+
+	FTimerHandle EndGameUIHandle;
+	GetWorld()->GetTimerManager().SetTimer(EndGameUIHandle,
+		[this]()
+		{
+			GameWidget->ResetWidget();
+			bIsMyTurn = false;
+			if (ANAFPlayerState* PS = GetPlayerState<ANAFPlayerState>())
+			{
+				PS->ResetPlayerState();
+			}
+		}, 0.5f, false);
 }
 
 void ANAFPlayerController::ShowCard(FCardDataServer Card, uint8 Line, uint8 col)
@@ -343,6 +364,14 @@ void ANAFPlayerController::ClientRPC_RowNameForSwitch_Implementation(const FName
 	const FCardData* Data2 = DeckDataTable->FindRow<FCardData>(RowName2,ContextString);
 	UTexture2D* ImageCard2 = Data2->ImageRecto;
 	if (GameWidget) GameWidget->ActiveSwitchAnim.Broadcast(ImageCard1, ImageCard2);
+}
+
+void ANAFPlayerController::ServerRPC_Replay_Implementation()
+{
+	if (ANAFGameMode* GameMode = Cast<ANAFGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->NewGame();
+	}
 }
 
 void ANAFPlayerController::UpdateActiveTurnUI(EPosition ActivePosition)
@@ -592,6 +621,20 @@ void ANAFPlayerController::LaunchAnimCombo3(const TArray<FIntPoint> CoordCardsCo
 		GameWidget->LaunchAnimCombo3(CoordCardsCombo);
 	}
 }
+
+void ANAFPlayerController::RemoveAnimCombo(const TArray<FIntPoint> CoordCardsNotCombo)
+{
+	if (GameWidget)
+	{
+		GameWidget->RemoveAnimNotCombo(CoordCardsNotCombo);
+	}
+}
+
+void ANAFPlayerController::Replay()
+{
+	ServerRPC_Replay();
+}
+
 
 void ANAFPlayerController::SetPlayerNames(FName Player1, FName Player2)
 {

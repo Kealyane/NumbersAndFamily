@@ -267,8 +267,9 @@ void ANAFGameMode::GiveOneCardToBothPlayer()
 						TArray<bool> HandCurrent = NafPS1->HandStatus();
 						NafPS2->UpdateHandUI(NafPS1->Id,HandCurrent);
 
-						FCardDataServer Card = Deck->DrawCard();
-						NafPS2->StoreCardInHand(Card);
+						FCardDataServer Card2 = Deck->DrawCard();
+						Deck->bIsStartGame = false;
+						NafPS2->StoreCardInHand(Card2);
 						HandCurrent = NafPS2->HandStatus();
 						NafPS1->UpdateHandUI(NafPS2->Id,HandCurrent);
 						
@@ -285,6 +286,60 @@ void ANAFGameMode::InitializeCurrentPlayer()
 	EPosition ActivePosition = bIsPlayerLeft ? EPosition::LEFT : EPosition::RIGHT;
 	
 	NafGameState->SetActivePlayer(ActivePosition);
+}
+
+void ANAFGameMode::NewGame()
+{
+	bIsGameOver = false;
+	Winner = EPosition::SERVER;
+
+	if (ANAFPlayerState* P1 = NafGameState->GetNafPlayerState(EPosition::LEFT))
+	{
+		P1->Card1 = FCardDataServer();
+		P1->Card2 = FCardDataServer();
+	}
+	if (ANAFPlayerState* P2 = NafGameState->GetNafPlayerState(EPosition::LEFT))
+	{
+		P2->Card1 = FCardDataServer();
+		P2->Card2 = FCardDataServer();
+	}
+	
+	// Initialize Deck
+	if (UWorld* World = GetWorld())
+	{
+		Deck->ResetDeck();
+		Board->InitBoard();
+		Board->InitParamDeck(Deck);
+		NafGameState->InitBoardRow();
+		NafGameState->MultiRPC_UpdateScores(0,0,0,0,
+			0,0,0,0);
+		
+		// Show UI
+		for (FConstPlayerControllerIterator PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; ++PCIterator)
+		{
+			if (ANAFPlayerController* NafPlayerController = Cast<ANAFPlayerController>(*PCIterator))
+			{
+				// REMOVE ENDGAME WIDGET
+				NafPlayerController->ClientRPC_ResetShowGameBoard();
+			}
+		}
+		NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::StartGame);
+
+		DelayCounter += 0.5f;
+		World->GetTimerManager().SetTimer(ShuffleHandle,
+			[this]()
+			{
+				NafGameState->MultiRPC_PlaySoundForBoth(ESoundRow::Shuffle);
+			},
+			DelayCounter,
+			false);
+		
+		DelayCounter += 3.f;
+		World->GetTimerManager().SetTimer(InitCardHandle,this,&ANAFGameMode::GiveOneCardToBothPlayer, DelayCounter, false);
+		
+		DelayCounter += 4.5f;
+		World->GetTimerManager().SetTimer(SwitchPlayerHandle,this,&ANAFGameMode::InitializeCurrentPlayer, DelayCounter, false);
+	}
 }
 
 
